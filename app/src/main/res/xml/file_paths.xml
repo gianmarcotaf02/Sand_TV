@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+    <!-- External files directory for downloaded APKs -->
+    <external-files-path
+        name="updates"
+        path="updates/" />
+    
+    <!-- Cache directory as fallback -->
+    <cache-path
+        name="cache"
+        path="/" />
+</paths>

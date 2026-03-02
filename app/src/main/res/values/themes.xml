@@ -1,0 +1,304 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- NOTE: Premium Theme - Prime Video Style for Android TV -->
+    
+    <!-- Base Theme for TV - Premium Streaming -->
+    <style name="Theme.SandTV" parent="android:Theme.DeviceDefault.NoActionBar">
+        <item name="android:colorPrimary">@color/brand_primary</item>
+        <item name="android:colorPrimaryDark">@color/background_dark</item>
+        <item name="android:colorAccent">@color/accent</item>
+        <item name="android:windowBackground">@color/background_dark</item>
+        <item name="android:textColorPrimary">@color/text_primary</item>
+        <item name="android:textColorSecondary">@color/text_secondary</item>
+        
+        <!-- Premium Typography for TV -->
+        <item name="android:fontFamily">sans-serif-medium</item>
+    </style>
+    
+    <style name="Theme.SandTV.FullScreen">
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowTranslucentNavigation">true</item>
+    </style>
+    
+    <style name="Theme.SandTV.Player" parent="Theme.SandTV.FullScreen">
+        <item name="android:windowBackground">@android:color/black</item>
+    </style>
+    
+    <!-- ============================================= -->
+    <!-- CARD STYLES - Premium Streaming Look -->
+    <!-- ============================================= -->
+    
+    <style name="CardStyle">
+        <item name="android:background">@drawable/card_premium_background</item>
+        <item name="android:focusable">true</item>
+        <item name="android:focusableInTouchMode">true</item>
+    </style>
+    
+    <style name="CardStyle.Poster" parent="CardStyle">
+        <!-- Poster cards with 2:3 aspect ratio feel -->
+    </style>
+    
+    <style name="CardStyle.Glass">
+        <item name="android:background">@drawable/glass_background</item>
+    </style>
+    
+    <style name="CardStyle.Elevated">
+        <item name="android:background">@drawable/card_modern_background</item>
+        <item name="android:elevation">8dp</item>
+    </style>
+    
+    <!-- ============================================= -->
+    <!-- BUTTON STYLES - Premium Actions -->
+    <!-- ============================================= -->
+    
+    <style name="ButtonStyle.Primary" parent="android:Widget.Button">
+        <item name="android:background">@drawable/button_primary_background</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:paddingHorizontal">36dp</item>
+        <item name="android:paddingVertical">16dp</item>
+        <item name="android:letterSpacing">0.02</item>
+        <item name="android:stateListAnimator">@animator/button_scale</item>
+    </style>
+    
+    <style name="ButtonStyle.Secondary" parent="android:Widget.Button">
+        <item name="android:background">@drawable/button_secondary_background</item>
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:paddingHorizontal">32dp</item>
+        <item name="android:paddingVertical">14dp</item>
+        <item name="android:stateListAnimator">@animator/button_scale</item>
+    </style>
+    
+    <style name="ButtonStyle.Glass" parent="android:Widget.Button">
+        <item name="android:background">@drawable/button_glass_background</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:paddingHorizontal">32dp</item>
+        <item name="android:paddingVertical">14dp</item>
+        <item name="android:stateListAnimator">@animator/button_scale</item>
+    </style>
+    
+    <style name="ButtonStyle.Icon" parent="android:Widget.Button">
+        <item name="android:background">@drawable/button_icon_background</item>
+        <item name="android:padding">14dp</item>
+        <item name="android:stateListAnimator">@animator/button_scale</item>
+    </style>
+    
+    <!-- ============================================= -->
+    <!-- TEXT STYLES - TV Optimized Typography -->
+    <!-- ============================================= -->
+    
+    <style name="TextStyle">
+        <item name="android:textSize">18sp</item>
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:fontFamily">sans-serif</item>
+    </style>
+    
+    <!-- Hero Title - Large display for featured content -->
+    <style name="TextStyle.Hero">
+        <item name="android:textSize">48sp</item>
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:letterSpacing">-0.02</item>
+        <item name="android:shadowColor">#80000000</item>
+        <item name="android:shadowRadius">8</item>
+    </style>
+    
+    <!-- Page Title -->
+    <style name="TextStyle.Title" parent="TextStyle">
+        <item name="android:textSize">36sp</item>
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:letterSpacing">-0.02</item>
+    </style>
+    
+    <!-- Section Headlines -->
+    <style name="TextStyle.Headline">
+        <item name="android:textSize">26sp</item>
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:letterSpacing">-0.01</item>
+    </style>
+    
+    <!-- Subheadline -->
+    <style name="TextStyle.Subheadline">
+        <item name="android:textSize">20sp</item>
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+    </style>
+    
+    <!-- Body Text - Good readability from distance -->
+    <style name="TextStyle.Body">
+        <item name="android:textSize">18sp</item>
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:lineHeight">28sp</item>
+    </style>
+    
+    <style name="TextStyle.BodySecondary">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/text_secondary</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:lineHeight">24sp</item>
+    </style>
+    
+    <!-- Card Titles -->
+    <style name="TextStyle.CardTitle">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:maxLines">2</item>
+        <item name="android:ellipsize">end</item>
+    </style>
+    
+    <style name="TextStyle.CardSubtitle">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/text_secondary</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:ellipsize">end</item>
+    </style>
+    
+    <!-- Caption/Metadata -->
+    <style name="TextStyle.Caption">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/text_secondary</item>
+        <item name="android:fontFamily">sans-serif</item>
+    </style>
+    
+    <!-- Small labels -->
+    <style name="TextStyle.Label">
+        <item name="android:textSize">12sp</item>
+        <item name="android:textColor">@color/text_tertiary</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:letterSpacing">0.08</item>
+    </style>
+    
+    <!-- Badge Text -->
+    <style name="TextStyle.Badge">
+        <item name="android:textSize">12sp</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:letterSpacing">0.04</item>
+    </style>
+    
+    <!-- Rating Numbers -->
+    <style name="TextStyle.Rating">
+        <item name="android:textSize">15sp</item>
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+    </style>
+    
+    <!-- ============================================= -->
+    <!-- PILL/TAB STYLES -->
+    <!-- ============================================= -->
+    
+    <style name="PillStyle">
+        <item name="android:background">@drawable/pill_background</item>
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:paddingHorizontal">24dp</item>
+        <item name="android:paddingVertical">12dp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:focusable">true</item>
+    </style>
+    
+    <style name="TabStyle">
+        <item name="android:background">@drawable/tab_pill_background</item>
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:paddingHorizontal">24dp</item>
+        <item name="android:paddingVertical">12dp</item>
+        <item name="android:minWidth">100dp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:focusable">true</item>
+        <item name="android:focusableInTouchMode">true</item>
+    </style>
+    
+    <!-- ============================================= -->
+    <!-- DIALOG STYLES - Glassmorphism -->
+    <!-- ============================================= -->
+    
+    <style name="ProfileDialogTheme" parent="android:Theme.DeviceDefault.Dialog">
+        <item name="android:windowBackground">@drawable/dialog_glass_background</item>
+        <item name="android:colorAccent">@color/accent</item>
+        <item name="android:textColorPrimary">@color/text_primary</item>
+        <item name="android:windowMinWidthMajor">55%</item>
+        <item name="android:windowMinWidthMinor">75%</item>
+    </style>
+    
+    <style name="Theme.SandTV.Dialog" parent="android:Theme.DeviceDefault.Dialog">
+        <item name="android:windowBackground">@drawable/dialog_glass_background</item>
+        <item name="android:colorAccent">@color/accent</item>
+        <item name="android:textColorPrimary">@color/text_primary</item>
+        <item name="android:textColorSecondary">@color/text_secondary</item>
+        <item name="android:windowMinWidthMajor">50%</item>
+        <item name="android:windowMinWidthMinor">75%</item>
+    </style>
+    
+    <style name="DialogButtonPositive" parent="android:Widget.Button">
+        <item name="android:textColor">@color/accent</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+    </style>
+    
+    <style name="DialogButtonNegative" parent="android:Widget.Button">
+        <item name="android:textColor">@color/text_secondary</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+    
+    <!-- ============================================= -->
+    <!-- INPUT STYLES -->
+    <!-- ============================================= -->
+    
+    <style name="EditTextStyle">
+        <item name="android:background">@drawable/edit_text_modern_background</item>
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:textColorHint">@color/text_hint</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:paddingHorizontal">24dp</item>
+        <item name="android:paddingVertical">18dp</item>
+        <item name="android:fontFamily">sans-serif</item>
+    </style>
+    
+    <style name="EditTextStyle.Glass">
+        <item name="android:background">@drawable/edit_text_glass_background</item>
+    </style>
+    
+    <!-- ============================================= -->
+    <!-- SPECIAL STYLES -->
+    <!-- ============================================= -->
+    
+    <!-- Sidebar Category Item -->
+    <style name="SidebarCategoryStyle">
+        <item name="android:textSize">17sp</item>
+        <item name="android:textColor">@color/text_secondary</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:paddingVertical">14dp</item>
+        <item name="android:paddingHorizontal">20dp</item>
+        <item name="android:background">@drawable/item_selectable_background</item>
+        <item name="android:focusable">true</item>
+    </style>
+    
+    <!-- Settings Item -->
+    <style name="SettingsItemStyle">
+        <item name="android:textSize">18sp</item>
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:paddingVertical">16dp</item>
+        <item name="android:paddingHorizontal">24dp</item>
+        <item name="android:background">@drawable/item_selectable_background</item>
+        <item name="android:focusable">true</item>
+    </style>
+    
+</resources>

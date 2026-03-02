@@ -1,0 +1,453 @@
+{
+  "page": 1,
+  "results": [
+    {
+      "adult": false,
+      "backdrop_path": "/7mkUu1F2hVUNgz24xO8HPx0D6mK.jpg",
+      "id": 224372,
+      "name": "A Knight of the Seven Kingdoms",
+      "original_name": "A Knight of the Seven Kingdoms",
+      "overview": "Un secolo prima degli eventi narrati in Game of Thrones, due improbabili eroi vagavano per Westeros: un giovane cavaliere ingenuo ma coraggioso, Ser Duncan l'Alto (alias Dunk) e il suo piccolo scudiero, Egg. Ambientato in un'epoca in cui la dinastia dei Targaryen detiene ancora il Trono di Spade e il ricordo dell'ultimo drago non è ancora svanito dalla memoria collettiva, grandi destini, nemici potenti e imprese pericolose attendono questi amici improbabili e incomparabili.",
+      "poster_path": "/A354Cp3H0OnQhw8oab4fYABavz1.jpg",
+      "media_type": "tv",
+      "original_language": "en",
+      "genre_ids": [
+        18,
+        10765,
+        10759
+      ],
+      "popularity": 319.9827,
+      "first_air_date": "2026-01-18",
+      "vote_average": 8.093,
+      "vote_count": 91,
+      "origin_country": [
+        "US"
+      ]
+    },
+    {
+      "adult": false,
+      "backdrop_path": "/gmECX1DvFgdUPjtio2zaL8BPYPu.jpg",
+      "id": 95479,
+      "name": "Jujutsu Kaisen",
+      "original_name": "呪術廻戦",
+      "overview": "Itadori Yuji è un ragazzo dall'incredibile possanza fisica, malgrado viva una vita comune da liceale. Per salvare un amico attaccato da una Maledizione, un giorno, ingoia il dito dello Spettro Bifronte, accogliendo così la Maledizione nella sua stessa anima. Condivide da allora il suo corpo con lo Spettro Bifronte. Sotto la guida del più potente degli stregoni, Gojo Satoru, Itadori è ammesso alla Tokyo Metropolitan Technical High School of Sorcery, un'organizzazione che combatte le Maledizioni... e inizia così il racconto eroico di un ragazzo che diviene una Maledizione per esorcizzare le Maledizioni, vita da cui non potrà mai tornare indietro.",
+      "poster_path": "/zKFkzRn1UyE11Jv9CJjVmvmQFvR.jpg",
+      "media_type": "tv",
+      "original_language": "ja",
+      "genre_ids": [
+        16,
+        10759,
+        10765
+      ],
+      "popularity": 178.3607,
+      "first_air_date": "2020-10-03",
+      "vote_average": 8.565,
+      "vote_count": 4119,
+      "origin_country": [
+        "JP"
+      ]
+    },
+    {
+      "adult": false,
+      "backdrop_path": "/rBOnrVlck7BIlGeWVlzYiZeg4l2.jpg",
+      "id": 209867,
+      "name": "Frieren - Oltre la Fine del Viaggio",
+      "original_name": "葬送のフリーレン",
+      "overview": "La maga elfica Frieren e i suoi coraggiosi compagni d'avventura hanno sconfitto il Re Demone, portando finalmente la pace nella loro terra. Ora gli eroi possono prendere ognuno la propria strada, verso la meta comune di una vita tranquilla. In qualità di elfa, Frieren è destinata a un'esistenza lunghissima e a sopravvivere al resto del gruppo: come potrà fare i conti con la mortalità dei suoi amici? Riuscirà a trovare appagamento nella propria vita e a imparare a comprendere cosa significa vivere per gli esseri umani che la circondano? Per Frieren la battaglia potrà anche essersi conclusa ma il viaggio interiore che la attende sarà altrettanto duro e difficile…",
+      "poster_path": "/8R68IpqR97EOxlKb6KgLsBAudsy.jpg",
+      "media_type": "tv",
+      "original_language": "ja",
+      "genre_ids": [
+        16,
+        10759,
+        18,
+        10765
+      ],
+      "popularity": 112.1469,
+      "first_air_date": "2023-09-29",
+      "vote_average": 8.7,
+      "vote_count": 646,
+      "origin_country": [
+        "JP"
+      ]
+    },
+    {
+      "adult": false,
+      "backdrop_path": "/6uPBHw488MUW6x51zZ2OCJo6Dgp.jpg",
+      "id": 250307,
+      "name": "The Pitt",
+      "original_name": "The Pitt",
+      "overview": "Lo staff del Trauma Medical Center di Pittsburgh lavora ininterrottamente per salvare vite in un reparto di emergenza sovraffollato e senza fondi.",
+      "poster_path": "/kvFSpESyBZMjaeOJDx7RS3P1jey.jpg",
+      "media_type": "tv",
+      "original_language": "en",
+      "genre_ids": [
+        18
+      ],
+      "popularity": 86.714,
+      "first_air_date": "2025-01-09",
+      "vote_average": 8.7,
+      "vote_count": 396,
+      "origin_country": [
+        "US"
+      ]
+    },
+    {
+      "adult": false,
+      "backdrop_path": "/cX6dzeKsBTTXHoG3uQUuhQbqyvq.jpg",
+      "id": 273160,
+      "name": "The Beauty",
+      "original_name": "The Beauty",
+      "overview": "Il mondo dell'alta moda viene sconvolto dalle misteriose morti di alcune top model internazionali. Gli agenti dell'FBI Cooper Madsen e Jordan Bennett vengono mandati a Parigi per scoprire la verità. Man mano che approfondiscono il caso, vengono a sapere di un virus sessualmente trasmissibile che trasforma le persone comuni in esseri fisicamente perfetti, ma con conseguenze terrificanti.",
+      "poster_path": "/hfMT9F21dyhr4ZmdIY7hAwJvnOH.jpg",
+      "media_type": "tv",
+      "original_language": "en",
+      "genre_ids": [
+        18,
+        10765
+      ],
+      "popularity": 72.534,
+      "first_air_date": "2026-01-21",
+      "vote_average": 3.6,
+      "vote_count": 14,
+      "origin_country": [
+        "US"
+      ]
+    },
+    {
+      "adult": false,
+      "backdrop_path": "/cIgHBLTMbcIkS0yvIrUUVVKLdOz.jpg",
+      "id": 106379,
+      "name": "Fallout",
+      "original_name": "Fallout",
+      "overview": "Basato su una delle serie di videogiochi più grandi di sempre, Fallout è la storia di chi ha e chi non ha, in un mondo in cui non è rimasto quasi più nulla da possedere. 200 anni dopo l'apocalisse, gli abitanti dei lussuosi rifugi antiatomici sono costretti a tornare nell'irradiato paesaggio infernale che i loro antenati si sono lasciati alle spalle, rimanendo sconvolti dalla scoperta di un universo incredibilmente complesso, gioiosamente bizzarro e altamente violento che li attende.",
+      "poster_path": "/bnayCOZ739OHS2DHPy7ZQDGC8iv.jpg",
+      "media_type": "tv",
+      "original_language": "en",
+      "genre_ids": [
+        10759,
+        10765
+      ],
+      "popularity": 160.8657,
+      "first_air_date": "2024-04-10",
+      "vote_average": 8.146,
+      "vote_count": 2415,
+      "origin_country": [
+        "US"
+      ]
+    },
+    {
+      "adult": false,
+      "backdrop_path": "/tSFndbpoEctuYviiSRJHjyC31V9.jpg",
+      "id": 254071,
+      "name": "Steal - La rapina",
+      "original_name": "Steal",
+      "overview": "Una giornata come tante alla Lochmill Capital viene sconvolta quando una banda armata irrompe negli uffici e costringe Zara e il suo migliore amico Luke a eseguire i loro ordini. L'ispettore Rhys dovrà scoprire chi ha rubato quattro miliardi di sterline dai fondi pensione e perché.",
+      "poster_path": "/syaooTxrx1ULyivY6s7WsNAlohx.jpg",
+      "media_type": "tv",
+      "original_language": "en",
+      "genre_ids": [
+        18,
+        80,
+        9648
+      ],
+      "popularity": 120.3319,
+      "first_air_date": "2026-01-21",
+      "vote_average": 8.438,
+      "vote_count": 16,
+      "origin_country": [
+        "GB"
+      ]
+    },
+    {
+      "adult": false,
+      "backdrop_path": "/8zbAoryWbtH0DKdev8abFAjdufy.jpg",
+      "id": 66732,
+      "name": "Stranger Things",
+      "original_name": "Stranger Things",
+      "overview": "La scomparsa di un ragazzino in una cittadina porta alla luce un mistero in cui si mescolano esperimenti segreti, spaventose forze soprannaturali e una strana bambina.",
+      "poster_path": "/wZNIKNMqjulcU1AbU6X98tHy9QF.jpg",
+      "media_type": "tv",
+      "original_language": "en",
+      "genre_ids": [
+        10765,
+        9648,
+        10759
+      ],
+      "popularity": 459.9347,
+      "first_air_date": "2016-07-15",
+      "vote_average": 8.581,
+      "vote_count": 20383,
+      "origin_country": [
+        "US"
+      ]
+    },
+    {
+      "adult": false,
+      "backdrop_path": "/mh2UczqEXJJVgqohbyZbHTuxwhL.jpg",
+      "id": 157741,
+      "name": "Landman",
+      "original_name": "Landman",
+      "overview": "Nelle città in rapida espansione del Texas occidentale, dove irrefrenabili miliardari stanno alimentando il più grande boom economico della storia, Tommy Norris è un anonimo gestore di crisi per la compagnia petrolifera di Monty Miller, un titano del locale sistema industriale con il quale ha una lunga relazione personale e professionale che coinvolge anche la moglie di quest'ultimo, Cami.",
+      "poster_path": "/hYthRgS1nvQkGILn9YmqsF8kSk6.jpg",
+      "media_type": "tv",
+      "original_language": "en",
+      "genre_ids": [
+        18
+      ],
+      "popularity": 125.4674,
+      "first_air_date": "2024-11-17",
+      "vote_average": 8.033,
+      "vote_count": 393,
+      "origin_country": [
+        "US"
+      ]
+    },
+    {
+      "adult": false,
+      "backdrop_path": "/6350bZGwGGf0tloA2h2WjmlPWGM.jpg",
+      "id": 223530,
+      "name": "Star Trek: Starfleet Academy",
+      "original_name": "Star Trek: Starfleet Academy",
+      "overview": "STAR TREK: STARFLEET ACADEMY presenta agli spettatori dei giovani cadetti che si uniscono nel sogno condiviso di speranza e ottimismo. Sotto lo sguardo dei loro istruttori, imparano ciò che serve per diventare ufficiali della Flotta Stellare.",
+      "poster_path": "/oqOQ7MulUJniBvYfzCLx5leHcU2.jpg",
+      "media_type": "tv",
+      "original_language": "en",
+      "genre_ids": [
+        10765,
+        10759
+      ],
+      "popularity": 80.7424,
+      "first_air_date": "2026-01-15",
+      "vote_average": 5.031,
+      "vote_count": 65,
+      "origin_country": [
+        "US"
+      ]
+    },
+    {
+      "adult": false,
+      "backdrop_path": "/60Hm8JC1Ps8DsrstAt4PTQuBdIB.jpg",
+      "id": 229891,
+      "name": "Come si dice \"amore\"?",
+      "original_name": "이 사랑 통역 되나요?",
+      "overview": "Un'attrice famosa e il suo interprete faticano a tradurre le proprie emozioni in parole mentre viaggiano per il mondo per girare una serie. L'amore saprà trovare la propria lingua?",
+      "poster_path": "/ePz0D6B6wbxoLHsUtcaqfGx7E41.jpg",
+      "media_type": "tv",
+      "original_language": "ko",
+      "genre_ids": [
+        18,
+        35
+      ],
+      "popularity": 65.0403,
+      "first_air_date": "2026-01-16",
+      "vote_average": 9.3,
+      "vote_count": 23,
+      "origin_country": [
+        "KR"
+      ]
+    },
+    {
+      "adult": false,
+      "backdrop_path": "/eVEbRtSOrczWlYnVmwM195AnX86.jpg",
+      "id": 250505,
+      "name": "I sette quadranti di Agatha Christie",
+      "original_name": "Agatha Christie's Seven Dials",
+      "overview": "Quando una sontuosa festa in campagna finisce con un omicidio, una giovane aristocratica arguta decide di risolvere il mistero in questo adattamento del romanzo di Agatha Christie.",
+      "poster_path": "/263ROeyuEg1ihYVRTa35qNzrKbs.jpg",
+      "media_type": "tv",
+      "original_language": "en",
+      "genre_ids": [
+        18,
+        9648
+      ],
+      "popularity": 60.7582,
+      "first_air_date": "2026-01-15",
+      "vote_average": 6.179,
+      "vote_count": 82,
+      "origin_country": [
+        "GB"
+      ]
+    },
+    {
+      "adult": false,
+      "backdrop_path": "/gArCVC4ML529WMCEqOXbALdQbUq.jpg",
+      "id": 203737,
+      "name": "Oshi no Ko",
+      "original_name": "【推しの子】",
+      "overview": "Il dottor Goro rinasce come figlio della giovane star Ai Hoshino dopo che il suo delirante stalker lo ha ucciso. Ora vuole aiutare la sua nuova madre a risalire la china, ma cosa può fare un bambino contro il lato oscuro dell'industria dello spettacolo?",
+      "poster_path": "/gnNMGCDA2mZuVMHRvqi8BwAUJWj.jpg",
+      "media_type": "tv",
+      "original_language": "ja",
+      "genre_ids": [
+        16,
+        18
+      ],
+      "popularity": 34.7225,
+      "first_air_date": "2023-04-12",
+      "vote_average": 8.3,
+      "vote_count": 292,
+      "origin_country": [
+        "JP"
+      ]
+    },
+    {
+      "adult": false,
+      "backdrop_path": "/t5OhMJHdgzXxiwZ8iNXMMLSglUK.jpg",
+      "id": 198102,
+      "name": "Hijack",
+      "original_name": "Hijack",
+      "overview": "Dopo che un gruppo di dirottatori ha preso il controllo, Idris Elba e i passeggeri a bordo con lui si preparano ad affrontare il viaggio più importante della loro vita. Sam tenterà ogni strategia a sua disposizione per fermarli, mentre la posta in gioco sale di secondo in secondo.",
+      "poster_path": "/vb1gfEOuRZPlWp5ymAoxQ2G1wkx.jpg",
+      "media_type": "tv",
+      "original_language": "en",
+      "genre_ids": [
+        18
+      ],
+      "popularity": 39.4364,
+      "first_air_date": "2023-06-28",
+      "vote_average": 7.6,
+      "vote_count": 682,
+      "origin_country": [
+        "GB"
+      ]
+    },
+    {
+      "adult": false,
+      "backdrop_path": "/lJoaiZcYMc8RkmPLROcdS2WQxn9.jpg",
+      "id": 61859,
+      "name": "The Night Manager",
+      "original_name": "The Night Manager",
+      "overview": "Tratta dall'omonimo romanzo di John Le Carré, la serie narra la storia dell'ex-soldato dell'esercito britannico Jonathan Pine, ora direttore di un albergo di lusso al Cairo, che viene reclutato da Angela Burr, ufficiale dei servizi segreti che indaga su Richard Onslow Roper, corrotto uomo d'affari coinvolto nel commercio illegale di armi. Jonathan riceve l'ordine di infiltrarsi nell'organizzazione di Roper, finendo ben presto col dover fare i conti con i sentimenti nei confronti della fidanzata di Roper stesso, con il disappunto verso Corkoran (socio di Roper) e soprattutto con la consapevolezza che l'intera operazione è tenuta segreta dall'agenzia per timore che possa essere annullata da un momento all'altro.",
+      "poster_path": "/1MccRnw41qQjREuZkovqP2UX1i3.jpg",
+      "media_type": "tv",
+      "original_language": "en",
+      "genre_ids": [
+        18,
+        9648,
+        80
+      ],
+      "popularity": 51.3254,
+      "first_air_date": "2016-02-21",
+      "vote_average": 7.754,
+      "vote_count": 1178,
+      "origin_country": [
+        "GB"
+      ]
+    },
+    {
+      "adult": false,
+      "backdrop_path": "/wIysQFRoro0DsNRMjFUoiTxbt5.jpg",
+      "id": 240459,
+      "name": "Spartacus: House of Ashur",
+      "original_name": "Spartacus: House of Ashur",
+      "overview": "E se Ashur fosse sopravvissuto e avesse ottenuto il ludus dove un tempo aveva sanguinato? Con Achillia, una gladiatrice, scatena spettacoli che sfidano Roma e sconvolgono l'élite.",
+      "poster_path": "/vNByuzy60v31nmUVPMA8oAtneUK.jpg",
+      "media_type": "tv",
+      "original_language": "en",
+      "genre_ids": [
+        18,
+        10759
+      ],
+      "popularity": 144.1108,
+      "first_air_date": "2025-12-05",
+      "vote_average": 6.372,
+      "vote_count": 133,
+      "origin_country": [
+        "US"
+      ]
+    },
+    {
+      "adult": false,
+      "backdrop_path": "/n4hJLZmBG8kZccNn7bNgBDsVQ6a.jpg",
+      "id": 259731,
+      "name": "La sua verità",
+      "original_name": "HIS & HERS",
+      "overview": "Due coniugi separati da tempo, lui poliziotto, lei giornalista, competono per risolvere un caso di omicidio in cui ciascuno ritiene che l'altro sia il principale sospettato.",
+      "poster_path": "/deuMoWfN5MHdEOmK8VlG9WW6o6.jpg",
+      "media_type": "tv",
+      "original_language": "en",
+      "genre_ids": [
+        18,
+        80,
+        9648
+      ],
+      "popularity": 80.0256,
+      "first_air_date": "2026-01-08",
+      "vote_average": 7.025,
+      "vote_count": 161,
+      "origin_country": [
+        "US"
+      ]
+    },
+    {
+      "adult": false,
+      "backdrop_path": "/6iNWfGVCEfASDdlNb05TP5nG0ll.jpg",
+      "id": 79744,
+      "name": "The Rookie",
+      "original_name": "The Rookie",
+      "overview": "La serie segue John Nolan, un uomo di quarant'anni, che si sposta dalla sua confortevole vita in città a Los Angeles per perseguire il suo sogno di diventare un agente del dipartimento di polizia di Los Angeles. Nolan deve però navigare nel pericoloso, umoristico e imprevedibile mondo di un poliziotto \"giovane\".",
+      "poster_path": "/70kTz0OmjjZe7zHvIDrq2iKW7PJ.jpg",
+      "media_type": "tv",
+      "original_language": "en",
+      "genre_ids": [
+        80,
+        18,
+        35
+      ],
+      "popularity": 258.899,
+      "first_air_date": "2018-10-16",
+      "vote_average": 8.536,
+      "vote_count": 2907,
+      "origin_country": [
+        "US"
+      ]
+    },
+    {
+      "adult": false,
+      "backdrop_path": "/Ak7AdQpvmZpSe9WYBd5KrgjSsSX.jpg",
+      "id": 262793,
+      "name": "PONIES",
+      "original_name": "PONIES",
+      "overview": "",
+      "poster_path": "/rwKS6rSAqMGnXwBVteYkHxeDLWX.jpg",
+      "media_type": "tv",
+      "original_language": "en",
+      "genre_ids": [
+        18,
+        35,
+        9648
+      ],
+      "popularity": 30.7154,
+      "first_air_date": "2026-01-15",
+      "vote_average": 7.1,
+      "vote_count": 23,
+      "origin_country": [
+        "US"
+      ]
+    },
+    {
+      "adult": false,
+      "backdrop_path": "/3aeYYriPQN7886in9bIGKnbC5eQ.jpg",
+      "id": 281401,
+      "name": "Finding Her Edge - Passione sul ghiaccio",
+      "original_name": "Finding Her Edge",
+      "overview": "Un'ex danzatrice su ghiaccio torna in pista con un nuovo ed entusiasmante partner, pur provando ancora sentimenti per il precedente, il suo primo amore.",
+      "poster_path": "/rundKWddXHke82ee8Sv9KJmuGhn.jpg",
+      "media_type": "tv",
+      "original_language": "en",
+      "genre_ids": [
+        18
+      ],
+      "popularity": 28.6583,
+      "first_air_date": "2026-01-22",
+      "vote_average": 7.2,
+      "vote_count": 7,
+      "origin_country": [
+        "CA"
+      ]
+    }
+  ],
+  "total_pages": 500,
+  "total_results": 10000
+}

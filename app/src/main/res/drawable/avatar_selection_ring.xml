@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- NOTE: Avatar selection ring - Premium violet glow -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+    <stroke
+        android:width="4dp"
+        android:color="@color/accent" />
+    <solid android:color="@android:color/transparent" />
+</shape>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- NOTE: Premium content card with enhanced focus state and gradient -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    
+    <!-- Focused State - Prominent glow + border -->
+    <item android:state_focused="true">
+        <layer-list>
+            <!-- Outer glow effect -->
+            <item android:bottom="-6dp" android:left="-6dp" android:right="-6dp" android:top="-6dp">
+                <shape android:shape="rectangle">
+                    <corners android:radius="18dp"/>
+                    <solid android:color="@color/focus_glow"/>
+                </shape>
+            </item>
+            <!-- Card background -->
+            <item>
+                <shape android:shape="rectangle">
+                    <corners android:radius="12dp"/>
+                    <solid android:color="@color/card_background_focused"/>
+                </shape>
+            </item>
+            <!-- Focus border overlay -->
+            <item>
+                <shape android:shape="rectangle">
+                    <corners android:radius="12dp"/>
+                    <stroke android:width="3dp" android:color="@color/focus_ring"/>
+                </shape>
+            </item>
+        </layer-list>
+    </item>
+    
+    <!-- Pressed State -->
+    <item android:state_pressed="true">
+        <shape android:shape="rectangle">
+            <corners android:radius="12dp"/>
+            <solid android:color="@color/card_background_hover"/>
+            <stroke android:width="2dp" android:color="@color/accent_light"/>
+        </shape>
+    </item>
+    
+    <!-- Default State - Clean with subtle border -->
+    <item>
+        <shape android:shape="rectangle">
+            <corners android:radius="12dp"/>
+            <solid android:color="@color/card_background"/>
+        </shape>
+    </item>
+    
+</selector>

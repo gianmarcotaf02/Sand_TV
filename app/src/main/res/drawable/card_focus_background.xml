@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Card background for movie/series grid with violet border on focus -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Focused state - violet border -->
+    <item android:state_focused="true">
+        <shape android:shape="rectangle">
+            <solid android:color="#000000" />
+            <corners android:radius="8dp" />
+            <stroke android:width="3dp" android:color="#8B5CF6" />
+        </shape>
+    </item>
+    <!-- Pressed state -->
+    <item android:state_pressed="true">
+        <shape android:shape="rectangle">
+            <solid android:color="#1C1C1C" />
+            <corners android:radius="8dp" />
+            <stroke android:width="2dp" android:color="#A78BFA" />
+        </shape>
+    </item>
+    <!-- Default state -->
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="#0A0A0A" />
+            <corners android:radius="8dp" />
+        </shape>
+    </item>
+</selector>

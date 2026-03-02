@@ -1,0 +1,419 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- App -->
+    <string name="app_name">SandTV</string>
+    
+    <!-- Navigation -->
+    <string name="home">Home</string>
+    <string name="movies">Film</string>
+    <string name="series">Serie TV</string>
+    <string name="live_tv">In diretta</string>
+    <string name="search">Cerca</string>
+    <string name="settings">Impostazioni</string>
+    <string name="profile">Profilo</string>
+    <string name="profile_settings_desc">Nome e avatar</string>
+    <string name="select_avatar">Seleziona avatar</string>
+    
+    <!-- Content Sections -->
+    <string name="continue_watching">Continua a guardare</string>
+    <string name="popular_movies">Film popolari</string>
+    <string name="popular_series">Serie TV popolari</string>
+    <string name="recently_added">Aggiunti di recente</string>
+    <string name="latest_releases">Ultime Uscite</string>
+    <string name="favorites">Preferiti</string>
+    <string name="watchlist">Da vedere</string>
+    
+    <!-- Source Selection -->
+    <string name="select_source">Seleziona la fonte</string>
+    <string name="multiple_sources">Disponibile da più fonti</string>
+    
+    <!-- Startup Preferences -->
+    <string name="preferences">Preferenze</string>
+    <string name="startup_screen">Schermata iniziale</string>
+    <string name="startup_movies">Film</string>
+    <string name="startup_series">Serie TV</string>
+    <string name="startup_live">Live TV</string>
+    
+    <!-- Actions -->
+    <string name="menu">Menu</string>
+    <string name="categories">Categorie</string>
+    <string name="play">Riproduci</string>
+    <string name="season_number">Stagione %1$d</string>
+    <string name="play_episode">▶ S%1$dE%2$d</string>
+    <string name="resume">Riprendi</string>
+    <string name="pause">Pausa</string>
+    <string name="rewind">Indietro</string>
+    <string name="forward">Avanti</string>
+    <string name="add_to_favorites">Aggiungi ai preferiti</string>
+    <string name="remove_from_favorites">Rimuovi dai preferiti</string>
+    <string name="download">Scarica</string>
+    <string name="save">Salva</string>
+    <string name="sync">Sincronizza</string>
+    <string name="delete">Elimina</string>
+    <string name="cancel">Annulla</string>
+    <string name="ok">OK</string>
+    <string name="edit">Modifica</string>
+    <string name="create">Crea</string>
+    <string name="back">Indietro</string>
+    
+    <!-- Player Controls (new) -->
+    <string name="rewind_10">Indietro 10 secondi</string>
+    <string name="forward_30">Avanti 30 secondi</string>
+    <string name="play_pause">Play/Pausa</string>
+    
+    <!-- Settings -->
+    <string name="tmdb_api_key">TMDB API Key</string>
+    <string name="tmdb_api_key_hint">Inserisci la tua TMDB v3 API key</string>
+    <string name="theme">Tema</string>
+    <string name="playlists">Playlist</string>
+    <string name="manage_playlists">Gestisci le tue playlist IPTV</string>
+    <string name="api_keys">API Keys</string>
+    <string name="tmdb_opensubtitles">TMDB, OpenSubtitles</string>
+    <string name="player">Player</string>
+    <string name="player_settings_desc">Decodificatore, buffer, sottotitoli</string>
+    <string name="appearance">Aspetto</string>
+    <string name="appearance_desc">Tema, colori, interfaccia</string>
+    <string name="storage">Archiviazione</string>
+    <string name="storage_desc">Cache, dati, pulizia</string>
+    <string name="about">Info</string>
+    <string name="app_version">Versione app e informazioni</string>
+    <string name="add_m3u">+ M3U</string>
+    <string name="add_xtream">+ Xtream</string>
+    
+    <!-- Playlist -->
+    <string name="playlist_name">Nome playlist</string>
+    <string name="playlists_description">Gestisci le tue playlist e le impostazioni di aggiornamento</string>
+    <string name="playlist_update_settings">Impostazioni Aggiornamento</string>
+    <string name="playlist_auto_update">Aggiornamento automatico</string>
+    <string name="playlist_auto_update_desc">Aggiorna automaticamente le playlist in base all\'intervallo</string>
+    <string name="playlist_update_interval">Intervallo</string>
+    <string name="playlist_refresh_now">Aggiorna Ora</string>
+    <string name="add_playlist">Aggiungi Playlist</string>
+    
+    <!-- Playlist Update Intervals -->
+    <string name="interval_startup">Ad ogni avvio</string>
+    <string name="interval_3h">Ogni 3 ore</string>
+    <string name="interval_6h">Ogni 6 ore</string>
+    <string name="interval_12h">Ogni 12 ore</string>
+    <string name="interval_24h">Ogni 24 ore</string>
+    <string name="interval_weekly">Una volta a settimana</string>
+    <string name="interval_manual">Solo manuale</string>
+    
+    <string name="m3u_url">URL M3U</string>
+    <string name="epg_url_optional">URL EPG (opzionale)</string>
+    <string name="xtream_host">Server URL (es. http://server.com:8080)</string>
+    <string name="xtream_username">Username</string>
+    <string name="xtream_password">Password</string>
+    
+    <!-- Errors -->
+    <string name="error_loading">Errore durante il caricamento</string>
+    <string name="error_playback">Errore di riproduzione</string>
+    <string name="no_content">Nessun contenuto disponibile</string>
+    <string name="no_playlists">Nessuna playlist configurata</string>
+    
+    <!-- Loading Screen -->
+    <string name="loading_syncing">Sincronizzazione…</string>
+    <string name="loading_using_cache">Utilizzo cache…</string>
+    <string name="loading_metadata">Caricamento metadati…</string>
+    <string name="loading_complete">Caricamento completato</string>
+    <string name="loading_cache_used">Dati dalla cache</string>
+    <string name="loading_error">Errore di caricamento</string>
+    
+    <!-- EPG -->
+    <string name="epg_title">Guida TV</string>
+    <string name="epg_no_data">Nessun dato EPG disponibile</string>
+    <string name="epg_refresh">Aggiorna EPG</string>
+    <string name="now_playing">In onda ora</string>
+    <string name="coming_up">Prossimamente</string>
+    
+    <!-- Live TV -->
+    <string name="select_category">Seleziona una categoria</string>
+    <string name="no_channels">Nessun canale disponibile</string>
+    <string name="toggle_layout">Cambia layout</string>
+    <string name="layout_grid">Vista griglia</string>
+    <string name="layout_timeline">Guida TV</string>
+    <string name="no_program_available">Nessun programma disponibile</string>
+    
+    <!-- Film/Series -->
+    <string name="no_movies">Nessun film disponibile</string>
+    <string name="no_series">Nessuna serie disponibile</string>
+    <string name="movie_poster">Poster del film</string>
+    <string name="series_poster">Poster della serie</string>
+    
+    <!-- Sync -->
+    <string name="sync_in_progress">Sincronizzazione in corso…</string>
+    <string name="sync_complete">Sincronizzazione completata</string>
+    <string name="last_sync">Ultima sincronizzazione: %s</string>
+    <string name="auto_sync">Aggiornamento automatico</string>
+    
+    <!-- EPG Settings -->
+    <string name="epg_settings">Impostazioni EPG</string>
+    <string name="epg_settings_desc">Aggiornamento guida programmi</string>
+    <string name="epg_auto_update">Aggiornamento automatico EPG</string>
+    <string name="epg_update_frequency">Frequenza aggiornamento</string>
+    <string name="epg_update_on_startup">All\'avvio dell\'app</string>
+    <string name="epg_update_every_3h">Ogni 3 ore</string>
+    <string name="epg_update_every_6h">Ogni 6 ore</string>
+    <string name="epg_update_every_12h">Ogni 12 ore</string>
+    <string name="epg_update_every_24h">Ogni 24 ore</string>
+    <string name="epg_update_every_3d">Ogni 3 giorni</string>
+    <string name="epg_update_weekly">Una volta a settimana</string>
+    <string name="epg_update_now">Aggiorna EPG ora</string>
+    <string name="epg_last_update">Ultimo aggiornamento: %1$s</string>
+    <string name="epg_never_updated">Mai aggiornato</string>
+    <string name="epg_updating">Aggiornamento EPG in corso...</string>
+    <string name="epg_update_success">EPG aggiornato con successo</string>
+    <string name="epg_update_failed">Errore aggiornamento EPG</string>
+
+    <!-- Tema App -->
+    <string name="accent_color">Colore accento</string>
+    <string name="color_purple">Viola</string>
+    <string name="color_blue">Blu</string>
+    <string name="color_green">Verde</string>
+    <string name="color_red">Rosso</string>
+    <string name="color_orange">Arancione</string>
+    <string name="color_pink">Rosa</string>
+    <string name="theme_dark">Scuro</string>
+    <string name="theme_light">Chiaro</string>
+    <string name="theme_system">Sistema</string>
+    
+    <!-- Theme Options -->
+    <string-array name="theme_options">
+        <item>Scuro</item>
+        <item>Chiaro</item>
+        <item>Sistema</item>
+    </string-array>
+    
+    <!-- Accent Color Options -->
+    <string-array name="accent_color_options">
+        <item>Viola</item>
+        <item>Blu</item>
+        <item>Verde</item>
+        <item>Rosso</item>
+        <item>Arancione</item>
+        <item>Rosa</item>
+    </string-array>
+    
+    <!-- Stream Selection -->
+    <string name="select_stream">Seleziona Stream</string>
+    <string name="multiple_providers">%d sorgenti disponibili</string>
+    <string name="quality_4k">4K</string>
+    <string name="quality_hd">HD</string>
+    <string name="quality_sd">SD</string>
+    
+    <!-- Sync Settings -->
+    <string name="sync_settings">Impostazioni Sincronizzazione</string>
+    <string name="playlist_auto_sync">Aggiornamento automatico playlist</string>
+    <string name="epg_auto_sync">Aggiornamento automatico EPG</string>
+    <string name="sync_interval">Intervallo aggiornamento</string>
+    <string name="sync_interval_1h">Ogni ora</string>
+    <string name="sync_interval_3h">Ogni 3 ore</string>
+    <string name="sync_interval_6h">Ogni 6 ore</string>
+    <string name="sync_interval_12h">Ogni 12 ore</string>
+    <string name="sync_interval_24h">Ogni 24 ore</string>
+    
+    <string-array name="sync_interval_options">
+        <item>Ogni ora</item>
+        <item>Ogni 3 ore</item>
+        <item>Ogni 6 ore</item>
+        <item>Ogni 12 ore</item>
+        <item>Ogni 24 ore</item>
+    </string-array>
+    
+    <integer-array name="sync_interval_values">
+        <item>1</item>
+        <item>3</item>
+        <item>6</item>
+        <item>12</item>
+        <item>24</item>
+    </integer-array>
+    
+    <!-- Profiles -->
+    <string name="who_is_watching">Chi sta guardando?</string>
+    <string name="add_profile">Aggiungi profilo</string>
+    <string name="profile_name">Nome profilo</string>
+    <string name="enter_profile_name">Inserisci il nome</string>
+    <string name="linked_playlist">Playlist collegata</string>
+    <string name="no_playlist">Nessuna playlist</string>
+    <string name="avatar_color">Colore avatar</string>
+    <string name="manage_profiles">Gestisci profili</string>
+    <string name="delete_profile">Elimina profilo</string>
+    <string name="edit_profile">Modifica profilo</string>
+    
+    <!-- Auto-Start Settings -->
+    <string name="auto_start_settings">Avvio automatico</string>
+    <string name="auto_start_none">Mostra sempre selezione profilo</string>
+    <string name="auto_start_default">Avvia con profilo predefinito</string>
+    <string name="auto_start_last">Avvia con ultimo profilo usato</string>
+    
+    <string-array name="auto_start_options">
+        <item>Mostra sempre selezione profilo</item>
+        <item>Avvia con profilo predefinito</item>
+        <item>Avvia con ultimo profilo usato</item>
+    </string-array>
+    
+    <!-- Setup Wizard -->
+    <string name="welcome_title">Benvenuto in SandTV</string>
+    <string name="welcome_subtitle">Configura il tuo streaming in pochi semplici passaggi</string>
+    <string name="setup_playlist_title">Aggiungi la tua Playlist</string>
+    <string name="setup_playlist_subtitle">Inserisci i dati della tua playlist IPTV</string>
+    <string name="setup_profile_title">Crea il tuo Profilo</string>
+    <string name="setup_profile_subtitle">Come vuoi essere chiamato?</string>
+    <string name="setup_tmdb_title">TMDB (Opzionale)</string>
+    <string name="setup_tmdb_subtitle">Aggiungi una chiave API TMDB per copertine e descrizioni migliori</string>
+    <string name="tmdb_optional_note">Puoi saltare questo passaggio e aggiungerlo dopo nelle impostazioni</string>
+    <string name="next">Avanti</string>
+    <string name="finish">Fine</string>
+    <string name="error_fill_required">Compila tutti i campi obbligatori</string>
+    
+    <!-- Loading -->
+    <string name="loading_preparing">Preparazione in corso…</string>
+    <string name="loading_syncing_playlist">Sincronizzazione playlist…</string>
+    <string name="loading_preparing_content">Preparazione contenuti…</string>
+    <string name="loading_done">Pronto!</string>
+    
+    <!-- Settings - Tema App -->
+    <string name="app_theme">Tema App</string>
+    <string-array name="theme_colors">
+        <item>Viola</item>
+        <item>Blu</item>
+        <item>Verde</item>
+        <item>Rosso</item>
+        <item>Arancione</item>
+        <item>Rosa</item>
+    </string-array>
+    
+    <!-- Customization -->
+    <string name="customize">Personalizza</string>
+    <string name="customize_categories">Gestisci Categorie</string>
+    <string name="customize_order">Ordina Contenuti</string>
+    <string name="hide_category">Nascondi categoria</string>
+    <string name="show_category">Mostra categoria</string>
+    <string name="move_up">Sposta su</string>
+    <string name="move_down">Sposta giù</string>
+    <string name="reset_order">Ripristina ordine</string>
+    <string name="hidden_categories">Categorie nascoste</string>
+    <string name="visible_categories">Categorie visibili</string>
+    
+    <!-- OpenSubtitles -->
+    <string name="opensubtitles_title">OpenSubtitles</string>
+    <string name="opensubtitles_description">Scarica sottotitoli automaticamente durante la riproduzione</string>
+    <string name="opensubtitles_not_logged">Non autenticato</string>
+    <string name="opensubtitles_login_hint">Accedi per scaricare sottotitoli</string>
+    <string name="opensubtitles_connected">Connesso come %s</string>
+    <string name="opensubtitles_remaining">%d download rimanenti oggi</string>
+    <string name="opensubtitles_username_hint">Nome utente OpenSubtitles</string>
+    <string name="opensubtitles_password_hint">Password</string>
+    <string name="opensubtitles_verify">Verifica Credenziali</string>
+    <string name="opensubtitles_login_success">Accesso effettuato con successo</string>
+    <string name="opensubtitles_logout_success">Disconnesso</string>
+    <string name="opensubtitles_error_empty">Inserisci username e password</string>
+    <string name="opensubtitles_info_title">ℹ️ Informazioni</string>
+    <string name="opensubtitles_info_description">OpenSubtitles è un servizio gratuito che offre milioni di sottotitoli. Crea un account su opensubtitles.com per accedere. Gli utenti gratuiti hanno un limite di 10-20 download giornalieri.</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="logout">Disconnetti</string>
+    
+    <!-- Subtitles Player -->
+    <string name="subtitles">Sottotitoli</string>
+    <string name="no_subtitles_found">Nessun sottotitolo trovato</string>
+    <string name="search_opensubtitles">Cerca su OpenSubtitles</string>
+    <string name="disable_subtitles">Disattiva sottotitoli</string>
+    <string name="subtitle_downloading">Scaricamento in corso…</string>
+    <string name="subtitle_downloaded">Sottotitolo scaricato</string>
+    <string name="subtitle_error">Errore download sottotitolo</string>
+    <string name="subtitle_limit_reached">Limite giornaliero raggiunto (%d/10). Riprova domani.</string>
+    <string name="local_subtitles">Sottotitoli Locali</string>
+    <string name="remote_subtitles">Da OpenSubtitles</string>
+    
+    <!-- API Keys Section -->
+    <string name="api_keys_section">Chiavi API</string>
+    <string name="api_keys_description">Configura le chiavi API per funzionalità aggiuntive</string>
+    <string name="omdb_api_key_label">OMDb API Key (Voti IMDB)</string>
+    <string name="omdb_api_key_hint">Inserisci la tua chiave OMDb</string>
+    <string name="omdb_info">Ottieni una chiave gratuita su omdbapi.com per visualizzare i voti IMDB, Rotten Tomatoes e Metacritic.</string>
+    <string name="omdb_key_saved">✓ Chiave salvata</string>
+    <string name="omdb_key_empty">Inserisci una chiave API</string>
+    <string name="saved">Salvato</string>
+    
+    <!-- Player -->
+    <string name="up_next">Prossimo</string>
+    <string name="play_next_in">Riproduci tra %d sec</string>
+    <string name="play_now">Riproduci ora</string>
+    <string name="watch_live">Guarda in diretta</string>
+    <string name="episodes">Episodi</string>
+    
+    <!-- Search -->
+    <string name="search_hint">Cerca film, serie, canali…</string>
+    <string name="no_results_for">Nessun risultato per "%s"</string>
+    
+    <!-- Settings -->
+    <string name="player_settings">Impostazioni Player</string>
+    <string name="auto_play_next">Riproduci prossimo</string>
+    <string name="auto_play_next_desc">Riproduci automaticamente l\'episodio successivo</string>
+    <string name="skip_intro">Salta intro</string>
+    <string name="skip_intro_desc">Salta automaticamente intro e sigla</string>
+    <string name="subtitle_language">Lingua sottotitoli</string>
+    <string name="cache">Cache</string>
+    <string name="clear_cache">Svuota cache</string>
+    <string name="coming_soon">Prossimamente</string>
+    <string name="about_description">SandTV è un player IPTV per Android TV.\nSviluppato con ❤️ in Italia.</string>
+    
+    <!-- Setup -->
+    <string name="setup_welcome">Aggiungi la tua prima playlist</string>
+    <string name="playlist_url_hint">URL playlist (http://…/playlist.m3u)</string>
+    <string name="xtream_server_hint">Server (http://server.com:port)</string>
+    <string name="continue_btn">Continua</string>
+    <string name="error_empty_fields">Compila tutti i campi</string>
+    <string name="error_loading_playlist">Errore nel caricamento della playlist</string>
+    
+    <!-- Profile (additional) -->
+    <string name="profile_name_hint">Nome profilo</string>
+    <string name="delete_profile_confirm">Vuoi eliminare il profilo "%s"?</string>
+    
+    <!-- Loading -->
+    <string name="loading">Caricamento…</string>
+    
+    <!-- EPG (additional) -->
+    <string name="no_program">Nessun programma</string>
+    <string name="then">Poi:</string>
+    
+    <!-- Notifications -->
+    <string name="notification_channel_general">Generale</string>
+    <string name="notification_channel_general_desc">Notifiche generali dell\'app</string>
+    <string name="notification_channel_new_content">Nuovi contenuti</string>
+    <string name="notification_channel_new_content_desc">Notifiche per nuovi film e serie</string>
+    <string name="notification_channel_downloads">Download</string>
+    <string name="notification_channel_downloads_desc">Stato dei download</string>
+    <string name="notification_new_content_title">Nuovi contenuti disponibili</string>
+    <string name="notification_new_content_text">%d nuovi contenuti aggiunti</string>
+    <string name="notification_sync_complete">Sincronizzazione completata</string>
+    <string name="notification_downloading">Download in corso…</string>
+    <string name="download_channel_name">Download Video</string>
+    <string name="download_channel_description">Notifiche per il download dei contenuti video</string>
+    
+    <!-- Backup/Restore -->
+    <string name="backup">Backup</string>
+    <string name="restore">Ripristina</string>
+    <string name="backup_description">Esporta preferenze, playlist e cronologia</string>
+    <string name="backup_success">Backup creato con successo</string>
+    <string name="backup_error">Errore durante il backup</string>
+    <string name="restore_success">Ripristino completato: %1$d profili, %2$d playlist, %3$d preferiti</string>
+    <string name="restore_error">Errore durante il ripristino</string>
+    <string name="confirm_restore">Vuoi ripristinare i dati dal backup?</string>
+    <string name="last_backup_time">Ultimo backup: %s</string>
+    <string name="no_backup_yet">Nessun backup precedente</string>
+    <string name="backup_includes">Include: profili, playlist, preferiti, cronologia, impostazioni</string>
+    <string name="create_backup">Crea backup</string>
+    <string name="restore_description">Ripristina dati da un file di backup precedente</string>
+    <string name="restore_from_file">Ripristina da file</string>
+    
+    <!-- Mark as Watched -->
+    <string name="mark_as_watched">Segna come già visto</string>
+    <string name="mark_as_watched_confirm_message">Sei sicuro di eliminare il contenuto dai \"Continua a guardare\"?</string>
+    <string name="yes">Sì</string>
+</resources>
+
+
+
+

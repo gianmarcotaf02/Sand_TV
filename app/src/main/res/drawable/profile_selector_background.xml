@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Profile card - transparent background, visible on focus -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_focused="true">
+        <layer-list>
+            <!-- Glow effect -->
+            <item android:bottom="-6dp" android:left="-6dp" android:right="-6dp" android:top="-6dp">
+                <shape android:shape="rectangle">
+                    <solid android:color="#508B5CF6" />
+                    <corners android:radius="24dp" />
+                </shape>
+            </item>
+            <!-- Border only -->
+            <item>
+                <shape android:shape="rectangle">
+                    <solid android:color="#20FFFFFF" />
+                    <corners android:radius="20dp" />
+                    <stroke android:width="3dp" android:color="@color/accent" />
+                </shape>
+            </item>
+        </layer-list>
+    </item>
+    <item>
+        <!-- Normal state - fully transparent -->
+        <shape android:shape="rectangle">
+            <solid android:color="#00000000" />
+            <corners android:radius="20dp" />
+        </shape>
+    </item>
+</selector>
+
+

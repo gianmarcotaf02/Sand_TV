@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Purple glow orb for decorative background effect -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+    <gradient
+        android:type="radial"
+        android:gradientRadius="50%"
+        android:centerX="0.5"
+        android:centerY="0.5"
+        android:startColor="#8B5CF6"
+        android:endColor="#00000000" />
+</shape>

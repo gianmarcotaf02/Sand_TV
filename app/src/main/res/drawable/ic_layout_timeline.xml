@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <!-- Timeline/list layout icon - horizontal bars -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M3,4h2v2H3V4zM7,4h14v2H7V4zM3,10h2v2H3V10zM7,10h14v2H7V10zM3,16h2v2H3V16zM7,16h14v2H7V16z"/>
+</vector>

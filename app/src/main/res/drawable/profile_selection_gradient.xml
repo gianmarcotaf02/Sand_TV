@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Subtle radial gradient overlay for profile selection background -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <gradient
+        android:type="radial"
+        android:gradientRadius="800dp"
+        android:centerX="0.5"
+        android:centerY="0.3"
+        android:startColor="#208B5CF6"
+        android:endColor="#00000000" />
+</shape>

@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- NOTE: Premium Design System - Prime Video Style -->
+    
+    <!-- Brand Colors - OLED Black with Premium Accents -->
+    <color name="brand_primary">#000000</color>
+    <color name="brand_secondary">#8B5CF6</color>
+    <color name="accent">#8B5CF6</color>
+    <color name="accent_light">#A78BFA</color>
+    <color name="accent_dark">#7C3AED</color>
+    
+    <!-- Gold/Sand Accent (Prime Video inspired) -->
+    <color name="accent_gold">#D4A574</color>
+    <color name="accent_gold_light">#E8C49A</color>
+    <color name="accent_sand">#C9B896</color>
+    
+    <!-- Accent Color Options (Tema App) -->
+    <color name="accent_purple">#8B5CF6</color>
+    <color name="accent_blue">#0A84FF</color>
+    <color name="accent_green">#30D158</color>
+    <color name="accent_red">#FF453A</color>
+    <color name="accent_orange">#FF9F0A</color>
+    <color name="accent_pink">#FF375F</color>
+    <color name="accent_cyan">#00D4FF</color>
+    
+    <!-- Background Colors - OLED Pure Black Theme -->
+    <color name="background_dark">#000000</color>
+    <color name="background_primary">#050505</color>
+    <color name="background_secondary">#0F0F0F</color>
+    <color name="background_tertiary">#181818</color>
+    <color name="background_elevated">#1A1A1A</color>
+    <color name="background_light">#FFFFFF</color>
+    
+    <!-- Card/Surface Colors - Premium Dark -->
+    <color name="card_background">#0D0D0D</color>
+    <color name="card_background_hover">#141414</color>
+    <color name="card_background_focused">#1A1A1A</color>
+    <color name="card_focused">#8B5CF6</color>
+    <color name="card_border">#1F1F1F</color>
+    <color name="surface_dark">#080808</color>
+    <color name="surface_elevated">#121212</color>
+    
+    <!-- Glass Effect Colors -->
+    <color name="glass_background">#18FFFFFF</color>
+    <color name="glass_background_light">#25FFFFFF</color>
+    <color name="glass_background_dark">#40000000</color>
+    <color name="glass_border">#258B5CF6</color>
+    <color name="glass_border_subtle">#15FFFFFF</color>
+    
+    <!-- Pill/Chip Colors - Premium -->
+    <color name="pill_background">#161616</color>
+    <color name="pill_background_hover">#1F1F1F</color>
+    <color name="pill_background_selected">#8B5CF6</color>
+    <color name="pill_border">#252525</color>
+    <color name="pill_border_focused">#8B5CF6</color>
+    
+    <!-- Text Colors - High Contrast for TV -->
+    <color name="text_primary">#FFFFFF</color>
+    <color name="text_secondary">#B3B3B3</color>
+    <color name="text_tertiary">#808080</color>
+    <color name="text_hint">#4D4D4D</color>
+    <color name="text_disabled">#333333</color>
+    <color name="text_accent">#A78BFA</color>
+    <color name="text_gold">#D4A574</color>
+    
+    <!-- UI System Colors -->
+    <color name="search_background">#1A1A1A</color>
+    <color name="error">#FF453A</color>
+    <color name="success">#30D158</color>
+    <color name="warning">#FF9F0A</color>
+    <color name="info">#0A84FF</color>
+    
+    <!-- Separator/Divider -->
+    <color name="separator">@color/separator_opaque</color>
+    <color name="separator_opaque">#222222</color>
+    <color name="divider">#1A1A1A</color>
+    <color name="divider_subtle">#0F0F0F</color>
+    
+    <!-- Accent Color (used for highlights) -->
+    <color name="accent_color">@color/accent</color>
+    
+    <!-- Overlay Colors - Cinematic Gradients -->
+    <color name="black_overlay">#80000000</color>
+    <color name="black_overlay_heavy">#CC000000</color>
+    <color name="black_overlay_light">#40000000</color>
+    <color name="gradient_start">#00000000</color>
+    <color name="gradient_end">#E6000000</color>
+    <color name="gradient_mid">#80000000</color>
+    <color name="blur_overlay">#80000000</color>
+    
+    <!-- Progress Colors -->
+    <color name="progress_background">#2A2A2A</color>
+    <color name="progress_fill">#8B5CF6</color>
+    <color name="progress_buffer">#40FFFFFF</color>
+    
+    <!-- Focus/Selection - High Visibility for TV -->
+    <color name="focus_ring">#8B5CF6</color>
+    <color name="focus_ring_light">#A78BFA</color>
+    <color name="focus_glow">#408B5CF6</color>
+    <color name="selection_background">#258B5CF6</color>
+    <color name="selection_border">#8B5CF6</color>
+    
+    <!-- Number Badge (for popular items ranking) -->
+    <color name="number_badge">#FFFFFF</color>
+    <color name="number_badge_shadow">#60000000</color>
+    <color name="number_badge_stroke">#20FFFFFF</color>
+    
+    <!-- Rating Badge Colors -->
+    <color name="rating_imdb">#F5C518</color>
+    <color name="rating_tmdb">#01D277</color>
+    <color name="rating_rt">#FA320A</color>
+    <color name="rating_metacritic">#66CC33</color>
+    
+    <!-- Player Colors -->
+    <color name="player_background">#000000</color>
+    <color name="player_controls_bg">#60000000</color>
+    <color name="player_seekbar_played">#8B5CF6</color>
+    <color name="player_seekbar_buffered">#60FFFFFF</color>
+    <color name="player_seekbar_unplayed">#30FFFFFF</color>
+    
+    <!-- Status Colors -->
+    <color name="status_live">#FF453A</color>
+    <color name="status_new">#30D158</color>
+    <color name="status_premium">#D4A574</color>
+    
+    <!-- Badge Colors -->
+    <color name="badge_background">#252525</color>
+</resources>

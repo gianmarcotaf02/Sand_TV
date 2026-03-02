@@ -1,0 +1,426 @@
+{
+  "page": 1,
+  "results": [
+    {
+      "adult": false,
+      "backdrop_path": "/3F2EXWF1thX0BdrVaKvnm6mAhqh.jpg",
+      "id": 1306368,
+      "title": "The Rip - Soldi sporchi",
+      "original_title": "The Rip",
+      "overview": "Una squadra di poliziotti di Miami scopre milioni di dollari in contanti in un nascondiglio fatiscente: la fiducia vacilla e tutti e tutto sono messi in discussione.",
+      "poster_path": "/2KFcXaBoLbFTLj7gUXHM0sRb5pP.jpg",
+      "media_type": "movie",
+      "original_language": "en",
+      "genre_ids": [
+        28,
+        53,
+        80
+      ],
+      "popularity": 548.9532,
+      "release_date": "2026-01-16",
+      "video": false,
+      "vote_average": 7.031,
+      "vote_count": 589
+    },
+    {
+      "adult": false,
+      "backdrop_path": "/kVSUUWiXoNwq2wVCZ4Mcqkniqvr.jpg",
+      "id": 991494,
+      "title": "SpongeBob - Un’avventura da pirati",
+      "original_title": "The SpongeBob Movie: Search for SquarePants",
+      "overview": "SpongeBob e i suoi amici di Bikini Bottom salpano per la loro più grande, nuovissima e imperdibile avventura cinematografica di sempre. Mosso dal desiderio di dimostrare a tutti, soprattutto a Mr.Krabs di avere il cuore di un vero eroe, SpongeBob si mette sulle tracce dell’Olandese Volante, un leggendario pirata fantasma. Inizia così un’avventura tra mostri, pirati e risate, che lo trascinerà nelle profondità più oscure dell’oceano… dove nessuna spugna ha mai osato mettere piede.",
+      "poster_path": "/9p9hIUmyC0jitTqWijiH6MzTPCc.jpg",
+      "media_type": "movie",
+      "original_language": "en",
+      "genre_ids": [
+        16,
+        10751,
+        35,
+        12,
+        14
+      ],
+      "popularity": 148.0267,
+      "release_date": "2025-12-16",
+      "video": false,
+      "vote_average": 6.4,
+      "vote_count": 87
+    },
+    {
+      "adult": false,
+      "backdrop_path": "/kHHVzOGE23kavlvFOxeHaBmrgBJ.jpg",
+      "id": 1317288,
+      "title": "Marty Supreme",
+      "original_title": "Marty Supreme",
+      "overview": "Marty Mauser (Timothée Chalamet) è un venditore di scarpe con un’irrefrenabile ossessione per il ping pong che si muove nella New York degli anni ’50 fra truffe, scommesse, passioni proibite e sogni di gloria. Un’esistenza rocambolesca per un personaggio larger than life, eccentrico e ambiziosissimo, smodato e leggendario.",
+      "poster_path": "/zrqTV3MMaIsx9dbplMwKUHxObmP.jpg",
+      "media_type": "movie",
+      "original_language": "en",
+      "genre_ids": [
+        18
+      ],
+      "popularity": 72.4288,
+      "release_date": "2025-12-19",
+      "video": false,
+      "vote_average": 8.1,
+      "vote_count": 178
+    },
+    {
+      "adult": false,
+      "backdrop_path": "/eeGRpU64sIrRApjWXvTpK5Lep2K.jpg",
+      "id": 1220564,
+      "title": "L'agente segreto",
+      "original_title": "O Agente Secreto",
+      "overview": "Brasile, 1977. Marcelo è in fuga. Raggiunge Recife durante la settimana del Carnevale per riabbracciare il figlio, ma scopre presto che la città non è l’ameno rifugio che aveva immaginato: sotto la superficie festosa pulsa una realtà soffocante, carica di tensione, violenza e pericolo.",
+      "poster_path": "/hQWzqAQ798fBOzQZ7cuLjTOLqCI.jpg",
+      "media_type": "movie",
+      "original_language": "pt",
+      "genre_ids": [
+        80,
+        18,
+        53
+      ],
+      "popularity": 58.6373,
+      "release_date": "2025-07-23",
+      "video": false,
+      "vote_average": 7.7,
+      "vote_count": 192
+    },
+    {
+      "adult": false,
+      "backdrop_path": "/l0rY0RH64CXne5vW2Y3yHZpjmDy.jpg",
+      "id": 1236153,
+      "title": "Mercy - Sotto accusa",
+      "original_title": "Mercy",
+      "overview": "Ambientato in un futuro prossimo in cui i crimini capitali sono in aumento, un detective viene accusato di un crimine violento ed è costretto a dimostrare la sua innocenza.",
+      "poster_path": "/gJMfdovNJ17DTvdDKlT6nbkJ1QX.jpg",
+      "media_type": "movie",
+      "original_language": "en",
+      "genre_ids": [
+        878,
+        28,
+        53
+      ],
+      "popularity": 47.5908,
+      "release_date": "2026-01-19",
+      "video": false,
+      "vote_average": 6.9,
+      "vote_count": 17
+    },
+    {
+      "adult": false,
+      "backdrop_path": "/2OHa6ukEq3Hce7Pc2kvu8wkmMFY.jpg",
+      "id": 7451,
+      "title": "xXx",
+      "original_title": "xXx",
+      "overview": "Tatuato. Rasato a zero. Sper-muscoloso. Dall'aria spavalda e scostante. Una pubblicità ambulante per l'anti-autoritarismo. Estremo in ogni sua manifestazione, proprio come la lettera per cui inizia il suo nome... una lettera che porta tatuata sul collo in triplice copia. Xander Cage è XXX. Si guadagna da vivere in modo discutibile, vendendo in Internet video delle proprie bizzarre gesta.",
+      "poster_path": "/7QkN9xXxIL0a0OQNBb3GjSmAdxR.jpg",
+      "media_type": "movie",
+      "original_language": "en",
+      "genre_ids": [
+        28,
+        12,
+        53,
+        80,
+        18
+      ],
+      "popularity": 76.3871,
+      "release_date": "2002-08-09",
+      "video": false,
+      "vote_average": 5.984,
+      "vote_count": 4741
+    },
+    {
+      "adult": false,
+      "backdrop_path": "/uRDu9DiTVf97z5sj6qesmyQpYji.jpg",
+      "id": 858024,
+      "title": "Hamnet - Nel nome del figlio",
+      "original_title": "Hamnet",
+      "overview": "In un bosco, una giovane donna dorme rannicchiata nella culla formata dalla radice emersa di un albero secolare: è vestita di rosso cupo, accompagnata da un falco che risponde ai suoi richiami, conosce erbe e pozioni, si dice non sia nata da sua madre ma da una donna venuta da lontano. Si chiama Agnes e quando Will la vede se ne innamora subito. Will è il giovane William Shakespeare, che riesce a sposarla nonostante l’ostilità delle famiglie e ad avere con lei tre figli, Susannah e i gemelli Judith e Hamnet. Ma un lutto li colpisce, quando il drammaturgo lavora già a Londra, e Hamnet diventa Hamlet. Tratta dal romanzo del 2020 di Maggie O’Farrell, la storia di Agnes (più che di William), intessuta di magia e femminilità.",
+      "poster_path": "/61xMzN4h8iLk0hq6oUzr9Ts6GE9.jpg",
+      "media_type": "movie",
+      "original_language": "en",
+      "genre_ids": [
+        18,
+        10749
+      ],
+      "popularity": 43.4628,
+      "release_date": "2025-11-26",
+      "video": false,
+      "vote_average": 7.7,
+      "vote_count": 83
+    },
+    {
+      "adult": false,
+      "backdrop_path": "/zpEWFNqoN8Qg1SzMMHmaGyOBTdW.jpg",
+      "id": 1054867,
+      "title": "Una battaglia dopo l’altra",
+      "original_title": "One Battle After Another",
+      "overview": "Un gruppo di ex rivoluzionari si riunisce quando un loro perfido nemico riemerge dal loro passato, dopo sedici anni di silenzio. Il gruppo avrà il duro compito di salvare la figlia di uno di loro, prima che accada l'inevitabile.",
+      "poster_path": "/lXix1MmRCdqstipEJzxgnRo3qp.jpg",
+      "media_type": "movie",
+      "original_language": "en",
+      "genre_ids": [
+        53,
+        80,
+        28
+      ],
+      "popularity": 69.304,
+      "release_date": "2025-09-23",
+      "video": false,
+      "vote_average": 7.4,
+      "vote_count": 2522
+    },
+    {
+      "adult": false,
+      "backdrop_path": "/nAxGnGHOsfzufThz20zgmRwKur3.jpg",
+      "id": 1233413,
+      "title": "I peccatori",
+      "original_title": "Sinners",
+      "overview": "Tornati nella regione natia con un discreto bottino e con abbondanti alcolici dalla malavita di Chicago, i gemelli Smoke e Stack trasformano una baracca in un locale di ballo e gioco clandestino per la popolazione nera. La festa notturna innesca una gioia contagiosa, ma presto si avvicinano tre bianchi che chiedono insistentemente di poter entrare. Sarà presto chiara la loro intenzione.",
+      "poster_path": "/gGhvLVcdWQanE1XuPkC3iE4PJN9.jpg",
+      "media_type": "movie",
+      "original_language": "en",
+      "genre_ids": [
+        27,
+        28,
+        53
+      ],
+      "popularity": 80.1054,
+      "release_date": "2025-04-16",
+      "video": false,
+      "vote_average": 7.5,
+      "vote_count": 3278
+    },
+    {
+      "adult": false,
+      "backdrop_path": "/ufuabtiOem0kHeYz6b8x8MjBb2L.jpg",
+      "id": 1208348,
+      "title": "Rental Family - Nelle vite degli altri",
+      "original_title": "Rental Family",
+      "overview": "Philip Vandarpleog è un attore americano che vive da otto anni a Tokyo, in Giappone, che considera ormai casa propria. Un tempo celebre perché interpretava un grosso tubetto di dentifricio, supereroe di una pubblicità popolarissima, adesso passa da un’audizione all’altra, mentre il suo agente lo manda a fare la comparsa in eventi come matrimoni e funerali. Ed è proprio a un finto funerale che Philip incontra Shinji, il capo di Rental Family, un’agenzia che procura attori per impersonare parenti e amici che non esistono, e lo scrittura: Philip diventa un giornalista amico di un anziano attore, il padre assente di una bambina sino-americana, il compagno di giochi di un appassionato di videogame.",
+      "poster_path": "/4OchXepJLKSeFrLdd3Rk6Wj0H5R.jpg",
+      "media_type": "movie",
+      "original_language": "en",
+      "genre_ids": [
+        35,
+        18
+      ],
+      "popularity": 60.4045,
+      "release_date": "2025-11-20",
+      "video": false,
+      "vote_average": 7.756,
+      "vote_count": 227
+    },
+    {
+      "adult": false,
+      "backdrop_path": "/dT1p0K1szMAUBuE2bibouDQdNb8.jpg",
+      "id": 1272837,
+      "title": "28 anni dopo - Il tempio delle ossa",
+      "original_title": "28 Years Later: The Bone Temple",
+      "overview": "Il dottor Kelson si ritrova coinvolto in una nuova e sconvolgente relazione, con conseguenze che potrebbero cambiare il mondo così come lo conoscono, e l'incontro di Spike con Jimmy Crystal si trasforma in un incubo da cui non può sfuggire.",
+      "poster_path": "/yNM4qb9F53nmwI8Lux1xfJ1dqoA.jpg",
+      "media_type": "movie",
+      "original_language": "en",
+      "genre_ids": [
+        27,
+        53,
+        878
+      ],
+      "popularity": 103.9854,
+      "release_date": "2026-01-14",
+      "video": false,
+      "vote_average": 7.2,
+      "vote_count": 198
+    },
+    {
+      "adult": false,
+      "backdrop_path": "/jojajuFqS2UsS59aFjDa8bo3lxH.jpg",
+      "id": 680493,
+      "title": "Return to Silent Hill",
+      "original_title": "Return to Silent Hill",
+      "overview": "Quando una lettera lo richiama a Silent Hill alla ricerca del suo amore perduto, James ritrova una città totalmente trasformata, abitata da mostri che lo portano a dubitare della sua sanità mentale.",
+      "poster_path": "/caDXLzECrllCWNeE0rxRmI6xz9z.jpg",
+      "media_type": "movie",
+      "original_language": "en",
+      "genre_ids": [
+        27,
+        18,
+        9648
+      ],
+      "popularity": 36.556,
+      "release_date": "2026-01-21",
+      "video": false,
+      "vote_average": 5.5,
+      "vote_count": 11
+    },
+    {
+      "adult": false,
+      "backdrop_path": "/7nfpkR9XsQ1lBNCXSSHxGV7Dkxe.jpg",
+      "id": 1084242,
+      "title": "Zootropolis 2",
+      "original_title": "Zootopia 2",
+      "overview": "Dopo aver risolto il caso più importante nella storia di Zootropolis, i poliziotti alle prime armi Judy Hopps e Nick Wilde scoprono che la loro collaborazione non è così solida come pensavano quando il capo Bogo ordina loro di unirsi al programma di consulenza \"Partners in Crisis\". Ma non ci vuole molto perché la loro collaborazione venga messa a dura prova quando si ritrovano sulle tracce tortuose di un mistero legato all'arrivo di un serpente velenoso nella metropoli degli animali.",
+      "poster_path": "/qAmXRssxXJ9foKgSGyisKnmRJfc.jpg",
+      "media_type": "movie",
+      "original_language": "en",
+      "genre_ids": [
+        16,
+        35,
+        12,
+        10751,
+        9648
+      ],
+      "popularity": 178.3701,
+      "release_date": "2025-11-26",
+      "video": false,
+      "vote_average": 7.589,
+      "vote_count": 1139
+    },
+    {
+      "adult": false,
+      "backdrop_path": "/tRQZUR3oTHSsSmZHDX77bbDxNxT.jpg",
+      "id": 1575337,
+      "title": "Cosmic Princess Kaguya!",
+      "original_title": "超かぐや姫！",
+      "overview": "La vita di Iroha subisce una svolta radicale quando Kaguya, una spensierata fuggitiva dalla Luna, si trasferisce da lei e la convince a esibirsi insieme in un mondo virtuale.",
+      "poster_path": "/vwFXqXh1LRxEYg94IyF8wAHsWOT.jpg",
+      "media_type": "movie",
+      "original_language": "ja",
+      "genre_ids": [
+        16,
+        10402,
+        14,
+        878
+      ],
+      "popularity": 19.4648,
+      "release_date": "2026-01-22",
+      "video": false,
+      "vote_average": 0.0,
+      "vote_count": 0
+    },
+    {
+      "adult": false,
+      "backdrop_path": "/uiSaYXR0jLLWma0EPA1tcBhX6wT.jpg",
+      "id": 1608982,
+      "title": "Dalle ceneri 2: La voragine",
+      "original_title": "جرس إنذار: الحفرة",
+      "overview": "Intrappolate in una fossa sotterranea durante una tempesta, tre studentesse di una scuola femminile devono affrontare i propri conflitti personali mentre lottano per sopravvivere.",
+      "poster_path": "/3OBRXbnlhZxMPpfLMLzQwF29IMC.jpg",
+      "media_type": "movie",
+      "original_language": "ar",
+      "genre_ids": [
+        53,
+        18
+      ],
+      "popularity": 24.6876,
+      "release_date": "2026-01-22",
+      "video": false,
+      "vote_average": 4.0,
+      "vote_count": 6
+    },
+    {
+      "adult": false,
+      "backdrop_path": "/u8DU5fkLoM5tTRukzPC31oGPxaQ.jpg",
+      "id": 83533,
+      "title": "Avatar - Fuoco e cenere",
+      "original_title": "Avatar: Fire and Ash",
+      "overview": "In seguito alla devastante guerra contro la RDA e alla perdita del loro figlio maggiore, Jake Sully e Neytiri affrontano una nuova minaccia su Pandora: il Popolo della Cenere, una tribù Na'vi violenta e assetata di potere guidata dagli spietati Varang. La famiglia di Jake deve lottare per la propria sopravvivenza e per il futuro di Pandora in un conflitto che li spinge ai loro limiti emotivi e fisici.",
+      "poster_path": "/pAXf6FyDUzZhAjkEhc02fMXWVvz.jpg",
+      "media_type": "movie",
+      "original_language": "en",
+      "genre_ids": [
+        878,
+        12,
+        14
+      ],
+      "popularity": 254.9243,
+      "release_date": "2025-12-17",
+      "video": false,
+      "vote_average": 7.338,
+      "vote_count": 1552
+    },
+    {
+      "adult": false,
+      "backdrop_path": "/sK3z0Naed3H1Wuh7a21YRVMxYqt.jpg",
+      "id": 1368166,
+      "title": "Una di famiglia",
+      "original_title": "The Housemaid",
+      "overview": "La trama segue Millie, una donna che cerca un nuovo inizio e trova lavoro come domestica per una coppia benestante ed elitaria. Ma come spesso accade nei thriller, le apparenze ingannano. Millie scoprirà presto che dietro la facciata di questa ricca famiglia perfetta si nascondono segreti oscuri e pericolosi.",
+      "poster_path": "/47iPnwRJdTYEGEPLP8p8p2JxcYs.jpg",
+      "media_type": "movie",
+      "original_language": "en",
+      "genre_ids": [
+        9648,
+        53
+      ],
+      "popularity": 170.7462,
+      "release_date": "2025-12-18",
+      "video": false,
+      "vote_average": 7.177,
+      "vote_count": 474
+    },
+    {
+      "adult": false,
+      "backdrop_path": "/uHavtqbnMDcwqVK9Y94ZQSWxtCw.jpg",
+      "id": 1443762,
+      "title": "Il falsario",
+      "original_title": "Il falsario",
+      "overview": "Tony Chichiarelli è il protagonista e vanta due primati straordinari della nostra Storia: è autore della più grande rapina mai compiuta in Italia (35 miliardi di lire nel 1984) e del falso meglio riuscito: il comunicato n. 7 delle Brigate rosse del 18 aprile 1978, in cui si annunciava il \"suicidio\" di Aldo Moro, operazione ideata da Steve Pieczenik, l'esperto americano chiamato ad aiutare Cossiga a risolvere il sequestro Moro, per tendere una trappola ai brigatisti. Ma chi è Tony Chichiarelli? Solo dopo il suo omicidio nel 1984, le indagini rivelano un percorso fatto di traffici di droga e quadri falsi, ricatti e violenze, Brigate Rosse, Banda della Magliana e servizi segreti. Ma più di tutto questo, la storia affonda le sue radici nel rapimento e nella morte più misteriosa del XX secolo: quella del presidente della Democrazia cristiana, Aldo Moro.",
+      "poster_path": "/bGLgIRasU93kIZbmOClkBA51E5T.jpg",
+      "media_type": "movie",
+      "original_language": "it",
+      "genre_ids": [
+        80,
+        18
+      ],
+      "popularity": 5.2326,
+      "release_date": "2025-10-19",
+      "video": false,
+      "vote_average": 2.0,
+      "vote_count": 1
+    },
+    {
+      "adult": false,
+      "backdrop_path": "/tN3pTxkQoP96wtaEahYuRVdUWb2.jpg",
+      "id": 701387,
+      "title": "Bugonia",
+      "original_title": "Bugonia",
+      "overview": "Due giovani ossessionati dalle teorie del complotto rapiscono l’influente CEO di una grande azienda, convinti che sia un’aliena decisa a distruggere il pianeta Terra.",
+      "poster_path": "/nhtC3xgsZMkotrPMzOHotUyHw6l.jpg",
+      "media_type": "movie",
+      "original_language": "en",
+      "genre_ids": [
+        878,
+        35
+      ],
+      "popularity": 36.0077,
+      "release_date": "2025-10-23",
+      "video": false,
+      "vote_average": 7.394,
+      "vote_count": 1206
+    },
+    {
+      "adult": false,
+      "backdrop_path": "/ceyakefyCRAgyeFhefa2bz6d9QO.jpg",
+      "id": 1062722,
+      "title": "Frankenstein",
+      "original_title": "Frankenstein",
+      "overview": "Il dottor Victor Frankenstein, uno scienziato geniale ma egoista, dà vita a una creatura in un mostruoso esperimento che porterà alla rovina sia del creatore che della sua tragica creazione.",
+      "poster_path": "/73Lhoexx9xTjTBVsb5UUqqOzmH3.jpg",
+      "media_type": "movie",
+      "original_language": "en",
+      "genre_ids": [
+        18,
+        14,
+        27
+      ],
+      "popularity": 52.2168,
+      "release_date": "2025-10-17",
+      "video": false,
+      "vote_average": 7.697,
+      "vote_count": 2689
+    }
+  ],
+  "total_pages": 500,
+  "total_results": 10000
+}
