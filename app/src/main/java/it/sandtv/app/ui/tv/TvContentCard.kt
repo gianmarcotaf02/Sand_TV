@@ -96,7 +96,8 @@ fun TvContentCard(
                 AsyncImage(
                     model = coil.request.ImageRequest.Builder(androidx.compose.ui.platform.LocalContext.current)
                         .data(item.posterUrl)
-                        .crossfade(true)
+                        .size(390, 585)  // 3x of 130x195 for sharp rendering
+                        .crossfade(200)
                         .build(),
                     contentDescription = item.title,
                     contentScale = if (isChannel) ContentScale.Fit else ContentScale.Crop,

@@ -368,12 +368,18 @@ private fun MainActivityScreen(
                 startActivityWithTransition(Intent(context, DetailsActivity::class.java).apply {
                     putExtra("content_type", ContentType.MOVIE.name)
                     putExtra("content_id", item.id)
+                    putExtra("title", item.title)
+                    putExtra("poster_url", item.posterUrl)
+                    putExtra("backdrop_url", item.backdropUrl)
                 })
             }
             "SERIES" -> {
                 startActivityWithTransition(Intent(context, DetailsActivity::class.java).apply {
                     putExtra("content_type", ContentType.SERIES.name)
                     putExtra("content_id", item.id)
+                    putExtra("title", item.title)
+                    putExtra("poster_url", item.posterUrl)
+                    putExtra("backdrop_url", item.backdropUrl)
                 })
             }
             // Category cards -> CategoryActivity
@@ -464,10 +470,13 @@ private fun MainActivityScreen(
                         showCreateListDialog = true
                     },
                     onHeroClick = { heroItem ->
-                        // Navigate to details page
+                        // Navigate to details page with preloaded data for instant rendering
                         val intent = Intent(context, DetailsActivity::class.java).apply {
                             putExtra("content_id", heroItem.id)
                             putExtra("content_type", heroItem.contentType)
+                            putExtra("title", heroItem.title)
+                            putExtra("poster_url", heroItem.posterUrl)
+                            putExtra("backdrop_url", heroItem.backdropUrl)
                         }
                         startActivityWithTransition(intent)
                     },

@@ -115,9 +115,7 @@ dependencies {
     ksp(libs.moshi.codegen)
     implementation(libs.gson)
 
-    // Image Loading
-    implementation(libs.glide)
-    ksp(libs.glide.ksp)
+    // Image Loading (Coil only - no Glide)
     implementation(libs.coil)
     implementation(libs.coil.compose)
 

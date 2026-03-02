@@ -173,6 +173,9 @@ class SeriesActivity : ComponentActivity() {
                     val intent = Intent(this@SeriesActivity, DetailsActivity::class.java).apply {
                         putExtra("content_id", sid)
                         putExtra("content_type", "SERIES")
+                        putExtra("title", item.title)
+                        putExtra("poster_url", item.posterUrl)
+                        putExtra("backdrop_url", item.backdropUrl)
                     }
                     startActivity(intent)
                 }
@@ -185,6 +188,9 @@ class SeriesActivity : ComponentActivity() {
         val intent = Intent(this, DetailsActivity::class.java).apply {
             putExtra("content_id", series.id)
             putExtra("content_type", "SERIES")
+            putExtra("title", series.tmdbName ?: series.name)
+            putExtra("poster_url", series.posterUrl ?: series.logoUrl)
+            putExtra("backdrop_url", series.backdropUrl)
         }
         startActivity(intent)
     }

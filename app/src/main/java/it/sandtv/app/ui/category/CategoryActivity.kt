@@ -76,8 +76,8 @@ class CategoryActivity : ComponentActivity() {
                     onItemClick = { item ->
                         // Navigate to details or play
                         when (item.contentType) {
-                            "MOVIE" -> openDetails(item.id, "MOVIE")
-                            "SERIES" -> openDetails(item.id, "SERIES")
+                            "MOVIE" -> openDetails(item)
+                            "SERIES" -> openDetails(item)
                             "CHANNEL" -> playChannel(item.id)
                         }
                     },
@@ -194,12 +194,15 @@ class CategoryActivity : ComponentActivity() {
         }
     }
     
-    private fun openDetails(id: Long, type: String) {
-        android.util.Log.d("CategoryActivity", "Opening details: id=$id, type=$type")
+    private fun openDetails(item: CarouselItem) {
+        android.util.Log.d("CategoryActivity", "Opening details: id=${item.id}, type=${item.contentType}")
         try {
             val intent = Intent(this, DetailsActivity::class.java).apply {
-                putExtra("content_id", id)
-                putExtra("content_type", type)
+                putExtra("content_id", item.id)
+                putExtra("content_type", item.contentType)
+                putExtra("title", item.title)
+                putExtra("poster_url", item.posterUrl)
+                putExtra("backdrop_url", item.backdropUrl)
             }
             startActivity(intent)
         } catch (e: Exception) {

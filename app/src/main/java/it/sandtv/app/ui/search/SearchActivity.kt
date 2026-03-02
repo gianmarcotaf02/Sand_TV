@@ -313,6 +313,8 @@ class SearchActivity : ComponentActivity() {
             val intent = Intent(this, DetailsActivity::class.java).apply {
                 putExtra("content_id", item.id)
                 putExtra("content_type", item.type.name)
+                putExtra("title", item.title)
+                putExtra("poster_url", item.posterUrl)
             }
             startActivity(intent)
         }

@@ -64,11 +64,21 @@ class DetailsActivity : ComponentActivity() {
     private var contentTitle: String = ""
     private var currentSeriesId: Long = 0
     
+    // Intent extras for instant rendering
+    private var intentTitle: String = ""
+    private var intentPosterUrl: String? = null
+    private var intentBackdropUrl: String? = null
+    
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         
         contentId = intent.getLongExtra("content_id", 0)
         contentType = ContentType.valueOf(intent.getStringExtra("content_type") ?: "MOVIE")
+        
+        // Read extras for instant UI rendering (passed from carousel/hero)
+        intentTitle = intent.getStringExtra("title") ?: ""
+        intentPosterUrl = intent.getStringExtra("poster_url")
+        intentBackdropUrl = intent.getStringExtra("backdrop_url")
         
         setContent {
             SandTVTheme {
@@ -79,14 +89,21 @@ class DetailsActivity : ComponentActivity() {
     
     @Composable
     private fun DetailsContent() {
+        // Start with instant state from Intent data — UI is visible immediately!
         var state by remember { 
-            mutableStateOf(DetailsState(isLoading = true, contentType = contentType)) 
+            mutableStateOf(DetailsState(
+                title = intentTitle,
+                posterUrl = intentPosterUrl,
+                backdropUrl = intentBackdropUrl,
+                contentType = contentType,
+                isLoading = false  // Show UI immediately with what we have
+            )) 
         }
         
         // Track if content has been loaded at least once
         var hasLoadedOnce by remember { mutableStateOf(false) }
         
-        // Load content on first composition
+        // Load content on first composition (enriches the instant state)
         LaunchedEffect(contentId) {
             loadContent { newState ->
                 state = newState

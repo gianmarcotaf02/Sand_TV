@@ -11,7 +11,7 @@ import it.sandtv.app.data.database.dao.*
 import it.sandtv.app.data.database.entity.*
 import it.sandtv.app.data.preferences.UserPreferences
 import it.sandtv.app.util.ContentFilters
-import it.sandtv.app.util.ImagePreloader
+import it.sandtv.app.util.CoilImagePreloader
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import javax.inject.Inject
@@ -51,7 +51,7 @@ class HomeViewModel @Inject constructor(
     private val customGroupDao: CustomGroupDao,
     private val userPreferences: UserPreferences,
     private val contentCache: ContentCache,
-    private val imagePreloader: ImagePreloader,
+    private val imagePreloader: CoilImagePreloader,
     private val tmdbService: TMDBService,
     private val imdbRatingsRepository: ImdbRatingsRepository,
     private val playlistDao: PlaylistDao,

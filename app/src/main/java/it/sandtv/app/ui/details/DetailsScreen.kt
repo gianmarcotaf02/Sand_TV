@@ -180,7 +180,12 @@ fun DetailsScreen(
         // Backdrop image - FULLSCREEN, shifted RIGHT
         if (!state.backdropUrl.isNullOrEmpty()) {
             AsyncImage(
-                model = state.backdropUrl,
+                model = coil.request.ImageRequest.Builder(androidx.compose.ui.platform.LocalContext.current)
+                    .data(state.backdropUrl)
+                    .size(1280, 720) // Decode at target size, not full resolution
+                    .diskCachePolicy(coil.request.CachePolicy.ENABLED)
+                    .memoryCachePolicy(coil.request.CachePolicy.ENABLED)
+                    .build(),
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 alignment = Alignment.CenterEnd,  // Shift image to the right

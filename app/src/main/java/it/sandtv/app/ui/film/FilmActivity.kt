@@ -164,6 +164,9 @@ class FilmActivity : ComponentActivity() {
                 val intent = Intent(this@FilmActivity, DetailsActivity::class.java).apply {
                     putExtra("content_id", item.contentId)
                     putExtra("content_type", "MOVIE")
+                    putExtra("title", item.title)
+                    putExtra("poster_url", item.posterUrl)
+                    putExtra("backdrop_url", item.backdropUrl)
                 }
                 startActivity(intent)
             },
@@ -175,6 +178,9 @@ class FilmActivity : ComponentActivity() {
         val intent = Intent(this, DetailsActivity::class.java).apply {
             putExtra("content_id", movie.id)
             putExtra("content_type", "MOVIE")
+            putExtra("title", movie.tmdbTitle ?: movie.name)
+            putExtra("poster_url", movie.posterUrl ?: movie.logoUrl)
+            putExtra("backdrop_url", movie.backdropUrl)
         }
         startActivity(intent)
     }

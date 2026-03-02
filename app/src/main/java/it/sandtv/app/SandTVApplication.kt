@@ -2,29 +2,37 @@ package it.sandtv.app
 
 import android.app.Application
 import android.content.ComponentCallbacks2
+import coil.ImageLoader
+import coil.ImageLoaderFactory
 import dagger.hilt.android.HiltAndroidApp
 import it.sandtv.app.data.database.DatabaseCheckpointManager
 import it.sandtv.app.data.preferences.UserPreferences
 import it.sandtv.app.ui.theme.AccentColor
 import it.sandtv.app.ui.theme.SandTVColors
+import it.sandtv.app.util.SandTVImageLoaderFactory
 import javax.inject.Inject
 
 /**
  * Main Application class for SandTV
  * 
  * Handles:
+ * - Coil ImageLoader configuration optimized for Android TV
  * - Immediate accent color loading from SharedPreferences (sync) for instant theming
  * - Periodic database checkpoint to prevent data loss on sudden shutdown
  * - Memory pressure callbacks to save data before system kills the app
  */
 @HiltAndroidApp
-class SandTVApplication : Application() {
+class SandTVApplication : Application(), ImageLoaderFactory {
     
     @Inject
     lateinit var checkpointManager: DatabaseCheckpointManager
     
     @Inject
     lateinit var userPreferences: UserPreferences
+    
+    override fun newImageLoader(): ImageLoader {
+        return SandTVImageLoaderFactory(this).newImageLoader()
+    }
     
     override fun onCreate() {
         super.onCreate()
