@@ -101,6 +101,13 @@ class HomeViewModel @Inject constructor(
     private var lastSeriesHeroFetchTime: Long = 0
     private val HERO_CACHE_DURATION = 30 * 60 * 1000L // 30 minutes
     
+    // Popular carousel caching (don't reshuffle on every resume)
+    private var cachedPopularMovies: List<Movie>? = null
+    private var lastPopularMoviesFetchTime: Long = 0
+    private var cachedPopularSeries: List<Series>? = null
+    private var lastPopularSeriesFetchTime: Long = 0
+    private val POPULAR_CACHE_DURATION = 15 * 60 * 1000L // 15 minutes
+    
     // Saved state before entering grid mode (for back navigation)
     private var savedPreGridState: HomeScreenState? = null
 
@@ -1624,22 +1631,34 @@ class HomeViewModel @Inject constructor(
     /**
      * Load popular movies from "Film Popolari" trending category
      * Category is populated weekly by LoadingActivity
+     * Results are cached for 15 minutes to avoid reshuffling on every resume
      */
     private suspend fun loadPopularMovies(): List<Movie>? {
+        // Return cached data if still fresh
+        val cached = cachedPopularMovies
+        if (cached != null && (System.currentTimeMillis() - lastPopularMoviesFetchTime) < POPULAR_CACHE_DURATION) {
+            Log.d("HomeViewModel", "Using cached popular movies (${cached.size} items)")
+            return cached
+        }
+        
         return withContext(Dispatchers.IO) {
             try {
                 // Load from trending category (populated weekly by LoadingActivity)
                 val movies = movieDao.getByTrendingCategory("Film Popolari")
                 
                 if (movies.isEmpty()) {
-                    // Start LoadingActivity to refresh if empty? Or just return empty.
                     // DO NOT fallback to random popular movies which might be unsafe
                     Log.w("HomeViewModel", "No trending movies found")
                     return@withContext emptyList()
                 }
                 
-                Log.d("HomeViewModel", "Loaded ${movies.size} trending movies from category")
-                movies.shuffled().take(10)
+                val result = movies.shuffled().take(10)
+                Log.d("HomeViewModel", "Loaded ${result.size} trending movies from category (fresh)")
+                
+                // Cache the shuffled result
+                cachedPopularMovies = result
+                lastPopularMoviesFetchTime = System.currentTimeMillis()
+                result
             } catch (e: Exception) {
                 Log.e("HomeViewModel", "Error loading popular movies", e)
                 null
@@ -1650,8 +1669,16 @@ class HomeViewModel @Inject constructor(
     /**
      * Load popular series from "Serie Popolari" trending category
      * Category is populated weekly by LoadingActivity
+     * Results are cached for 15 minutes to avoid reshuffling on every resume
      */
     private suspend fun loadPopularSeries(): List<Series>? {
+        // Return cached data if still fresh
+        val cached = cachedPopularSeries
+        if (cached != null && (System.currentTimeMillis() - lastPopularSeriesFetchTime) < POPULAR_CACHE_DURATION) {
+            Log.d("HomeViewModel", "Using cached popular series (${cached.size} items)")
+            return cached
+        }
+        
         return withContext(Dispatchers.IO) {
             try {
                 // Load from trending category (populated weekly by LoadingActivity)
@@ -1663,8 +1690,13 @@ class HomeViewModel @Inject constructor(
                     return@withContext emptyList()
                 }
                 
-                Log.d("HomeViewModel", "Loaded ${series.size} trending series from category")
-                series.shuffled().take(10)
+                val result = series.shuffled().take(10)
+                Log.d("HomeViewModel", "Loaded ${result.size} trending series from category (fresh)")
+                
+                // Cache the shuffled result
+                cachedPopularSeries = result
+                lastPopularSeriesFetchTime = System.currentTimeMillis()
+                result
             } catch (e: Exception) {
                 Log.e("HomeViewModel", "Error loading popular series", e)
                 null
