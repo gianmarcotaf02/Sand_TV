@@ -5,9 +5,12 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.*
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.core.app.ActivityOptionsCompat
 import androidx.lifecycle.lifecycleScope
@@ -89,6 +92,22 @@ class DetailsActivity : ComponentActivity() {
     
     @Composable
     private fun DetailsContent() {
+        // Smooth fade-in entrance animation (Netflix-style)
+        var contentReady by remember { mutableStateOf(false) }
+        val contentAlpha by androidx.compose.animation.core.animateFloatAsState(
+            targetValue = if (contentReady) 1f else 0f,
+            animationSpec = androidx.compose.animation.core.tween(
+                durationMillis = 500,
+                easing = androidx.compose.animation.core.FastOutSlowInEasing
+            ),
+            label = "detailFadeIn"
+        )
+        
+        // Trigger fade-in after first frame
+        LaunchedEffect(Unit) {
+            contentReady = true
+        }
+        
         // Start with instant state from Intent data — UI is visible immediately!
         var state by remember { 
             mutableStateOf(DetailsState(
@@ -134,6 +153,8 @@ class DetailsActivity : ComponentActivity() {
             }
         }
         
+        // Wrap DetailsScreen with fade-in alpha
+        Box(modifier = Modifier.graphicsLayer { alpha = contentAlpha }) {
         DetailsScreen(
             state = state,
             onBackClick = { finish() },
@@ -334,6 +355,7 @@ class DetailsActivity : ComponentActivity() {
                 }
             }
         )
+        } // End Box fade-in wrapper
     }
     
     private fun loadContent(onStateUpdate: (DetailsState) -> Unit) {
