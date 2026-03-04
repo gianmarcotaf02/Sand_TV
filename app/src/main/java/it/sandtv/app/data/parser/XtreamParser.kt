@@ -73,6 +73,10 @@ class XtreamParser @Inject constructor() {
             val array = JSONArray(json)
             (0 until array.length()).map { i ->
             val obj = array.getJSONObject(i)
+                // Debug: log raw poster fields for first 3 items
+                if (i < 3) {
+                    Log.d(TAG, "VOD[$i] raw fields: cover='${obj.optString("cover", "")}' cover_big='${obj.optString("cover_big", "")}' stream_icon='${obj.optString("stream_icon", "")}' movie_image='${obj.optString("movie_image", "")}' icon='${obj.optString("icon", "")}' name='${obj.optString("name", "")}'")
+                }
                 // Try multiple fields for poster URL (different providers use different fields)
                 // Prioritize 'cover' like series since it works for them
                 val posterUrl = obj.optString("cover", "").takeIf { it.isNotEmpty() }
