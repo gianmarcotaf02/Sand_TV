@@ -1949,11 +1949,14 @@ class HomeViewModel @Inject constructor(
                     // Only shuffle once at first load
                     if (cachedShuffledMovieCategories == null) {
                         val allMovieCategories = movieDao.getCategoriesList()
+                        Log.d("CarouselDebug", "All movie categories: ${allMovieCategories.size} -> ${allMovieCategories.take(10)}")
                         val filteredCategories = ContentFilters.filterMovieCategories(allMovieCategories)
+                        Log.d("CarouselDebug", "Filtered movie categories: ${filteredCategories.size} -> ${filteredCategories.take(10)}")
                         cachedShuffledMovieCategories = filteredCategories.shuffled()
                     }
                     
                     val categoriesToShow = cachedShuffledMovieCategories!!.take(8)
+                    Log.d("CarouselDebug", "Categories to show: $categoriesToShow")
                     
                     for (category in categoriesToShow) {
                         val movies = contentCache.getMoviesByCategory(category)
@@ -1961,6 +1964,7 @@ class HomeViewModel @Inject constructor(
                                 contentCache.putMoviesByCategory(category, it)
                             }
                         
+                        Log.d("CarouselDebug", "Category '$category': ${movies.size} movies, posterUrls: ${movies.take(3).map { it.posterUrl != null }}")
                         if (movies.isNotEmpty()) {
                             rows.add(CarouselRow(
                                 title = ContentFilters.cleanCategoryTitle(category),
