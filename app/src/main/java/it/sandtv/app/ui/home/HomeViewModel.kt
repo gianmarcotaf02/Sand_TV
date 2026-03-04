@@ -1964,7 +1964,10 @@ class HomeViewModel @Inject constructor(
                                 contentCache.putMoviesByCategory(category, it)
                             }
                         
-                        Log.d("CarouselDebug", "Category '$category': ${movies.size} movies, posterUrls: ${movies.take(3).map { it.posterUrl != null }}")
+                        Log.d("CarouselDebug", "Category '$category': ${movies.size} movies")
+                        movies.take(3).forEach { m ->
+                            Log.d("CarouselDebug", "  - '${m.name}' logoUrl=${m.logoUrl} tmdbPosterPath=${m.tmdbPosterPath} posterUrl=${m.posterUrl}")
+                        }
                         if (movies.isNotEmpty()) {
                             rows.add(CarouselRow(
                                 title = ContentFilters.cleanCategoryTitle(category),
