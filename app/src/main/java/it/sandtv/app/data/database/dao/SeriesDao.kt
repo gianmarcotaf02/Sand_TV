@@ -22,7 +22,7 @@ interface SeriesDao {
     @Query("SELECT * FROM series WHERE category = :category AND isHidden = 0 ORDER BY name")
     fun getSeriesByCategory(category: String): Flow<List<Series>>
     
-    @Query("SELECT * FROM series WHERE category = :category AND isHidden = 0 AND (logoUrl IS NOT NULL OR tmdbPosterPath IS NOT NULL) ORDER BY name")
+    @Query("SELECT * FROM series WHERE category = :category AND isHidden = 0 ORDER BY name")
     suspend fun getSeriesByCategoryList(category: String): List<Series>
     
     @Query("SELECT DISTINCT category FROM series WHERE category IS NOT NULL AND isHidden = 0 ORDER BY category")
