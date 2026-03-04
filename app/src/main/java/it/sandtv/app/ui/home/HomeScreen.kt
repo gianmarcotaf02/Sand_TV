@@ -443,11 +443,7 @@ fun PosterCard(
                 .background(SandTVColors.CardBackground)
         ) {
             AsyncImage(
-                model = coil.request.ImageRequest.Builder(androidx.compose.ui.platform.LocalContext.current)
-                    .data(item.posterUrl)
-                    .size(390, 585)  // 3x of 130x195 for sharp rendering
-                    .crossfade(200)
-                    .build(),
+                model = item.posterUrl,
                 contentDescription = item.title,
                 contentScale = ContentScale.Crop,
                 placeholder = coil.compose.rememberAsyncImagePainter(R.drawable.placeholder_poster),
