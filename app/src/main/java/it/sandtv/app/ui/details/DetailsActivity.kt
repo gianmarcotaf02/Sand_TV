@@ -92,10 +92,12 @@ class DetailsActivity : ComponentActivity() {
     
     @Composable
     private fun DetailsContent() {
-        // Smooth fade-in entrance animation (Netflix-style)
-        var contentReady by remember { mutableStateOf(false) }
+        // Track if content has been loaded at least once
+        var hasLoadedOnce by remember { mutableStateOf(false) }
+        
+        // Netflix-style dissolve: entire page fades in once enriched data is ready
         val contentAlpha by androidx.compose.animation.core.animateFloatAsState(
-            targetValue = if (contentReady) 1f else 0f,
+            targetValue = if (hasLoadedOnce) 1f else 0f,
             animationSpec = androidx.compose.animation.core.tween(
                 durationMillis = 500,
                 easing = androidx.compose.animation.core.FastOutSlowInEasing
@@ -103,24 +105,16 @@ class DetailsActivity : ComponentActivity() {
             label = "detailFadeIn"
         )
         
-        // Trigger fade-in after first frame
-        LaunchedEffect(Unit) {
-            contentReady = true
-        }
-        
-        // Start with instant state from Intent data — UI is visible immediately!
+        // Start with instant state from Intent data
         var state by remember { 
             mutableStateOf(DetailsState(
                 title = intentTitle,
                 posterUrl = intentPosterUrl,
                 backdropUrl = intentBackdropUrl,
                 contentType = contentType,
-                isLoading = false  // Show UI immediately with what we have
+                isLoading = false
             )) 
         }
-        
-        // Track if content has been loaded at least once
-        var hasLoadedOnce by remember { mutableStateOf(false) }
         
         // Load content on first composition (enriches the instant state)
         LaunchedEffect(contentId) {

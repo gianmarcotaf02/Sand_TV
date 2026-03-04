@@ -297,29 +297,14 @@ fun DetailsScreen(
                             animationSpec = tween(durationMillis = 400)
                         )
                 ) {
-                    // Title — uses Crossfade so changes (e.g. adding year) are smooth
-                    androidx.compose.animation.Crossfade(
-                        targetState = state.title,
-                        animationSpec = tween(400),
-                        label = "titleCrossfade"
-                    ) { title ->
+                    // Title
                     Text(
-                        text = title,
+                        text = state.title,
                         style = MaterialTheme.typography.displaySmall,
                         color = SandTVColors.TextPrimary,
                         fontWeight = FontWeight.Bold
                     )
-                    }
                     
-                    // Enriched data: year, genre, duration (fades in when data arrives)
-                    val hasEnrichedMetadata = state.year.isNotEmpty() || state.genres.isNotEmpty() || state.duration != null
-                    AnimatedVisibility(
-                        visible = hasEnrichedMetadata,
-                        enter = fadeIn(animationSpec = tween(400)) + androidx.compose.animation.expandVertically(
-                            animationSpec = tween(400)
-                        )
-                    ) {
-                        Column {
                     Spacer(modifier = Modifier.height(8.dp))
                     
                     // Year and genre
@@ -353,20 +338,10 @@ fun DetailsScreen(
                             color = SandTVColors.TextSecondary
                         )
                     }
-                        }
-                    } // End AnimatedVisibility for metadata
                     
-                    // Ratings section with header (fades in when data arrives)
-                    val hasRatings = state.tmdbRating != null || state.imdbRating != null || 
-                        state.rottenTomatoesScore != null || state.metacriticScore != null || state.audienceScore != null
-                    AnimatedVisibility(
-                        visible = hasRatings,
-                        enter = fadeIn(animationSpec = tween(500, delayMillis = 100)) + androidx.compose.animation.expandVertically(
-                            animationSpec = tween(400, delayMillis = 100)
-                        )
-                    ) {
-                        Column {
                     Spacer(modifier = Modifier.height(16.dp))
+                    
+                    // Ratings section with header
                     Text(
                         text = "Valutazioni",
                         style = MaterialTheme.typography.titleMedium,
@@ -380,8 +355,6 @@ fun DetailsScreen(
                         metacriticScore = state.metacriticScore,
                         audienceScore = state.audienceScore
                     )
-                        }
-                    } // End AnimatedVisibility for ratings
                     
                     Spacer(modifier = Modifier.height(6.dp))
                     
@@ -514,13 +487,7 @@ fun DetailsScreen(
                     
                     Spacer(modifier = Modifier.height(8.dp))
                     
-                    // 1. Overview (Trama) - fades in smoothly
-                    AnimatedVisibility(
-                        visible = state.overview.isNotEmpty(),
-                        enter = fadeIn(animationSpec = tween(500, delayMillis = 200)) + androidx.compose.animation.expandVertically(
-                            animationSpec = tween(400, delayMillis = 200)
-                        )
-                    ) {
+                    // 1. Overview (Trama)
                     if (state.overview.isNotEmpty()) {
                         var isExpanded by remember { mutableStateOf(false) }
                         var hasOverflow by remember { mutableStateOf(false) }
@@ -565,15 +532,8 @@ fun DetailsScreen(
                             }
                         }
                     }
-                    } // End AnimatedVisibility for overview
                     
-                    // 2. Cast - fades in with delay
-                    AnimatedVisibility(
-                        visible = state.cast != null,
-                        enter = fadeIn(animationSpec = tween(500, delayMillis = 300)) + androidx.compose.animation.expandVertically(
-                            animationSpec = tween(400, delayMillis = 300)
-                        )
-                    ) {
+                    // 2. Cast
                     state.cast?.let {
                         Spacer(modifier = Modifier.height(12.dp))
                         Row(
@@ -595,15 +555,8 @@ fun DetailsScreen(
                             )
                         }
                     }
-                    } // End AnimatedVisibility for cast
                     
-                    // 3. Director (Regia) - fades in with delay
-                    AnimatedVisibility(
-                        visible = state.director != null,
-                        enter = fadeIn(animationSpec = tween(500, delayMillis = 350)) + androidx.compose.animation.expandVertically(
-                            animationSpec = tween(400, delayMillis = 350)
-                        )
-                    ) {
+                    // 3. Director (Regia)
                     state.director?.let {
                         Spacer(modifier = Modifier.height(8.dp))
                         Row(
@@ -623,7 +576,6 @@ fun DetailsScreen(
                             )
                         }
                     }
-                    } // End AnimatedVisibility for director
                 }
             }
             
