@@ -31,6 +31,24 @@ class ContentCache @Inject constructor() {
     private val moviesByCategoryCache = LruCache<String, List<Movie>>(CATEGORY_CACHE_SIZE)
     private val seriesByCategoryCache = LruCache<String, List<Series>>(CATEGORY_CACHE_SIZE)
     
+    // Popular content caches (15 min)
+    var popularMoviesCache: List<Movie>? = null
+    var popularMoviesCacheTime: Long = 0
+    
+    var popularSeriesCache: List<Series>? = null
+    var popularSeriesCacheTime: Long = 0
+    
+    // Hero caches (30 min)
+    var cachedMovieHeroes: List<it.sandtv.app.ui.home.HeroItem>? = null
+    var lastMovieHeroFetchTime: Long = 0
+    
+    var cachedSeriesHeroes: List<it.sandtv.app.ui.home.HeroItem>? = null
+    var lastSeriesHeroFetchTime: Long = 0
+    
+    // Shuffled categories (cached once per session)
+    var cachedShuffledMovieCategories: List<String>? = null
+    var cachedShuffledSeriesCategories: List<String>? = null
+    
     // Timestamp for cache invalidation
     private var lastInvalidation = System.currentTimeMillis()
     

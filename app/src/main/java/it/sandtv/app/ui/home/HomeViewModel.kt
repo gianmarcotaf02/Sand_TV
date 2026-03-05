@@ -59,10 +59,8 @@ class HomeViewModel @Inject constructor(
 ) : ViewModel() {
 
     companion object {
-        // Cache shuffled categories so they don't change during app usage
-        // Only shuffled ONCE at first load
-        private var cachedShuffledMovieCategories: List<String>? = null
-        private var cachedShuffledSeriesCategories: List<String>? = null
+        private const val HERO_CACHE_DURATION = 30 * 60 * 1000L // 30 minutes
+        private const val POPULAR_CACHE_DURATION = 15 * 60 * 1000L // 15 minutes
     }
 
     private val _uiState = MutableStateFlow(HomeScreenState())
@@ -94,20 +92,6 @@ class HomeViewModel @Inject constructor(
     val favoriteSeriesCategories: StateFlow<Set<String>> = _favoriteSeriesCategories.asStateFlow()
 
 
-    // Hero content caching
-    private var cachedMovieHeroes: List<HeroItem>? = null
-    private var lastMovieHeroFetchTime: Long = 0
-    private var cachedSeriesHeroes: List<HeroItem>? = null
-    private var lastSeriesHeroFetchTime: Long = 0
-    private val HERO_CACHE_DURATION = 30 * 60 * 1000L // 30 minutes
-    
-    // Popular carousel caching (don't reshuffle on every resume)
-    private var cachedPopularMovies: List<Movie>? = null
-    private var lastPopularMoviesFetchTime: Long = 0
-    private var cachedPopularSeries: List<Series>? = null
-    private var lastPopularSeriesFetchTime: Long = 0
-    private val POPULAR_CACHE_DURATION = 15 * 60 * 1000L // 15 minutes
-    
     // Saved state before entering grid mode (for back navigation)
     private var savedPreGridState: HomeScreenState? = null
 
@@ -568,8 +552,8 @@ class HomeViewModel @Inject constructor(
                 // Check cache first
                 val now = System.currentTimeMillis()
                 val cachedHeroes = when (filterType) {
-                    ContentType.MOVIE -> if (now - lastMovieHeroFetchTime < HERO_CACHE_DURATION) cachedMovieHeroes else null
-                    ContentType.SERIES -> if (now - lastSeriesHeroFetchTime < HERO_CACHE_DURATION) cachedSeriesHeroes else null
+                    ContentType.MOVIE -> if (now - contentCache.lastMovieHeroFetchTime < HERO_CACHE_DURATION) contentCache.cachedMovieHeroes else null
+                    ContentType.SERIES -> if (now - contentCache.lastSeriesHeroFetchTime < HERO_CACHE_DURATION) contentCache.cachedSeriesHeroes else null
                     else -> null
                 }
                 
@@ -639,8 +623,8 @@ class HomeViewModel @Inject constructor(
                         }
                         
                         if (finalHeroes.isNotEmpty()) {
-                            cachedMovieHeroes = finalHeroes
-                            lastMovieHeroFetchTime = System.currentTimeMillis()
+                            contentCache.cachedMovieHeroes = finalHeroes
+                            contentCache.lastMovieHeroFetchTime = System.currentTimeMillis()
                         }
                         finalHeroes
                     }
@@ -703,8 +687,8 @@ class HomeViewModel @Inject constructor(
                         }
                         
                         if (finalHeroes.isNotEmpty()) {
-                            cachedSeriesHeroes = finalHeroes
-                            lastSeriesHeroFetchTime = System.currentTimeMillis()
+                            contentCache.cachedSeriesHeroes = finalHeroes
+                            contentCache.lastSeriesHeroFetchTime = System.currentTimeMillis()
                         }
                         finalHeroes
                     }
@@ -1635,8 +1619,8 @@ class HomeViewModel @Inject constructor(
      */
     private suspend fun loadPopularMovies(): List<Movie>? {
         // Return cached data if still fresh
-        val cached = cachedPopularMovies
-        if (cached != null && (System.currentTimeMillis() - lastPopularMoviesFetchTime) < POPULAR_CACHE_DURATION) {
+        val cached = contentCache.popularMoviesCache
+        if (cached != null && (System.currentTimeMillis() - contentCache.popularMoviesCacheTime) < POPULAR_CACHE_DURATION) {
             Log.d("HomeViewModel", "Using cached popular movies (${cached.size} items)")
             return cached
         }
@@ -1656,8 +1640,8 @@ class HomeViewModel @Inject constructor(
                 Log.d("HomeViewModel", "Loaded ${result.size} trending movies from category (fresh)")
                 
                 // Cache the shuffled result
-                cachedPopularMovies = result
-                lastPopularMoviesFetchTime = System.currentTimeMillis()
+                contentCache.popularMoviesCache = result
+                contentCache.popularMoviesCacheTime = System.currentTimeMillis()
                 result
             } catch (e: Exception) {
                 Log.e("HomeViewModel", "Error loading popular movies", e)
@@ -1673,8 +1657,8 @@ class HomeViewModel @Inject constructor(
      */
     private suspend fun loadPopularSeries(): List<Series>? {
         // Return cached data if still fresh
-        val cached = cachedPopularSeries
-        if (cached != null && (System.currentTimeMillis() - lastPopularSeriesFetchTime) < POPULAR_CACHE_DURATION) {
+        val cached = contentCache.popularSeriesCache
+        if (cached != null && (System.currentTimeMillis() - contentCache.popularSeriesCacheTime) < POPULAR_CACHE_DURATION) {
             Log.d("HomeViewModel", "Using cached popular series (${cached.size} items)")
             return cached
         }
@@ -1694,8 +1678,8 @@ class HomeViewModel @Inject constructor(
                 Log.d("HomeViewModel", "Loaded ${result.size} trending series from category (fresh)")
                 
                 // Cache the shuffled result
-                cachedPopularSeries = result
-                lastPopularSeriesFetchTime = System.currentTimeMillis()
+                contentCache.popularSeriesCache = result
+                contentCache.popularSeriesCacheTime = System.currentTimeMillis()
                 result
             } catch (e: Exception) {
                 Log.e("HomeViewModel", "Error loading popular series", e)
@@ -1947,15 +1931,15 @@ class HomeViewModel @Inject constructor(
                 // Movie categories (filtered and shuffled ONCE)
                 if (includeMovies) {
                     // Only shuffle once at first load
-                    if (cachedShuffledMovieCategories == null) {
+                    if (contentCache.cachedShuffledMovieCategories == null) {
                         val allMovieCategories = movieDao.getCategoriesList()
                         Log.d("CarouselDebug", "All movie categories: ${allMovieCategories.size} -> ${allMovieCategories.take(10)}")
                         val filteredCategories = ContentFilters.filterMovieCategories(allMovieCategories)
                         Log.d("CarouselDebug", "Filtered movie categories: ${filteredCategories.size} -> ${filteredCategories.take(10)}")
-                        cachedShuffledMovieCategories = filteredCategories.shuffled()
+                        contentCache.cachedShuffledMovieCategories = filteredCategories.shuffled()
                     }
                     
-                    val categoriesToShow = cachedShuffledMovieCategories!!.take(8)
+                    val categoriesToShow = contentCache.cachedShuffledMovieCategories!!.take(8)
                     Log.d("CarouselDebug", "Categories to show: $categoriesToShow")
                     
                     for (category in categoriesToShow) {
@@ -1981,13 +1965,13 @@ class HomeViewModel @Inject constructor(
                 // Series categories (filtered and shuffled ONCE)
                 if (includeSeries) {
                     // Only shuffle once at first load
-                    if (cachedShuffledSeriesCategories == null) {
+                    if (contentCache.cachedShuffledSeriesCategories == null) {
                         val allSeriesCategories = seriesDao.getCategoriesList()
                         val filteredCategories = ContentFilters.filterSeriesCategories(allSeriesCategories)
-                        cachedShuffledSeriesCategories = filteredCategories.shuffled()
+                        contentCache.cachedShuffledSeriesCategories = filteredCategories.shuffled()
                     }
                     
-                    val categoriesToShow = cachedShuffledSeriesCategories!!.take(8)
+                    val categoriesToShow = contentCache.cachedShuffledSeriesCategories!!.take(8)
                     
                     for (category in categoriesToShow) {
                         val series = contentCache.getSeriesByCategory(category)

@@ -95,16 +95,6 @@ class DetailsActivity : ComponentActivity() {
         // Track if content has been loaded at least once
         var hasLoadedOnce by remember { mutableStateOf(false) }
         
-        // Netflix-style dissolve: entire page fades in once enriched data is ready
-        val contentAlpha by androidx.compose.animation.core.animateFloatAsState(
-            targetValue = if (hasLoadedOnce) 1f else 0f,
-            animationSpec = androidx.compose.animation.core.tween(
-                durationMillis = 500,
-                easing = androidx.compose.animation.core.FastOutSlowInEasing
-            ),
-            label = "detailFadeIn"
-        )
-        
         // Start with instant state from Intent data
         var state by remember { 
             mutableStateOf(DetailsState(
@@ -112,7 +102,7 @@ class DetailsActivity : ComponentActivity() {
                 posterUrl = intentPosterUrl,
                 backdropUrl = intentBackdropUrl,
                 contentType = contentType,
-                isLoading = false
+                isLoading = true // true to trigger internal fade animation
             )) 
         }
         
@@ -147,8 +137,6 @@ class DetailsActivity : ComponentActivity() {
             }
         }
         
-        // Wrap DetailsScreen with fade-in alpha
-        Box(modifier = Modifier.graphicsLayer { alpha = contentAlpha }) {
         DetailsScreen(
             state = state,
             onBackClick = { finish() },
@@ -349,7 +337,6 @@ class DetailsActivity : ComponentActivity() {
                 }
             }
         )
-        } // End Box fade-in wrapper
     }
     
     private fun loadContent(onStateUpdate: (DetailsState) -> Unit) {
