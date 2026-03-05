@@ -5,9 +5,12 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.*
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.core.app.ActivityOptionsCompat
 import androidx.lifecycle.lifecycleScope
@@ -64,11 +67,21 @@ class DetailsActivity : ComponentActivity() {
     private var contentTitle: String = ""
     private var currentSeriesId: Long = 0
     
+    // Intent extras for instant rendering
+    private var intentTitle: String = ""
+    private var intentPosterUrl: String? = null
+    private var intentBackdropUrl: String? = null
+    
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         
         contentId = intent.getLongExtra("content_id", 0)
         contentType = ContentType.valueOf(intent.getStringExtra("content_type") ?: "MOVIE")
+        
+        // Read extras for instant UI rendering (passed from carousel/hero)
+        intentTitle = intent.getStringExtra("title") ?: ""
+        intentPosterUrl = intent.getStringExtra("poster_url")
+        intentBackdropUrl = intent.getStringExtra("backdrop_url")
         
         setContent {
             SandTVTheme {
@@ -79,14 +92,31 @@ class DetailsActivity : ComponentActivity() {
     
     @Composable
     private fun DetailsContent() {
-        var state by remember { 
-            mutableStateOf(DetailsState(isLoading = true, contentType = contentType)) 
-        }
-        
         // Track if content has been loaded at least once
         var hasLoadedOnce by remember { mutableStateOf(false) }
         
-        // Load content on first composition
+        // Netflix-style dissolve: entire page fades in once enriched data is ready
+        val contentAlpha by androidx.compose.animation.core.animateFloatAsState(
+            targetValue = if (hasLoadedOnce) 1f else 0f,
+            animationSpec = androidx.compose.animation.core.tween(
+                durationMillis = 500,
+                easing = androidx.compose.animation.core.FastOutSlowInEasing
+            ),
+            label = "detailFadeIn"
+        )
+        
+        // Start with instant state from Intent data
+        var state by remember { 
+            mutableStateOf(DetailsState(
+                title = intentTitle,
+                posterUrl = intentPosterUrl,
+                backdropUrl = intentBackdropUrl,
+                contentType = contentType,
+                isLoading = false
+            )) 
+        }
+        
+        // Load content on first composition (enriches the instant state)
         LaunchedEffect(contentId) {
             loadContent { newState ->
                 state = newState
@@ -117,6 +147,8 @@ class DetailsActivity : ComponentActivity() {
             }
         }
         
+        // Wrap DetailsScreen with fade-in alpha
+        Box(modifier = Modifier.graphicsLayer { alpha = contentAlpha }) {
         DetailsScreen(
             state = state,
             onBackClick = { finish() },
@@ -317,6 +349,7 @@ class DetailsActivity : ComponentActivity() {
                 }
             }
         )
+        } // End Box fade-in wrapper
     }
     
     private fun loadContent(onStateUpdate: (DetailsState) -> Unit) {

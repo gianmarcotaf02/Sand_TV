@@ -7,6 +7,8 @@ import it.sandtv.app.data.database.DatabaseCheckpointManager
 import it.sandtv.app.data.preferences.UserPreferences
 import it.sandtv.app.ui.theme.AccentColor
 import it.sandtv.app.ui.theme.SandTVColors
+import coil.Coil
+import it.sandtv.app.util.SandTVImageLoaderFactory
 import javax.inject.Inject
 
 /**
@@ -14,6 +16,7 @@ import javax.inject.Inject
  * 
  * Handles:
  * - Immediate accent color loading from SharedPreferences (sync) for instant theming
+ * - Coil image loader initialization with TV-optimized settings
  * - Periodic database checkpoint to prevent data loss on sudden shutdown
  * - Memory pressure callbacks to save data before system kills the app
  */
@@ -26,6 +29,9 @@ class SandTVApplication : Application() {
     @Inject
     lateinit var userPreferences: UserPreferences
     
+    @Inject
+    lateinit var imageLoaderFactory: SandTVImageLoaderFactory
+    
     override fun onCreate() {
         super.onCreate()
         android.util.Log.d("SandTVDebug", "SandTVApplication onCreate STARTED")
@@ -35,6 +41,9 @@ class SandTVApplication : Application() {
         val accentColorId = userPreferences.getAccentColorSync()
         SandTVColors.updateAccent(AccentColor.fromId(accentColorId))
         android.util.Log.d("SandTVDebug", "App Accent Color applied: $accentColorId")
+        
+        // Initialize Coil with TV-optimized settings (30% RAM, 150MB disk, RGB_565)
+        Coil.setImageLoader(imageLoaderFactory.newImageLoader())
         
         // Start periodic WAL checkpoint (every 30 seconds)
         // This ensures data is written to disk and not lost on sudden TV shutdown

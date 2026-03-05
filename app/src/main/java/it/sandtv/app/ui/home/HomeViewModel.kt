@@ -11,7 +11,7 @@ import it.sandtv.app.data.database.dao.*
 import it.sandtv.app.data.database.entity.*
 import it.sandtv.app.data.preferences.UserPreferences
 import it.sandtv.app.util.ContentFilters
-import it.sandtv.app.util.ImagePreloader
+import it.sandtv.app.util.CoilImagePreloader
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import javax.inject.Inject
@@ -51,7 +51,7 @@ class HomeViewModel @Inject constructor(
     private val customGroupDao: CustomGroupDao,
     private val userPreferences: UserPreferences,
     private val contentCache: ContentCache,
-    private val imagePreloader: ImagePreloader,
+    private val imagePreloader: CoilImagePreloader,
     private val tmdbService: TMDBService,
     private val imdbRatingsRepository: ImdbRatingsRepository,
     private val playlistDao: PlaylistDao,
@@ -100,6 +100,13 @@ class HomeViewModel @Inject constructor(
     private var cachedSeriesHeroes: List<HeroItem>? = null
     private var lastSeriesHeroFetchTime: Long = 0
     private val HERO_CACHE_DURATION = 30 * 60 * 1000L // 30 minutes
+    
+    // Popular carousel caching (don't reshuffle on every resume)
+    private var cachedPopularMovies: List<Movie>? = null
+    private var lastPopularMoviesFetchTime: Long = 0
+    private var cachedPopularSeries: List<Series>? = null
+    private var lastPopularSeriesFetchTime: Long = 0
+    private val POPULAR_CACHE_DURATION = 15 * 60 * 1000L // 15 minutes
     
     // Saved state before entering grid mode (for back navigation)
     private var savedPreGridState: HomeScreenState? = null
@@ -1624,22 +1631,34 @@ class HomeViewModel @Inject constructor(
     /**
      * Load popular movies from "Film Popolari" trending category
      * Category is populated weekly by LoadingActivity
+     * Results are cached for 15 minutes to avoid reshuffling on every resume
      */
     private suspend fun loadPopularMovies(): List<Movie>? {
+        // Return cached data if still fresh
+        val cached = cachedPopularMovies
+        if (cached != null && (System.currentTimeMillis() - lastPopularMoviesFetchTime) < POPULAR_CACHE_DURATION) {
+            Log.d("HomeViewModel", "Using cached popular movies (${cached.size} items)")
+            return cached
+        }
+        
         return withContext(Dispatchers.IO) {
             try {
                 // Load from trending category (populated weekly by LoadingActivity)
                 val movies = movieDao.getByTrendingCategory("Film Popolari")
                 
                 if (movies.isEmpty()) {
-                    // Start LoadingActivity to refresh if empty? Or just return empty.
                     // DO NOT fallback to random popular movies which might be unsafe
                     Log.w("HomeViewModel", "No trending movies found")
                     return@withContext emptyList()
                 }
                 
-                Log.d("HomeViewModel", "Loaded ${movies.size} trending movies from category")
-                movies.shuffled().take(10)
+                val result = movies.shuffled().take(10)
+                Log.d("HomeViewModel", "Loaded ${result.size} trending movies from category (fresh)")
+                
+                // Cache the shuffled result
+                cachedPopularMovies = result
+                lastPopularMoviesFetchTime = System.currentTimeMillis()
+                result
             } catch (e: Exception) {
                 Log.e("HomeViewModel", "Error loading popular movies", e)
                 null
@@ -1650,8 +1669,16 @@ class HomeViewModel @Inject constructor(
     /**
      * Load popular series from "Serie Popolari" trending category
      * Category is populated weekly by LoadingActivity
+     * Results are cached for 15 minutes to avoid reshuffling on every resume
      */
     private suspend fun loadPopularSeries(): List<Series>? {
+        // Return cached data if still fresh
+        val cached = cachedPopularSeries
+        if (cached != null && (System.currentTimeMillis() - lastPopularSeriesFetchTime) < POPULAR_CACHE_DURATION) {
+            Log.d("HomeViewModel", "Using cached popular series (${cached.size} items)")
+            return cached
+        }
+        
         return withContext(Dispatchers.IO) {
             try {
                 // Load from trending category (populated weekly by LoadingActivity)
@@ -1663,8 +1690,13 @@ class HomeViewModel @Inject constructor(
                     return@withContext emptyList()
                 }
                 
-                Log.d("HomeViewModel", "Loaded ${series.size} trending series from category")
-                series.shuffled().take(10)
+                val result = series.shuffled().take(10)
+                Log.d("HomeViewModel", "Loaded ${result.size} trending series from category (fresh)")
+                
+                // Cache the shuffled result
+                cachedPopularSeries = result
+                lastPopularSeriesFetchTime = System.currentTimeMillis()
+                result
             } catch (e: Exception) {
                 Log.e("HomeViewModel", "Error loading popular series", e)
                 null
@@ -1917,11 +1949,14 @@ class HomeViewModel @Inject constructor(
                     // Only shuffle once at first load
                     if (cachedShuffledMovieCategories == null) {
                         val allMovieCategories = movieDao.getCategoriesList()
+                        Log.d("CarouselDebug", "All movie categories: ${allMovieCategories.size} -> ${allMovieCategories.take(10)}")
                         val filteredCategories = ContentFilters.filterMovieCategories(allMovieCategories)
+                        Log.d("CarouselDebug", "Filtered movie categories: ${filteredCategories.size} -> ${filteredCategories.take(10)}")
                         cachedShuffledMovieCategories = filteredCategories.shuffled()
                     }
                     
                     val categoriesToShow = cachedShuffledMovieCategories!!.take(8)
+                    Log.d("CarouselDebug", "Categories to show: $categoriesToShow")
                     
                     for (category in categoriesToShow) {
                         val movies = contentCache.getMoviesByCategory(category)
@@ -1929,6 +1964,10 @@ class HomeViewModel @Inject constructor(
                                 contentCache.putMoviesByCategory(category, it)
                             }
                         
+                        Log.d("CarouselDebug", "Category '$category': ${movies.size} movies")
+                        movies.take(3).forEach { m ->
+                            Log.d("CarouselDebug", "  - '${m.name}' logoUrl=${m.logoUrl} tmdbPosterPath=${m.tmdbPosterPath} posterUrl=${m.posterUrl}")
+                        }
                         if (movies.isNotEmpty()) {
                             rows.add(CarouselRow(
                                 title = ContentFilters.cleanCategoryTitle(category),

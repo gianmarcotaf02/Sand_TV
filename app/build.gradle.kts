@@ -14,8 +14,8 @@ android {
         applicationId = "it.sandtv.app"
         minSdk = 26
         targetSdk = 34
-        versionCode = 42
-        versionName = "1.3.2"
+        versionCode = 44
+        versionName = "1.3.4"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -115,9 +115,7 @@ dependencies {
     ksp(libs.moshi.codegen)
     implementation(libs.gson)
 
-    // Image Loading
-    implementation(libs.glide)
-    ksp(libs.glide.ksp)
+    // Image Loading (Coil only - unified cache)
     implementation(libs.coil)
     implementation(libs.coil.compose)
 

@@ -2,6 +2,7 @@ package it.sandtv.app.ui.details
 
 import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
@@ -177,10 +178,24 @@ fun DetailsScreen(
             .fillMaxSize()
             .background(SandTVColors.BackgroundDark)
     ) {
+        
+        // Full content fade-in: everything appears at once with a smooth dissolve
+        // While loading, the screen stays dark (BackgroundDark). When ready → fade in.
+        AnimatedVisibility(
+            visible = !state.isLoading,
+            enter = fadeIn(tween(600))
+        ) {
+            Box(modifier = Modifier.fillMaxSize()) {
         // Backdrop image - FULLSCREEN, shifted RIGHT
         if (!state.backdropUrl.isNullOrEmpty()) {
             AsyncImage(
-                model = state.backdropUrl,
+                model = coil.request.ImageRequest.Builder(androidx.compose.ui.platform.LocalContext.current)
+                    .data(state.backdropUrl)
+                    .size(1280, 720)
+                    .crossfade(true)
+                    .diskCachePolicy(coil.request.CachePolicy.ENABLED)
+                    .memoryCachePolicy(coil.request.CachePolicy.ENABLED)
+                    .build(),
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 alignment = Alignment.CenterEnd,  // Shift image to the right
@@ -240,10 +255,8 @@ fun DetailsScreen(
                             )
                         )
                     )
-        )
+            )
         }
-        
-        // Netflix-style content fade - removed for instant display
         
         // Content - LEFT ALIGNED with better width for readability
         // Using TvLazyColumn for focus-driven scrolling (like Live TV sidebar)
@@ -273,7 +286,13 @@ fun DetailsScreen(
                 // Poster
                 if (!state.posterUrl.isNullOrEmpty()) {
                     AsyncImage(
-                        model = state.posterUrl,
+                        model = coil.request.ImageRequest.Builder(
+                            androidx.compose.ui.platform.LocalContext.current
+                        )
+                            .data(state.posterUrl)
+                            .size(150, 225)
+                            .crossfade(true)
+                            .build(),
                         contentDescription = state.title,
                         contentScale = ContentScale.Crop,
                         modifier = Modifier
@@ -285,7 +304,11 @@ fun DetailsScreen(
                 
                 // Info column
                 Column(
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier
+                        .weight(1f)
+                        .animateContentSize(
+                            animationSpec = tween(durationMillis = 400)
+                        )
                 ) {
                     // Title
                     Text(
@@ -477,7 +500,7 @@ fun DetailsScreen(
                     
                     Spacer(modifier = Modifier.height(8.dp))
                     
-                    // 1. Overview (Trama) - FIRST
+                    // 1. Overview (Trama)
                     if (state.overview.isNotEmpty()) {
                         var isExpanded by remember { mutableStateOf(false) }
                         var hasOverflow by remember { mutableStateOf(false) }
@@ -523,7 +546,7 @@ fun DetailsScreen(
                         }
                     }
                     
-                    // 2. Cast - SECOND
+                    // 2. Cast
                     state.cast?.let {
                         Spacer(modifier = Modifier.height(12.dp))
                         Row(
@@ -546,7 +569,7 @@ fun DetailsScreen(
                         }
                     }
                     
-                    // 3. Director (Regia) - THIRD
+                    // 3. Director (Regia)
                     state.director?.let {
                         Spacer(modifier = Modifier.height(8.dp))
                         Row(
@@ -606,6 +629,8 @@ fun DetailsScreen(
                 Spacer(modifier = Modifier.height(56.dp))
             }
     }
+    }  // end inner Box (AnimatedVisibility content)
+    }  // end AnimatedVisibility
 }
 }
 

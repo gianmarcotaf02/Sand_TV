@@ -48,7 +48,7 @@ interface MovieDao {
     
     // Popular movies - sorts by TMDB popularity when available, random otherwise
     // This ensures carousel shows content even during initial TMDB enrichment
-    @Query("SELECT * FROM movies WHERE isHidden = 0 ORDER BY COALESCE(tmdbPopularity, 0) DESC, RANDOM() LIMIT :limit")
+    @Query("SELECT * FROM movies WHERE isHidden = 0 AND (logoUrl IS NOT NULL OR tmdbPosterPath IS NOT NULL) ORDER BY COALESCE(tmdbPopularity, 0) DESC, RANDOM() LIMIT :limit")
     suspend fun getPopularMovies(limit: Int = 20): List<Movie>
     
     // Update only popularity score (for efficient refresh without overwriting enriched data)
@@ -58,8 +58,8 @@ interface MovieDao {
     @Query("SELECT * FROM movies WHERE isHidden = 0 ORDER BY COALESCE(tmdbPopularity, 0) DESC, RANDOM() LIMIT :limit")
     fun getPopularMoviesFlow(limit: Int): Flow<List<Movie>>
     
-    // Recently added
-    @Query("SELECT * FROM movies WHERE isHidden = 0 ORDER BY addedAt DESC LIMIT :limit")
+    // Recently added (only those with a poster image)
+    @Query("SELECT * FROM movies WHERE isHidden = 0 AND (logoUrl IS NOT NULL OR tmdbPosterPath IS NOT NULL) ORDER BY addedAt DESC LIMIT :limit")
     suspend fun getRecentlyAddedMovies(limit: Int = 20): List<Movie>
     
     @Query("SELECT * FROM movies WHERE isHidden = 0 ORDER BY addedAt DESC LIMIT :limit")

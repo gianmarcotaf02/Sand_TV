@@ -13,6 +13,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -92,20 +93,46 @@ fun TvContentCard(
             )
         ) {
             Box(modifier = Modifier.fillMaxSize()) {
+                // DEBUG: Log poster URL for each card
+                android.util.Log.d("CoilDebug", "TvContentCard loading: title=${item.title}, posterUrl=${item.posterUrl}")
+                
                 // Poster/Logo image - use Fit for channels, Crop for movies/series
-                AsyncImage(
-                    model = coil.request.ImageRequest.Builder(androidx.compose.ui.platform.LocalContext.current)
-                        .data(item.posterUrl)
-                        .crossfade(true)
-                        .build(),
-                    contentDescription = item.title,
-                    contentScale = if (isChannel) ContentScale.Fit else ContentScale.Crop,
-                    placeholder = coil.compose.rememberAsyncImagePainter(R.drawable.placeholder_poster),
-                    error = coil.compose.rememberAsyncImagePainter(R.drawable.placeholder_poster),
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .then(if (isChannel) Modifier.padding(8.dp) else Modifier)
-                )
+                if (item.posterUrl.isNullOrEmpty()) {
+                    // Fallback when no poster is available (common for VOD categories without TMDB enrichment)
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(androidx.compose.ui.res.colorResource(R.color.card_background)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = item.title,
+                            style = MaterialTheme.typography.titleMedium,
+                            color = Color.White.copy(alpha = 0.7f),
+                            textAlign = TextAlign.Center,
+                            maxLines = 3,
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier.padding(16.dp)
+                        )
+                    }
+                } else {
+                    AsyncImage(
+                        model = item.posterUrl,
+                        contentDescription = item.title,
+                        contentScale = if (isChannel) ContentScale.Fit else ContentScale.Crop,
+                        placeholder = coil.compose.rememberAsyncImagePainter(R.drawable.placeholder_poster),
+                        error = coil.compose.rememberAsyncImagePainter(R.drawable.placeholder_poster),
+                        onError = { error ->
+                            android.util.Log.e("CoilDebug", "FAILED to load: title=${item.title}, url=${item.posterUrl}, error=${error.result.throwable}")
+                        },
+                        onSuccess = {
+                            android.util.Log.d("CoilDebug", "SUCCESS: title=${item.title}")
+                        },
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .then(if (isChannel) Modifier.padding(8.dp) else Modifier)
+                    )
+                }
                 
                 // Rating badge (if available and NOT continue watching)
                 if (item.progressPercent == null) {

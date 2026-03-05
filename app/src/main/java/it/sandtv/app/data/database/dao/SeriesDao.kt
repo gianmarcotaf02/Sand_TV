@@ -48,7 +48,7 @@ interface SeriesDao {
     
     // Popular series - sorts by TMDB popularity when available, random otherwise
     // This ensures carousel shows content even during initial TMDB enrichment
-    @Query("SELECT * FROM series WHERE isHidden = 0 ORDER BY COALESCE(tmdbPopularity, 0) DESC, RANDOM() LIMIT :limit")
+    @Query("SELECT * FROM series WHERE isHidden = 0 AND (logoUrl IS NOT NULL OR tmdbPosterPath IS NOT NULL) ORDER BY COALESCE(tmdbPopularity, 0) DESC, RANDOM() LIMIT :limit")
     suspend fun getPopularSeries(limit: Int = 20): List<Series>
     
     // Update only popularity score (for efficient refresh without overwriting enriched data)
@@ -58,8 +58,8 @@ interface SeriesDao {
     @Query("SELECT * FROM series WHERE isHidden = 0 ORDER BY COALESCE(tmdbPopularity, 0) DESC, RANDOM() LIMIT :limit")
     fun getPopularSeriesFlow(limit: Int): Flow<List<Series>>
     
-    // Recently added
-    @Query("SELECT * FROM series WHERE isHidden = 0 ORDER BY addedAt DESC LIMIT :limit")
+    // Recently added (only those with a poster image)
+    @Query("SELECT * FROM series WHERE isHidden = 0 AND (logoUrl IS NOT NULL OR tmdbPosterPath IS NOT NULL) ORDER BY addedAt DESC LIMIT :limit")
     suspend fun getRecentlyAddedSeries(limit: Int = 20): List<Series>
     
     // Series needing TMDB update
