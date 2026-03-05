@@ -373,6 +373,7 @@ fun DetailsScreen(
                     
                     // Action buttons
                     Row(
+                        modifier = Modifier.padding(start = 6.dp),
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
