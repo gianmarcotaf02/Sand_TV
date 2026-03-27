@@ -14,8 +14,8 @@ android {
         applicationId = "it.sandtv.app"
         minSdk = 26
         targetSdk = 34
-        versionCode = 45
-        versionName = "1.3.5"
+        versionCode = 47
+        versionName = "1.3.7"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

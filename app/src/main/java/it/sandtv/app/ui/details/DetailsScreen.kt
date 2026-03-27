@@ -177,6 +177,7 @@ fun DetailsScreen(
         modifier = modifier
             .fillMaxSize()
             .background(SandTVColors.BackgroundDark)
+    ) {
         // Full content fade-in: everything appears at once with a smooth dissolve
         // While loading, the screen stays dark (BackgroundDark). When ready → fade in.
         AnimatedVisibility(
@@ -630,7 +631,8 @@ fun DetailsScreen(
     }
     }  // end inner Box (AnimatedVisibility content)
     }  // end AnimatedVisibility
-}
+}  // end Box
+}  // end DetailsScreen
 
 /**
  * Top bar with back button

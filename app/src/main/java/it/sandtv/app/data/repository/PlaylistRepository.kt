@@ -171,7 +171,7 @@ class PlaylistRepository @Inject constructor(
  * Load episodes for a series on-demand from Xtream API
  * Called when user opens series details page
  */
-suspend fun loadSeriesEpisodes(seriesId: Long): Boolean = withContext(Dispatchers.IO) {
+suspend fun loadSeriesEpisodes(seriesId: Long, forceRefresh: Boolean = false): Boolean = withContext(Dispatchers.IO) {
     val series = seriesDao.getSeriesById(seriesId) ?: run {
         Log.w(TAG, "loadSeriesEpisodes: Series not found for id=$seriesId")
         return@withContext false
@@ -181,11 +181,15 @@ suspend fun loadSeriesEpisodes(seriesId: Long): Boolean = withContext(Dispatcher
         return@withContext false
     }
     
-    // Check if episodes already loaded
+    // Check if episodes already loaded (skip if forceRefresh)
     val existingCount = episodeDao.getCountBySeries(seriesId)
-    if (existingCount > 0) {
-        Log.d(TAG, "Episodes already loaded for series $seriesId ($existingCount episodes)")
+    if (existingCount > 0 && !forceRefresh) {
+        Log.d(TAG, "Episodes already loaded for series $seriesId ($existingCount episodes), skipping")
         return@withContext true
+    }
+    if (forceRefresh && existingCount > 0) {
+        Log.d(TAG, "Force refresh: deleting $existingCount cached episodes for series $seriesId")
+        episodeDao.deleteBySeries(seriesId)
     }
     
     val playlist = playlistDao.getPlaylistById(series.playlistId) ?: run {
@@ -694,11 +698,18 @@ suspend fun loadSeriesEpisodes(seriesId: Long): Boolean = withContext(Dispatcher
             // 4. Batch Execute
             if (seriesToDelete.isNotEmpty()) {
                 Log.d(TAG, "Deleting ${seriesToDelete.size} removed series")
+                // Delete episodes for removed series first
+                seriesToDelete.forEach { episodeDao.deleteBySeries(it.id) }
                 seriesDao.deleteList(seriesToDelete)
             }
             if (seriesToUpdate.isNotEmpty()) {
                 Log.d(TAG, "Updating ${seriesToUpdate.size} existing series")
                 seriesDao.updateList(seriesToUpdate)
+                // Invalidate cached episodes for updated series so they are re-fetched on next open
+                // This is essential: without this, new seasons/episodes are never loaded
+                val updatedSeriesIds = seriesToUpdate.map { it.id }
+                Log.d(TAG, "Invalidating cached episodes for ${updatedSeriesIds.size} updated series")
+                episodeDao.deleteBySeriesIds(updatedSeriesIds)
             }
             if (seriesToInsert.isNotEmpty()) {
                 Log.d(TAG, "Inserting ${seriesToInsert.size} new series")

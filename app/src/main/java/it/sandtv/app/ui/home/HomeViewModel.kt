@@ -1,4 +1,4 @@
-﻿package it.sandtv.app.ui.home
+package it.sandtv.app.ui.home
 
 import android.content.Context
 import androidx.lifecycle.ViewModel
@@ -61,6 +61,7 @@ class HomeViewModel @Inject constructor(
     companion object {
         private const val HERO_CACHE_DURATION = 30 * 60 * 1000L // 30 minutes
         private const val POPULAR_CACHE_DURATION = 15 * 60 * 1000L // 15 minutes
+        private const val CAROUSEL_CACHE_DURATION = 30 * 60 * 1000L // 30 minutes - carousel order stays stable
     }
 
     private val _uiState = MutableStateFlow(HomeScreenState())
@@ -78,6 +79,7 @@ class HomeViewModel @Inject constructor(
     
     // Cache for tab content to avoid reloading when switching tabs
     private val cachedCarouselRows = mutableMapOf<HomeContentType, List<CarouselRow>>()
+    private val cachedCarouselRowsTime = mutableMapOf<HomeContentType, Long>() // timestamp of cache build
     private val cachedHeroItems = mutableMapOf<HomeContentType, Pair<List<HeroItem>, Boolean>>()
     
     // In-memory session cache for "Recently Added" content
@@ -160,14 +162,69 @@ class HomeViewModel @Inject constructor(
     }
     
     /**
-     * Force refresh content after returning from player
-     * Clears cached data and reloads to reflect watch progress updates
+     * Soft refresh: only updates the "Continua a guardare" carousel in-place.
+     * The order of other carousels (Popular, categories) is preserved for 30 minutes.
+     * A full reload only happens if the carousel cache has expired.
      */
     fun forceRefresh() {
-        Log.d("HomeViewModel", "Force refreshing content for $currentContentType")
-        cachedCarouselRows.clear()
-        cachedHeroItems.clear()
-        loadContent(currentContentType)
+        Log.d("HomeViewModel", "Soft refresh for $currentContentType")
+        
+        val cachedRows = cachedCarouselRows[currentContentType]
+        val cacheTime = cachedCarouselRowsTime[currentContentType] ?: 0L
+        val isCacheStillValid = cachedRows != null &&
+            (System.currentTimeMillis() - cacheTime) < CAROUSEL_CACHE_DURATION &&
+            (currentContentType == HomeContentType.MOVIES || currentContentType == HomeContentType.SERIES)
+        
+        if (isCacheStillValid && cachedRows != null) {
+            // Only refresh the "Continua a guardare" row in-place
+            viewModelScope.launch(Dispatchers.IO) {
+                try {
+                    val continueWatchingData = loadContinueWatching() ?: emptyList()
+                    val cwItems = when (currentContentType) {
+                        HomeContentType.MOVIES -> continueWatchingData.filter { it.contentType == ContentType.MOVIE }
+                        HomeContentType.SERIES -> continueWatchingData.filter { it.contentType == ContentType.SERIES }
+                        else -> continueWatchingData
+                    }
+                    
+                    // Replace just the "Continua a guardare" row, keep everything else intact
+                    val updatedRows = cachedRows.toMutableList()
+                    val cwIndex = updatedRows.indexOfFirst { it.title == "Continua a guardare" }
+                    val newCwItems = cwItems.mapNotNull { it.toCarouselItem() }
+                    
+                    when {
+                        cwIndex >= 0 && newCwItems.isNotEmpty() -> {
+                            // Update existing CW row
+                            updatedRows[cwIndex] = updatedRows[cwIndex].copy(items = newCwItems)
+                        }
+                        cwIndex >= 0 && newCwItems.isEmpty() -> {
+                            // Remove CW row if nothing left
+                            updatedRows.removeAt(cwIndex)
+                        }
+                        cwIndex < 0 && newCwItems.isNotEmpty() -> {
+                            // Add CW row at the top if it's new
+                            updatedRows.add(0, CarouselRow(title = "Continua a guardare", items = newCwItems))
+                        }
+                    }
+                    
+                    // Update cache with the patched rows
+                    cachedCarouselRows[currentContentType] = updatedRows
+                    
+                    withContext(Dispatchers.Main) {
+                        _uiState.update { it.copy(carouselRows = updatedRows) }
+                    }
+                    Log.d("HomeViewModel", "Soft refresh done: CW row updated, carousels stable")
+                } catch (e: Exception) {
+                    Log.e("HomeViewModel", "Error in soft refresh", e)
+                }
+            }
+        } else {
+            // Cache expired (> 30 min) or not yet built → full reload
+            Log.d("HomeViewModel", "Carousel cache expired, doing full reload")
+            cachedCarouselRows.remove(currentContentType)
+            cachedCarouselRowsTime.remove(currentContentType)
+            cachedHeroItems.remove(currentContentType)
+            loadContent(currentContentType)
+        }
     }
     
     /**
@@ -320,6 +377,7 @@ class HomeViewModel @Inject constructor(
             // Cache the loaded data for MOVIES and SERIES
             if (contentType == HomeContentType.MOVIES || contentType == HomeContentType.SERIES) {
                 cachedCarouselRows[contentType] = rows.toList()
+                cachedCarouselRowsTime[contentType] = System.currentTimeMillis() // stamp when built
                 if (heroResult != null) {
                     cachedHeroItems[contentType] = heroResult
                 }

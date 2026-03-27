@@ -1327,13 +1327,13 @@ private fun PlayerClockOverlay(modifier: Modifier = Modifier) {
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(8.dp))
-            .background(Color.Black.copy(alpha = 0.5f))
+            .background(Color.Black.copy(alpha = 0.3f))
             .padding(horizontal = 12.dp, vertical = 6.dp)
     ) {
         Text(
             text = currentTime,
             color = Color.White.copy(alpha = 0.9f),
-            style = MaterialTheme.typography.titleMedium,
+            style = MaterialTheme.typography.titleSmall,
             fontWeight = FontWeight.Medium
         )
     }
