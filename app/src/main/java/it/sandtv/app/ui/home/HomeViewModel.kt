@@ -1113,6 +1113,24 @@ class HomeViewModel @Inject constructor(
              }
         }
         
+        // Check for new episode
+        var newEpisodeSeason: Int? = null
+        var newEpisodeNumber: Int? = null
+
+        if (currentSeries.latestEpisodeAddedAt != null &&
+            currentSeries.latestEpisodeSeason != null &&
+            currentSeries.latestEpisodeNumber != null) {
+
+            val episode = episodeDao.getEpisode(currentSeries.id, currentSeries.latestEpisodeSeason!!, currentSeries.latestEpisodeNumber!!)
+            if (episode != null) {
+                val progress = watchProgressDao.getProgress(currentProfileId, ContentType.EPISODE, episode.id)
+                if (progress == null || !progress.isCompleted) {
+                    newEpisodeSeason = currentSeries.latestEpisodeSeason
+                    newEpisodeNumber = currentSeries.latestEpisodeNumber
+                }
+            }
+        }
+
         return HeroItem(
             id = currentSeries.id,
             title = currentSeries.title,
@@ -1140,7 +1158,9 @@ class HomeViewModel @Inject constructor(
             },
             trailerKey = currentSeries.tmdbTrailerKey,
             resumeEpisodeSeason = resumeEpisodeSeason,
-            resumeEpisodeNumber = resumeEpisodeNumber
+            resumeEpisodeNumber = resumeEpisodeNumber,
+            newEpisodeSeason = newEpisodeSeason,
+            newEpisodeNumber = newEpisodeNumber
         )
     }
 
@@ -1689,8 +1709,19 @@ class HomeViewModel @Inject constructor(
                 val movies = movieDao.getByTrendingCategory("Film Popolari")
                 
                 if (movies.isEmpty()) {
-                    // DO NOT fallback to random popular movies which might be unsafe
-                    Log.w("HomeViewModel", "No trending movies found")
+                    Log.w("HomeViewModel", "No trending movies found, triggering TMDB refresh...")
+                    try {
+                        tmdbService.populateTrendingMovies()
+                        val refreshedMovies = movieDao.getByTrendingCategory("Film Popolari")
+                        if (refreshedMovies.isNotEmpty()) {
+                            val result = refreshedMovies.shuffled().take(10)
+                            contentCache.popularMoviesCache = result
+                            contentCache.popularMoviesCacheTime = System.currentTimeMillis()
+                            return@withContext result
+                        }
+                    } catch (e: Exception) {
+                        Log.e("HomeViewModel", "Error re-populating trending movies", e)
+                    }
                     return@withContext emptyList()
                 }
                 
@@ -1727,8 +1758,19 @@ class HomeViewModel @Inject constructor(
                 val series = seriesDao.getByTrendingCategory("Serie Popolari")
                 
                 if (series.isEmpty()) {
-                    // DO NOT fallback to random popular series which might be unsafe
-                    Log.w("HomeViewModel", "No trending series found")
+                    Log.w("HomeViewModel", "No trending series found, triggering TMDB refresh...")
+                    try {
+                        tmdbService.populateTrendingSeries()
+                        val refreshedSeries = seriesDao.getByTrendingCategory("Serie Popolari")
+                        if (refreshedSeries.isNotEmpty()) {
+                            val result = refreshedSeries.shuffled().take(10)
+                            contentCache.popularSeriesCache = result
+                            contentCache.popularSeriesCacheTime = System.currentTimeMillis()
+                            return@withContext result
+                        }
+                    } catch (e: Exception) {
+                        Log.e("HomeViewModel", "Error re-populating trending series", e)
+                    }
                     return@withContext emptyList()
                 }
                 

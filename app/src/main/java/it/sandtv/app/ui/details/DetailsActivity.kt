@@ -94,16 +94,22 @@ class DetailsActivity : ComponentActivity() {
     private fun DetailsContent() {
         // Track if content has been loaded at least once
         var hasLoadedOnce by remember { mutableStateOf(false) }
-        
+
+        // Read resume extras from intent
+        val resumeSeason = intent.getIntExtra("resume_season", -1).takeIf { it != -1 }
+        val resumeEpisode = intent.getIntExtra("resume_episode", -1).takeIf { it != -1 }
+
         // Start with instant state from Intent data
-        var state by remember { 
+        var state by remember {
             mutableStateOf(DetailsState(
                 title = intentTitle,
                 posterUrl = intentPosterUrl,
                 backdropUrl = intentBackdropUrl,
                 contentType = contentType,
-                isLoading = true // true to trigger internal fade animation
-            )) 
+                isLoading = true, // true to trigger internal fade animation
+                resumeEpisodeSeason = resumeSeason,
+                resumeEpisodeNumber = resumeEpisode
+            ))
         }
         
         // Load content on first composition (enriches the instant state)
@@ -360,30 +366,20 @@ class DetailsActivity : ComponentActivity() {
         // Check favorite status
         val isFavorite = favoriteDao.getFavorite(1, ContentType.MOVIE, contentId) != null
         
-        // Initialize state with basic info
-        var overview = ""
-        var cast: String? = null
-        var director: String? = null
-        var genre: String? = null
+        // Use persistent data from DB first (Xtream data we now save)
+        var overview = movie.xtreamPlot ?: ""
+        var cast = movie.xtreamCast
+        var director = movie.xtreamDirector
+        var genre = movie.xtreamGenre
         var duration: String? = null
         
-        // Try to load VOD info from Xtream API (this has plot, cast, director)
-        val xtreamStreamId = movie.xtreamStreamId
-        Log.d(TAG, "Xtream check: xtreamStreamId=$xtreamStreamId, playlistId=${movie.playlistId}")
-        
-        if (xtreamStreamId != null) {
+        // If data is missing and we have Xtream ID, we can still try to fetch it (fallback)
+        if (overview.isEmpty() && movie.xtreamStreamId != null) {
             try {
                 val playlist = playlistDao.getPlaylistById(movie.playlistId)
-                Log.d(TAG, "Playlist: type=${playlist?.type}, username=${playlist?.username}, url=${playlist?.url}")
-                
                 if (playlist?.type == "xtream" && playlist.username != null && playlist.password != null) {
                     val baseUrl = playlist.url.trimEnd('/') + "/"
-                    Log.d(TAG, "Calling Xtream getVodInfo with baseUrl=$baseUrl, vodId=$xtreamStreamId")
-                    
-                    // Use Moshi with KSP-generated adapters
-                    val moshi = com.squareup.moshi.Moshi.Builder()
-                        .build()
-                    
+                    val moshi = com.squareup.moshi.Moshi.Builder().build()
                     val api = Retrofit.Builder()
                         .baseUrl(baseUrl)
                         .client(OkHttpClient.Builder().build())
@@ -391,60 +387,50 @@ class DetailsActivity : ComponentActivity() {
                         .build()
                         .create(XtreamApiService::class.java)
                     
-                    val vodInfo = api.getVodInfo(
-                        username = playlist.username,
-                        password = playlist.password,
-                        vodId = xtreamStreamId
-                    )
-                    
-                    Log.d(TAG, "Xtream VOD info: plot=${vodInfo.info?.plot?.take(50)}, cast=${vodInfo.info?.cast}, director=${vodInfo.info?.director}")
-                    
-                    // Use data from Xtream
+                    val vodInfo = api.getVodInfo(playlist.username, playlist.password, vodId = movie.xtreamStreamId ?: 0)
                     vodInfo.info?.let { info ->
-                        overview = info.plot ?: ""
-                        cast = info.cast
-                        director = info.director
-                        genre = info.genre
+                        overview = info.plot ?: overview
+                        cast = info.cast ?: cast
+                        director = info.director ?: director
+                        genre = info.genre ?: genre
                         duration = info.duration ?: info.durationSecs?.let { "${it / 60} min" }
+                        
+                        // Save it back to DB for next time
+                        movieDao.update(movie.copy(
+                            xtreamPlot = info.plot, xtreamCast = info.cast, xtreamDirector = info.director, xtreamGenre = info.genre
+                        ))
                     }
-                } else {
-                    Log.d(TAG, "Playlist not valid for Xtream: type=${playlist?.type}")
                 }
             } catch (e: Exception) {
                 Log.e(TAG, "Error loading VOD info from Xtream", e)
             }
-        } else {
-            Log.d(TAG, "xtreamStreamId is null, skipping Xtream API")
         }
+
         
-        // Always enrich with TMDB to get the rating and fallback data
+        // Always enrich with TMDB for rating and fallback
         val enrichedMovie = tmdbService.enrichMovieDetails(movie)
         val tmdbRating = enrichedMovie.tmdbVoteAverage
         
-        // Use Xtream data if available, otherwise TMDB
-        if (overview.isEmpty()) {
-            overview = enrichedMovie.tmdbOverview ?: ""
-        }
+        if (overview.isEmpty()) overview = enrichedMovie.tmdbOverview ?: ""
         cast = cast ?: enrichedMovie.tmdbCast
         director = director ?: enrichedMovie.tmdbDirector
         genre = genre ?: enrichedMovie.tmdbGenres
         duration = duration ?: enrichedMovie.tmdbRuntime?.let { "$it min" }
         
         var state = DetailsState(
-            title = movie.name,  // Use original name from playlist (never modified)
+            title = movie.name,
             year = enrichedMovie.year?.toString() ?: "",
             overview = overview,
             genres = genre ?: "",
             duration = duration,
             director = director,
             cast = cast,
-            posterUrl = movie.logoUrl ?: enrichedMovie.posterUrl,  // Playlist poster first, TMDB fallback
-            backdropUrl = enrichedMovie.backdropUrl ?: movie.backdropUrl,  // TMDB backdrop first (better quality)
+            posterUrl = movie.logoUrl ?: enrichedMovie.posterUrl,
+            backdropUrl = movie.backdropUrl ?: enrichedMovie.backdropUrl,
             contentType = ContentType.MOVIE,
             isFavorite = isFavorite,
             isLoading = false,
             tmdbRating = tmdbRating,
-            // Use cached OMDB ratings immediately for instant display
             imdbRating = enrichedMovie.omdbImdbRating,
             rottenTomatoesScore = enrichedMovie.omdbRottenTomatoesScore,
             metacriticScore = enrichedMovie.omdbMetacriticScore,
@@ -677,9 +663,9 @@ class DetailsActivity : ComponentActivity() {
         var state = DetailsState(
             title = series.name,
             year = series.year?.toString() ?: "",
-            overview = series.tmdbOverview ?: series.plot ?: "",
-            genres = series.tmdbGenres ?: series.genre ?: "",
-            cast = series.tmdbCast,
+            overview = series.xtreamPlot ?: series.tmdbOverview ?: "",
+            genres = series.xtreamGenre ?: series.tmdbGenres ?: "",
+            cast = series.xtreamCast,
             posterUrl = series.posterUrl,
             backdropUrl = series.backdropUrl,
             contentType = ContentType.SERIES,
@@ -705,6 +691,7 @@ class DetailsActivity : ComponentActivity() {
             audienceScore = series.omdbAudienceScore,
             trailerKey = series.tmdbTrailerKey
         )
+
         
         onStateUpdate(state)
         
@@ -1000,7 +987,7 @@ class DetailsActivity : ComponentActivity() {
         }
     }
 
-        @Inject lateinit var trailerManager: it.sandtv.app.util.TrailerManager
+    @Inject lateinit var trailerManager: it.sandtv.app.util.TrailerManager
     
     private fun playTrailer(trailerKey: String) {
         lifecycleScope.launch {

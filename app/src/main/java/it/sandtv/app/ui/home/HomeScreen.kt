@@ -88,7 +88,9 @@ data class HeroItem(
     val isFavorite: Boolean = false,
     val trailerKey: String? = null,
     val resumeEpisodeSeason: Int? = null,  // Season number for resume (series only)
-    val resumeEpisodeNumber: Int? = null   // Episode number for resume (series only)
+    val resumeEpisodeNumber: Int? = null,  // Episode number for resume (series only)
+    val newEpisodeSeason: Int? = null,     // Season number for new episode (series only)
+    val newEpisodeNumber: Int? = null      // Episode number for new episode (series only)
 )
 
 /**

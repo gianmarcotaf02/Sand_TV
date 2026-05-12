@@ -524,57 +524,9 @@ private fun TvHomeScreenContent(
                 )
             }
         } else if (state.carouselRows.isEmpty() && state.heroItems.isEmpty()) {
-            android.util.Log.d("TvHomeScreenDebug", "BRANCH: Generic empty state (waiting 10s)")
-            // Generic Empty State (for Movies/Series when no content found)
-            // Show only after a delay to avoid flash during normal loading
-            var showEmptyState by remember { mutableStateOf(false) }
-            
-            LaunchedEffect(Unit) {
-                delay(10000) // Wait 10 seconds before showing empty state
-                showEmptyState = true
-            }
-            
-            if (showEmptyState) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(brush = SandTVColors.BackgroundGradient),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Info,
-                            contentDescription = null,
-                            tint = SandTVColors.TextTertiary,
-                            modifier = Modifier.size(80.dp)
-                        )
-                        
-                        Spacer(modifier = Modifier.height(24.dp))
-                        
-                        Text(
-                            text = "Nessun contenuto trovato",
-                            style = MaterialTheme.typography.headlineSmall,
-                            color = SandTVColors.TextPrimary,
-                            fontWeight = FontWeight.Bold
-                        )
-                        
-                        Spacer(modifier = Modifier.height(8.dp))
-                        
-                        Text(
-                            text = "Potrebbe esserci un errore di caricamento o il database è vuoto",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = SandTVColors.TextSecondary,
-                            textAlign = androidx.compose.ui.text.style.TextAlign.Center
-                        )
-                    }
-                }
-            } else {
-                // Show loading indicator while waiting
-                SkeletonLoader()
-            }
+            android.util.Log.d("TvHomeScreenDebug", "BRANCH: Content loading in background, showing skeleton")
+            // Content is loading in background - show skeleton loading
+            SkeletonLoader()
         } else {
             android.util.Log.d("TvHomeScreenDebug", "BRANCH: Normal carousel mode")
             // Carousel mode - hero is first item in TvLazyColumn
@@ -962,6 +914,21 @@ fun HeroBanner(
                     verticalArrangement = Arrangement.Bottom  // Put content at bottom
                 ) {
                         // Title
+                        if (hero.newEpisodeSeason != null && hero.newEpisodeNumber != null) {
+                            Box(
+                                modifier = Modifier
+                                    .padding(bottom = 8.dp)
+                                    .background(SandTVColors.Accent, RoundedCornerShape(4.dp))
+                                    .padding(horizontal = 8.dp, vertical = 4.dp)
+                            ) {
+                                Text(
+                                    text = "Nuovo episodio S${hero.newEpisodeSeason} E${hero.newEpisodeNumber}",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = Color.White,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+                        }
                         Text(
                             text = hero.title,
                             style = MaterialTheme.typography.headlineLarge,
@@ -1245,6 +1212,8 @@ fun HeroBanner(
                                         "S${hero.resumeEpisodeSeason} E${hero.resumeEpisodeNumber} - "
                                     } else ""
                                     "${episodeInfo}Riprendi"
+                                } else if (hero.newEpisodeSeason != null && hero.newEpisodeNumber != null) {
+                                    "Nuovo episodio S${hero.newEpisodeSeason} E${hero.newEpisodeNumber}"
                                 } else if (hero.resumeEpisodeSeason != null && hero.resumeEpisodeNumber != null) {
                                     "Riproduci S${hero.resumeEpisodeSeason} E${hero.resumeEpisodeNumber}"
                                 } else {
@@ -1261,13 +1230,18 @@ fun HeroBanner(
                             
                             // Text: "xx min rimasti di yy min" - Same level as buttons
                             if (hasProgress && hero.resumeMinutes != null && hero.totalDurationMinutes != null) {
-                                Text(
-                                    text = "${hero.resumeMinutes} min rimasti di ${hero.totalDurationMinutes} min",
-                                    style = MaterialTheme.typography.labelMedium,
-                                    color = SandTVColors.TextSecondary,
-                                    fontWeight = FontWeight.Medium
-                                )
-                                Spacer(modifier = Modifier.width(8.dp)) // Gap before icon buttons
+                            // Format minutes → "2h 7min" when >= 60, otherwise "X min"
+                            fun formatMins(m: Int): String = if (m >= 60) {
+                                val h = m / 60; val rem = m % 60
+                                if (rem > 0) "${h}h ${rem}min" else "${h}h"
+                            } else "$m min"
+                            Text(
+                                text = "${formatMins(hero.resumeMinutes!!)} rimasti di ${formatMins(hero.totalDurationMinutes!!)}",
+                                style = MaterialTheme.typography.labelMedium,
+                                color = SandTVColors.TextSecondary,
+                                fontWeight = FontWeight.Medium
+                            )
+                            Spacer(modifier = Modifier.width(8.dp)) // Gap before icon buttons
                             }
                             
                             // Trailer button (only if key exists)

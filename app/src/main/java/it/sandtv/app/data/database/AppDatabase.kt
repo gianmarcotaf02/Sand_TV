@@ -29,7 +29,7 @@ import it.sandtv.app.data.database.entity.*
         TeamChannelMap::class,
         DownloadedContent::class
     ],
-    version = 13,
+    version = 15,
     exportSchema = true
 )
 @TypeConverters(Converters::class)

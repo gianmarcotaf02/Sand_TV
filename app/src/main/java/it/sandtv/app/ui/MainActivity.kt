@@ -285,11 +285,12 @@ private fun MainActivityScreen(
         MainActivity.topBarView = rootView
     }
     
-    // Register callback for long press back to focus search
+    // Register callback for long press back to open SearchActivity directly
     LaunchedEffect(Unit) {
         MainActivity.onLongPressBackToSearch = {
             try {
-                searchButtonFocusRequester.requestFocus()
+                val intent = Intent(context, SearchActivity::class.java)
+                context.startActivity(intent)
             } catch (e: Exception) {
                 // Ignore focus errors
             }

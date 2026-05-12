@@ -150,6 +150,42 @@ object DatabaseModule {
         }
     }
     
+    /**
+     * Migration from version 13 to 14:
+     * - Add latestEpisodeAddedAt, latestEpisodeSeason, latestEpisodeNumber columns to series table
+     *   (for tracking new episodes in Hero banner)
+     */
+    private val MIGRATION_13_14 = object : Migration(13, 14) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            db.execSQL("ALTER TABLE series ADD COLUMN latestEpisodeAddedAt INTEGER DEFAULT NULL")
+            db.execSQL("ALTER TABLE series ADD COLUMN latestEpisodeSeason INTEGER DEFAULT NULL")
+            db.execSQL("ALTER TABLE series ADD COLUMN latestEpisodeNumber INTEGER DEFAULT NULL")
+        }
+    }
+    
+    /**
+     * Migration from version 14 to 15:
+     * - Add Xtream detail columns to movies table (xtreamPlot, xtreamBackdropUrl, xtreamCast, xtreamDirector, xtreamGenre)
+     * - Add Xtream detail columns to series table (xtreamPlot, xtreamBackdropUrl, xtreamCast, xtreamDirector, xtreamGenre)
+     */
+    private val MIGRATION_14_15 = object : Migration(14, 15) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            // Movies: add Xtream detail columns
+            db.execSQL("ALTER TABLE movies ADD COLUMN xtreamPlot TEXT DEFAULT NULL")
+            db.execSQL("ALTER TABLE movies ADD COLUMN xtreamBackdropUrl TEXT DEFAULT NULL")
+            db.execSQL("ALTER TABLE movies ADD COLUMN xtreamCast TEXT DEFAULT NULL")
+            db.execSQL("ALTER TABLE movies ADD COLUMN xtreamDirector TEXT DEFAULT NULL")
+            db.execSQL("ALTER TABLE movies ADD COLUMN xtreamGenre TEXT DEFAULT NULL")
+            
+            // Series: add Xtream detail columns
+            db.execSQL("ALTER TABLE series ADD COLUMN xtreamPlot TEXT DEFAULT NULL")
+            db.execSQL("ALTER TABLE series ADD COLUMN xtreamBackdropUrl TEXT DEFAULT NULL")
+            db.execSQL("ALTER TABLE series ADD COLUMN xtreamCast TEXT DEFAULT NULL")
+            db.execSQL("ALTER TABLE series ADD COLUMN xtreamDirector TEXT DEFAULT NULL")
+            db.execSQL("ALTER TABLE series ADD COLUMN xtreamGenre TEXT DEFAULT NULL")
+        }
+    }
+    
     @Provides
     @Singleton
     fun provideAppDatabase(
@@ -160,8 +196,7 @@ object DatabaseModule {
             AppDatabase::class.java,
             AppDatabase.DATABASE_NAME
         )
-            .addMigrations(MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11, MIGRATION_11_12, MIGRATION_12_13)
-            .fallbackToDestructiveMigration()
+            .addMigrations(MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11, MIGRATION_11_12, MIGRATION_12_13, MIGRATION_13_14, MIGRATION_14_15)
             .build()
     }
     

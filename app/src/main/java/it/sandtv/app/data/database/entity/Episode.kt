@@ -36,6 +36,8 @@ data class Episode(
     
     // Xtream specific
     val xtreamEpisodeId: Int? = null,
+    val plot: String? = null,
+    val thumbnailUrl: String? = null,
     val containerExtension: String? = null,
     
     // TMDB enriched data

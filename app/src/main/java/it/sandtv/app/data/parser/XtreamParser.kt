@@ -85,6 +85,9 @@ class XtreamParser @Inject constructor() {
                     ?: obj.optString("movie_image", "").takeIf { it.isNotEmpty() }
                     ?: obj.optString("icon", "").takeIf { it.isNotEmpty() }
                 
+                val backdropUrl = obj.optString("backdrop", "").takeIf { it.isNotEmpty() }
+                    ?: obj.optString("cover_big", "").takeIf { it.isNotEmpty() }
+                
                 // Parse added timestamp (can be string or long)
                 val addedTimestamp = obj.optLong("added", 0).takeIf { it != 0L }
                     ?: obj.optString("added", "").toLongOrNull()
@@ -93,6 +96,7 @@ class XtreamParser @Inject constructor() {
                     id = obj.optInt("stream_id", 0),
                     name = obj.optString("name", ""),
                     poster = posterUrl,
+                    backdrop = backdropUrl,
                     categoryId = obj.optString("category_id", "").takeIf { it.isNotEmpty() },
                     extension = obj.optString("container_extension", "").takeIf { it.isNotEmpty() },
                     rating = obj.optString("rating", "").takeIf { it.isNotEmpty() },
@@ -124,6 +128,9 @@ class XtreamParser @Inject constructor() {
                     ?: obj.optString("stream_icon", "").takeIf { it.isNotEmpty() }
                     ?: obj.optString("cover_big", "").takeIf { it.isNotEmpty() }
                 
+                val backdropUrl = obj.optString("backdrop", "").takeIf { it.isNotEmpty() }
+                    ?: obj.optString("cover_big", "").takeIf { it.isNotEmpty() }
+                
                 // Parse added timestamp (can be string or long)
                 val addedTimestamp = obj.optLong("added", 0).takeIf { it != 0L }
                     ?: obj.optString("added", "").toLongOrNull()
@@ -132,6 +139,7 @@ class XtreamParser @Inject constructor() {
                     id = obj.optInt("series_id", 0),
                     name = obj.optString("name", ""),
                     poster = posterUrl,
+                    backdrop = backdropUrl,
                     categoryId = obj.optString("category_id", "").takeIf { it.isNotEmpty() },
                     rating = obj.optString("rating", "").takeIf { it.isNotEmpty() },
                     year = obj.optString("year", "").takeIf { it.isNotEmpty() },
@@ -237,6 +245,7 @@ data class XtreamVod(
     val id: Int,
     val name: String,
     val poster: String?,
+    val backdrop: String? = null,
     val categoryId: String?,
     val extension: String?,
     val rating: String?,
@@ -248,6 +257,7 @@ data class XtreamSeries(
     val id: Int,
     val name: String,
     val poster: String?,
+    val backdrop: String? = null,
     val categoryId: String?,
     val rating: String?,
     val year: String?,

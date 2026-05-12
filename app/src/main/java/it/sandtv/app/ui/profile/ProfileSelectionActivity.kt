@@ -32,21 +32,33 @@ class ProfileSelectionActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         android.util.Log.d("SandTVDebug", "ProfileSelectionActivity onCreate STARTED")
-        
+
         setContent {
             SandTVTheme {
-                // Show splash on first launch, then profile selection
                 var showSplash by remember { mutableStateOf(true) }
-                
+                // Profiles are loaded once during splash; passed directly to avoid a second IO call
+                var loadedProfiles by remember { mutableStateOf<List<Profile>>(emptyList()) }
+                var loadedLastProfileId by remember { mutableStateOf<Long?>(null) }
+
                 if (showSplash) {
                     SplashScreen(
-                        onComplete = { 
-                            android.util.Log.d("SandTVDebug", "Splash complete, showing content")
-                            showSplash = false 
+                        onComplete = {
+                            android.util.Log.d("SandTVDebug", "Splash complete - checking auto-start")
+                            // Navigation happens here, AFTER the window is already visible & focused.
+                            // Calling startActivity before the window has focus causes an ANR.
+                            checkAutoStartAndLoadProfiles { profiles, lastId ->
+                                android.util.Log.d("SandTVDebug", "No auto-start, profiles=${profiles.size}")
+                                loadedProfiles = profiles
+                                loadedLastProfileId = lastId
+                                showSplash = false
+                            }
                         }
                     )
                 } else {
-                    ProfileSelectionContent()
+                    ProfileSelectionContent(
+                        initialProfiles = loadedProfiles,
+                        initialLastProfileId = loadedLastProfileId
+                    )
                 }
             }
         }
@@ -58,25 +70,18 @@ class ProfileSelectionActivity : ComponentActivity() {
     }
     
     @Composable
-    private fun ProfileSelectionContent() {
-        // State
-        var profiles by remember { mutableStateOf<List<Profile>>(emptyList()) }
-        var lastUsedProfileId by remember { mutableStateOf<Long?>(null) }
+    private fun ProfileSelectionContent(
+        initialProfiles: List<Profile>,
+        initialLastProfileId: Long?
+    ) {
+        // Profiles are pre-loaded during splash; no extra IO call needed here
+        var profiles by remember { mutableStateOf(initialProfiles) }
+        var lastUsedProfileId by remember { mutableStateOf(initialLastProfileId) }
         var showAddDialog by remember { mutableStateOf(false) }
         var showEditDialog by remember { mutableStateOf(false) }
         var showDeleteDialog by remember { mutableStateOf(false) }
         var showOptionsDialog by remember { mutableStateOf(false) }
         var selectedProfile by remember { mutableStateOf<Profile?>(null) }
-        
-        // Load profiles on first composition
-        LaunchedEffect(Unit) {
-            android.util.Log.d("SandTVDebug", "ProfileSelectionActivity LaunchedEffect STARTED")
-            checkAutoStartAndLoadProfiles { loadedProfiles, lastId ->
-                android.util.Log.d("SandTVDebug", "Profiles loaded: ${loadedProfiles.size}, LastId: $lastId")
-                profiles = loadedProfiles
-                lastUsedProfileId = lastId
-            }
-        }
         
         // Main Screen
         ProfileSelectionScreen(

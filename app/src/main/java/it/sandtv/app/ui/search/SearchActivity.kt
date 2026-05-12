@@ -198,9 +198,79 @@ class SearchActivity : ComponentActivity() {
     private suspend fun performSearch(query: String): List<SearchResultItem> {
         val results = mutableListOf<SearchResultItem>()
         val profileId = userPreferences.getCurrentProfileId() ?: 1L
+
+        // Helper: true = il contenuto è da ESCLUDERE dalla ricerca
+        // Blocca contenuti XXX/adulti e contenuti di altri paesi (non italiani)
+        fun isBlockedContent(name: String, category: String?): Boolean {
+            val nameLower = name.lowercase().trim()
+            val catLower = category?.lowercase()?.trim() ?: ""
+
+            // 1. Blocca contenuti XXX/adulti (nome o categoria)
+            val adultKeywords = listOf("xxx", "18+", "adult", "porno", "erotic", "porn")
+            if (adultKeywords.any { nameLower.contains(it) || catLower.contains(it) }) return true
+
+            // 2. Prefissi di paese all'inizio del nome (pattern IPTV: "XX - ...", "XX: ...", "XX TOP - ...")
+            // Codici paese da bloccare (tutto tranne IT)
+            val blockedCountryCodes = listOf(
+                "de", "uk", "fr", "al", "es", "pt", "tr", "ro", "nl", "pl",
+                "gr", "ar", "ru", "bg", "hr", "rs", "cz", "sk", "hu", "se",
+                "no", "dk", "fi", "be", "ch", "at", "us", "ca", "br", "mx",
+                "in", "pk", "bd", "ph", "th", "vn", "id", "my", "kr", "jp",
+                "cn", "tw", "hk", "il", "eg", "ma", "dz", "tn", "sa", "ae",
+                "qa", "kw", "ir", "iq", "af", "ex-yu", "ex yu"
+            )
+            for (code in blockedCountryCodes) {
+                // "DE - ...", "DE: ...", "DE| ...", "DE TOP ...", "DE top ...", "(DE) ..."
+                if (nameLower.startsWith("$code ") ||
+                    nameLower.startsWith("$code-") ||
+                    nameLower.startsWith("$code:") ||
+                    nameLower.startsWith("$code|") ||
+                    nameLower.startsWith("($code)") ||
+                    nameLower.startsWith("[$code]")) return true
+                // Stessi pattern nella categoria
+                if (catLower.startsWith("$code ") ||
+                    catLower.startsWith("$code-") ||
+                    catLower.startsWith("$code:") ||
+                    catLower.startsWith("$code|") ||
+                    catLower.startsWith("($code)") ||
+                    catLower.startsWith("[$code]")) return true
+            }
+
+            // 3. Keyword di lingua/paese nel nome o nella categoria
+            val blockedLangKeywords = listOf(
+                "deutsch", "german", "germany", "germania",
+                "french", "france", "francia",
+                "spanish", "spain", "españa",
+                "portuguese", "portugal",
+                "turkish", "turkey", "turchia",
+                "albanian", "albania",
+                "arabic", "arab",
+                "polish", "poland", "polonia",
+                "romanian", "romania",
+                "russian", "russia",
+                "greek", "greece", "grecia",
+                "bulgarian", "bulgaria",
+                "croatian", "croatia", "croazia",
+                "serbian", "serbia",
+                "hungarian", "hungary",
+                "dutch", "netherlands", "olanda",
+                "swedish", "sweden", "svezia",
+                "norwegian", "norway", "norvegia",
+                "danish", "denmark", "danimarca",
+                "finnish", "finland", "finlandia"
+            )
+            if (blockedLangKeywords.any { nameLower.contains(it) || catLower.contains(it) }) return true
+
+            // 4. Pattern "| XX" o "| XX |" nel nome (es. "Film | DE", "Serie | FR |")
+            val pipePattern = Regex("\\|\\s*(${blockedCountryCodes.joinToString("|")})\\s*(\\||$)")
+            if (pipePattern.containsMatchIn(nameLower) || pipePattern.containsMatchIn(catLower)) return true
+
+            return false
+        }
         
         // Search movies
         val movies = movieDao.searchMovies(query)
+            .filter { !isBlockedContent(it.name, it.category) }
         results.addAll(movies.map { movie ->
             SearchResultItem(
                 id = movie.id,
@@ -212,9 +282,10 @@ class SearchActivity : ComponentActivity() {
                 isFavorite = favoriteDao.isFavorite(profileId, ContentType.MOVIE, movie.id)
             )
         })
-        
+
         // Search series
         val series = seriesDao.searchSeries(query)
+            .filter { !isBlockedContent(it.name, it.category) }
         results.addAll(series.map { s ->
             SearchResultItem(
                 id = s.id,
@@ -226,9 +297,10 @@ class SearchActivity : ComponentActivity() {
                 isFavorite = favoriteDao.isFavorite(profileId, ContentType.SERIES, s.id)
             )
         })
-        
+
         // Search channels
         val channels = channelDao.searchChannels(query)
+            .filter { !isBlockedContent(it.name, it.categoryName) }
         results.addAll(channels.map { channel ->
             SearchResultItem(
                 id = channel.id,
@@ -243,7 +315,8 @@ class SearchActivity : ComponentActivity() {
         
         // Search categories (movies)
         val movieCategories = movieDao.getCategoriesList().filter { cat ->
-            cat.contains(query, ignoreCase = true)
+            cat.contains(query, ignoreCase = true) &&
+            !isBlockedContent(cat, cat)  // Escludi categorie XXX/straniere
         }.take(5)
         results.addAll(0, movieCategories.map { category ->
             SearchResultItem(
@@ -257,10 +330,11 @@ class SearchActivity : ComponentActivity() {
                 categoryType = "movies"
             )
         })
-        
+
         // Search categories (series)
         val seriesCategories = seriesDao.getCategoriesList().filter { cat ->
-            cat.contains(query, ignoreCase = true)
+            cat.contains(query, ignoreCase = true) &&
+            !isBlockedContent(cat, cat)  // Escludi categorie XXX/straniere
         }.take(5)
         results.addAll(movieCategories.size, seriesCategories.map { category ->
             SearchResultItem(
@@ -274,10 +348,11 @@ class SearchActivity : ComponentActivity() {
                 categoryType = "series"
             )
         })
-        
+
         // Search categories (live)
         val liveCategories = channelDao.getCategoriesList().filter { cat ->
-            cat.contains(query, ignoreCase = true)
+            cat.contains(query, ignoreCase = true) &&
+            !isBlockedContent(cat, cat)  // Escludi categorie XXX/straniere
         }.take(5)
         results.addAll(movieCategories.size + seriesCategories.size, liveCategories.map { category ->
             SearchResultItem(

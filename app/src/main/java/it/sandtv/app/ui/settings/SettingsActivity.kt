@@ -653,6 +653,51 @@ private fun PlaylistSettings(
             
             Spacer(modifier = Modifier.height(16.dp))
             
+            // Refresh all playlists button - always visible right after settings
+            if (playlists.isNotEmpty()) {
+                Button(
+                    onClick = {
+                        if (!isRefreshing) {
+                            isRefreshing = true
+                            refreshingPlaylistId = -1L // -1 means all
+                            refreshError = null
+                            coroutineScope.launch {
+                                try {
+                                    playlists.forEach { playlist ->
+                                        refreshingPlaylistId = playlist.id
+                                        playlistRepository.refreshPlaylist(playlist.id)
+                                    }
+                                    showRestartDialog = true
+                                } catch (e: Exception) {
+                                    android.util.Log.e("PlaylistSettings", "Refresh all failed", e)
+                                    refreshError = e.message ?: "Errore sconosciuto"
+                                } finally {
+                                    isRefreshing = false
+                                    refreshingPlaylistId = null
+                                }
+                            }
+                        }
+                    },
+                    enabled = !isRefreshing,
+                    colors = ButtonDefaults.buttonColors(containerColor = SandTVColors.Accent),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    if (isRefreshing) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(20.dp),
+                            color = Color.White,
+                            strokeWidth = 2.dp
+                        )
+                    } else {
+                        Icon(Icons.Default.Refresh, contentDescription = null, modifier = Modifier.size(20.dp))
+                    }
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(if (isRefreshing) "Aggiornamento in corso..." else "Aggiorna tutte le playlist")
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+            
             // Add new playlist button
             Button(
                 onClick = { showAddDialog = true },
@@ -699,121 +744,6 @@ private fun PlaylistSettings(
                             }
                         }
                     )
-                    
-                    // Show modern loading indicator when refreshing this playlist
-                    if (isRefreshing && refreshingPlaylistId == playlist.id) {
-                        val infiniteTransition = rememberInfiniteTransition(label = "refreshProgress")
-                        val shimmerOffset by infiniteTransition.animateFloat(
-                            initialValue = 0f,
-                            targetValue = 1f,
-                            animationSpec = infiniteRepeatable(
-                                animation = tween(1500, easing = LinearEasing),
-                                repeatMode = RepeatMode.Restart
-                            ),
-                            label = "shimmer"
-                        )
-                        
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 16.dp, vertical = 12.dp)
-                        ) {
-                            // Text with animated emoji
-                            Row(
-                                horizontalArrangement = Arrangement.Center,
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier.fillMaxWidth()
-                            ) {
-                                // Professional loading indicator
-                                CircularProgressIndicator(
-                                    modifier = Modifier.size(16.dp),
-                                    color = SandTVColors.Accent,
-                                    strokeWidth = 2.dp
-                                )
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Text(
-                                    "Aggiornamento in corso...",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = SandTVColors.TextSecondary,
-                                    fontWeight = FontWeight.Medium
-                                )
-                            }
-                            
-                            Spacer(modifier = Modifier.height(12.dp))
-                            
-                            // Modern progress bar with shimmer effect
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(6.dp)
-                                    .clip(RoundedCornerShape(3.dp))
-                                    .background(SandTVColors.BackgroundTertiary)
-                            ) {
-                                // Animated shimmer bar
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxHeight()
-                                        .fillMaxWidth(0.35f)
-                                        .offset(x = (shimmerOffset * 280).dp)
-                                        .clip(RoundedCornerShape(3.dp))
-                                        .background(
-                                            Brush.horizontalGradient(
-                                                colors = listOf(
-                                                    SandTVColors.Accent.copy(alpha = 0.3f),
-                                                    SandTVColors.Accent,
-                                                    SandTVColors.Accent.copy(alpha = 0.3f)
-                                                )
-                                            )
-                                        )
-                                )
-                            }
-                        }
-                    }
-                }
-            }
-            
-            // Refresh all playlists button (only if playlists exist)
-            if (playlists.isNotEmpty()) {
-                Spacer(modifier = Modifier.height(16.dp))
-                
-                Button(
-                    onClick = {
-                        if (!isRefreshing) {
-                            isRefreshing = true
-                            refreshingPlaylistId = -1L // -1 means all
-                            refreshError = null
-                            coroutineScope.launch {
-                                try {
-                                    playlists.forEach { playlist ->
-                                        refreshingPlaylistId = playlist.id
-                                        playlistRepository.refreshPlaylist(playlist.id)
-                                    }
-                                    showRestartDialog = true
-                                } catch (e: Exception) {
-                                    android.util.Log.e("PlaylistSettings", "Refresh all failed", e)
-                                    refreshError = e.message ?: "Errore sconosciuto"
-                                } finally {
-                                    isRefreshing = false
-                                    refreshingPlaylistId = null
-                                }
-                            }
-                        }
-                    },
-                    enabled = !isRefreshing,
-                    colors = ButtonDefaults.buttonColors(containerColor = SandTVColors.Accent),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    if (isRefreshing) {
-                        CircularProgressIndicator(
-                            modifier = Modifier.size(20.dp),
-                            color = Color.White,
-                            strokeWidth = 2.dp
-                        )
-                    } else {
-                        Icon(Icons.Default.Refresh, contentDescription = null, modifier = Modifier.size(20.dp))
-                    }
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(if (isRefreshing) "Aggiornamento in corso..." else "Aggiorna tutte le playlist")
                 }
             }
             

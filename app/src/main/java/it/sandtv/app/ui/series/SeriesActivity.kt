@@ -176,6 +176,9 @@ class SeriesActivity : ComponentActivity() {
                         putExtra("title", item.title)
                         putExtra("poster_url", item.posterUrl)
                         putExtra("backdrop_url", item.backdropUrl)
+                        // Pass resume season and episode for auto-selection
+                        item.seasonNumber?.let { putExtra("resume_season", it) }
+                        item.episodeNumber?.let { putExtra("resume_episode", it) }
                     }
                     startActivity(intent)
                 }

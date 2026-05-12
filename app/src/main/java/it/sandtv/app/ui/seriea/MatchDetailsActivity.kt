@@ -928,7 +928,16 @@ fun translateStatName(name: String): String {
 fun MatchLiveTab(viewModel: MatchDetailsViewModel) {
     val allChannels by viewModel.liveChannels.collectAsState()
     val channels = remember(allChannels) {
-        allChannels.filter { it.category?.contains("DAZN", ignoreCase = true) == true }
+        allChannels.filter { channel ->
+            // Includi solo canali con categoria DAZN
+            channel.category?.contains("DAZN", ignoreCase = true) == true &&
+            // Escludi canali tedeschi (nome o categoria)
+            !channel.name.contains("Germania", ignoreCase = true) &&
+            !channel.name.contains("Germany", ignoreCase = true) &&
+            !channel.name.contains("Deutsch", ignoreCase = true) &&
+            !(channel.category?.contains("Germania", ignoreCase = true) == true) &&
+            !(channel.category?.contains("Germany", ignoreCase = true) == true)
+        }
     }
     val context = androidx.compose.ui.platform.LocalContext.current
     

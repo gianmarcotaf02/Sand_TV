@@ -29,6 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.zIndex
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
@@ -152,13 +153,21 @@ fun DetailsScreen(
     
     // Lazy list state for auto-scroll to current/next episode
     val listState = remember { androidx.tv.foundation.lazy.list.TvLazyListState() }
-    
+    val targetEpisodeFocusRequester = remember { FocusRequester() }
+
     // Auto-scroll to target episode when entering detail view
     LaunchedEffect(state.scrollToEpisodeIndex, state.selectedSeason) {
         val targetIndex = state.scrollToEpisodeIndex
         if (targetIndex != null && targetIndex >= 0) {
             // +2 offset: item 0 = top content block, item 1 = season header
             listState.animateScrollToItem(targetIndex + 2)
+            // After scroll completes, move focus to the target episode
+            kotlinx.coroutines.delay(400)
+            try {
+                targetEpisodeFocusRequester.requestFocus()
+            } catch (e: Exception) {
+                // Ignore if focus request fails (composable not yet laid out)
+            }
         }
     }
     
@@ -262,6 +271,7 @@ fun DetailsScreen(
         // The whole page scrolls when navigating with D-pad
         androidx.tv.foundation.lazy.list.TvLazyColumn(
             state = listState,
+            contentPadding = androidx.compose.foundation.layout.PaddingValues(top = 24.dp),
             modifier = Modifier
                 .fillMaxHeight()
                 .fillMaxWidth(0.75f)  // Use left 75% of screen for content (increased to fit all buttons)
@@ -271,8 +281,7 @@ fun DetailsScreen(
             item {
             // Top bar - always visible
             DetailsTopBar(
-                onBackClick = onBackClick,
-                modifier = Modifier.padding(top = 8.dp)
+                onBackClick = onBackClick
             )
             
             Spacer(modifier = Modifier.height(16.dp))
@@ -372,7 +381,7 @@ fun DetailsScreen(
                     
                     // Action buttons
                     Row(
-                        modifier = Modifier.padding(start = 6.dp),
+                        modifier = Modifier.padding(start = 14.dp),
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
@@ -493,7 +502,7 @@ fun DetailsScreen(
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
                             text = remainingText,
-                            style = MaterialTheme.typography.bodySmall,
+                            style = MaterialTheme.typography.bodyMedium,
                             color = SandTVColors.TextTertiary
                         )
                     }
@@ -603,11 +612,12 @@ fun DetailsScreen(
                         seasons = state.seasons,
                         selectedSeason = state.selectedSeason,
                         onSeasonSelected = onSeasonSelected,
-                        onDownloadSeason = onDownloadSeason
+                        onDownloadSeason = onDownloadSeason,
+                        firstEpisodeFocusRequester = targetEpisodeFocusRequester
                     )
                     Spacer(modifier = Modifier.height(20.dp))
                 }
-                
+
                 // Each episode as an individual lazy item for proper D-pad scrolling
                 items(state.episodes.size, key = { state.episodes[it].id }) { index ->
                     val episode = state.episodes[index]
@@ -619,7 +629,10 @@ fun DetailsScreen(
                         downloadState = downloadState,
                         seriesName = state.title,
                         onClick = { onEpisodeClick(episode) },
-                        onDownloadClick = { onDownloadEpisode(episode) }
+                        onDownloadClick = { onDownloadEpisode(episode) },
+                        modifier = Modifier.then(
+                            if (index == (state.scrollToEpisodeIndex ?: 0)) Modifier.focusRequester(targetEpisodeFocusRequester) else Modifier
+                        )
                     )
                     Spacer(modifier = Modifier.height(12.dp))
                 }
@@ -857,7 +870,7 @@ private fun PlayButton(
     Box(
         modifier = Modifier
             .scale(scale)
-            .widthIn(max = 220.dp)  // Limit width so other buttons can fit
+            .widthIn(min = 100.dp, max = 160.dp)  // Narrower: no icon buttons squishing
             .height(52.dp)
             .border(3.dp, borderColor, RoundedCornerShape(12.dp))
             .clip(RoundedCornerShape(12.dp))
@@ -1209,19 +1222,26 @@ private fun EpisodesSectionHeader(
     seasons: List<Int>,
     selectedSeason: Int,
     onSeasonSelected: (Int) -> Unit,
-    onDownloadSeason: (Int) -> Unit = {}
+    onDownloadSeason: (Int) -> Unit = {},
+    firstEpisodeFocusRequester: FocusRequester? = null
 ) {
     var dropdownExpanded by remember { mutableStateOf(false) }
     val interactionSource = remember { MutableInteractionSource() }
     val isFocused by interactionSource.collectIsFocusedAsState()
-    
+
     // Season download button focus state
     val seasonDownloadInteractionSource = remember { MutableInteractionSource() }
     val isSeasonDownloadFocused by seasonDownloadInteractionSource.collectIsFocusedAsState()
-    
+
     // Section title + download button + Season dropdown
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .then(
+                if (firstEpisodeFocusRequester != null) {
+                    Modifier.focusProperties { down = firstEpisodeFocusRequester }
+                } else Modifier
+            ),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -1392,7 +1412,8 @@ private fun EpisodeCard(
     downloadState: EpisodeDownloadState? = null,
     seriesName: String? = null,
     onClick: () -> Unit,
-    onDownloadClick: () -> Unit = {}
+    onDownloadClick: () -> Unit = {},
+    modifier: Modifier = Modifier
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val isFocused by interactionSource.collectIsFocusedAsState()
@@ -1428,7 +1449,7 @@ private fun EpisodeCard(
     
     // Outer Row: non-focusable container with card + download button as separate focus targets
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {

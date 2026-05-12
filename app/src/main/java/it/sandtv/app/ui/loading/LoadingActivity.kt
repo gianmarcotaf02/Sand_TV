@@ -7,6 +7,7 @@ import androidx.activity.compose.setContent
 import androidx.compose.runtime.*
 import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
+import android.util.Log
 import it.sandtv.app.R
 import it.sandtv.app.data.database.dao.MovieDao
 import it.sandtv.app.data.database.dao.PlaylistDao
@@ -102,12 +103,19 @@ class LoadingActivity : ComponentActivity() {
                 val playlists = playlistDao.getAllPlaylists().first()
                 
                 if (playlists.isEmpty()) {
-                    // No playlists - go to setup
                     goToSetup()
                     return@launch
                 }
                 
-                // Check if auto-update is enabled and get interval
+                // If not forceRefresh and we have playlists, we can go to Main almost immediately
+                // and run the sync in the background.
+                if (!forceRefresh) {
+                    Log.d("LoadingActivity", "Using cache, proceeding to Main while syncing in background")
+                    goToMain()
+                    // Continue executing the sync in the background
+                }
+                
+                // The rest of the sync logic continues here...
                 val autoUpdateEnabled = userPreferences.getPlaylistAutoUpdate()
                 val updateIntervalHours = userPreferences.getPlaylistUpdateIntervalHours()
                 val intervalMs = updateIntervalHours * 60 * 60 * 1000L
@@ -115,141 +123,43 @@ class LoadingActivity : ComponentActivity() {
                 
                 var progress = 0
                 val totalSteps = playlists.size
-                var syncedCount = 0
-                var skippedCount = 0
                 
-                // Show initial progress
-                onStateUpdate(
-                    LoadingState(
-                        status = getString(R.string.loading),
-                        detail = "Inizializzazione...",
-                        progress = 5,
-                        showProgress = true
-                    )
-                )
+                onStateUpdate(LoadingState(status = getString(R.string.loading), detail = "Inizializzazione...", progress = 5, showProgress = true))
                 
-                // One-time migration: Clear team-channel cache to rebuild with correct logic
                 if (!userPreferences.isTeamChannelCacheCleared()) {
-                    withContext(Dispatchers.IO) {
-                        teamChannelMapDao.clearAll()
-                        android.util.Log.d("LoadingActivity", "Team-channel cache cleared (one-time migration)")
-                    }
+                    withContext(Dispatchers.IO) { teamChannelMapDao.clearAll() }
                     userPreferences.setTeamChannelCacheCleared()
                 }
                 
-                delay(300) // Brief delay to show initial state
-                
-                // Phase 1: Playlist sync (0-30%)
                 playlists.forEachIndexed { index, playlist ->
                     val timeSinceUpdate = now - playlist.lastUpdated
-                    val needsUpdate = forceRefresh || 
-                                     (autoUpdateEnabled && timeSinceUpdate > intervalMs)
-                    
-                    // Debug logging to verify update logic
-                    val hoursInterval = updateIntervalHours
-                    val hoursSinceUpdate = timeSinceUpdate / (60 * 60 * 1000)
-                    android.util.Log.d("LoadingActivity", 
-                        "Playlist '${playlist.name}' check: interval=${hoursInterval}h, timeSince=${hoursSinceUpdate}h, " +
-                        "autoUpdate=$autoUpdateEnabled, forceRefresh=$forceRefresh, needsUpdate=$needsUpdate")
-                    
-                    // Calculate progress within phase 1 (5-30%)
+                    val needsUpdate = forceRefresh || (autoUpdateEnabled && timeSinceUpdate > intervalMs)
                     val phaseProgress = 5 + ((index + 1) * 25 / totalSteps)
                     
                     if (needsUpdate) {
-                        // Sync playlist
-                        onStateUpdate(
-                            LoadingState(
-                                status = getString(R.string.loading_syncing),
-                                detail = playlist.name,
-                                progress = phaseProgress,
-                                showProgress = true
-                            )
-                        )
-                        
+                        onStateUpdate(LoadingState(status = getString(R.string.loading_syncing), detail = playlist.name, progress = phaseProgress, showProgress = true))
                         try {
                             playlistRepository.refreshPlaylist(playlist.id)
-                            syncedCount++
-                            android.util.Log.d("LoadingActivity", "Synced playlist: ${playlist.name}")
                         } catch (e: Exception) {
-                            android.util.Log.e("LoadingActivity", "Failed to sync ${playlist.name}", e)
+                            Log.e("LoadingActivity", "Failed to sync ${playlist.name}", e)
                         }
                     } else {
-                        // Skip - use cached data
-                        val hoursAgo = timeSinceUpdate / (60 * 60 * 1000)
-                        onStateUpdate(
-                            LoadingState(
-                                status = getString(R.string.loading_using_cache),
-                                detail = "${playlist.name} (${hoursAgo}h fa)",
-                                progress = phaseProgress,
-                                showProgress = true
-                            )
-                        )
-                        skippedCount++
-                        android.util.Log.d("SandTVDebug", 
-                            "Using cache for ${playlist.name}, last updated ${hoursAgo}h ago")
-                        delay(400) // Longer delay for visual feedback when using cache
+                        onStateUpdate(LoadingState(status = getString(R.string.loading_using_cache), detail = "${playlist.name}", progress = phaseProgress, showProgress = true))
                     }
-                    
-                    progress++
                 }
                 
-                // Phase 2: EPG (30-50%)
-                onStateUpdate(
-                    LoadingState(
-                        status = "Caricamento guida TV...",
-                        detail = "",
-                        progress = 35,
-                        showProgress = true
-                    )
-                )
-                
-                // === EPG Loading with caching ===
                 loadEpgIfNeeded(playlists, forceRefresh, onStateUpdate)
-                
-                onStateUpdate(
-                    LoadingState(
-                        status = "Guida TV pronta",
-                        detail = "",
-                        progress = 50,
-                        showProgress = true
-                    )
-                )
-                delay(200)
-                
-                // Phase 2.5: TMDB Trending categories refresh (50-55%)
                 refreshTrendingCategoriesIfNeeded(onStateUpdate)
-                
-                // Phase 3: Hero enrichment (55-95%)
-                // Pre-load hero banners so they're ready when home screen appears
                 enrichHeroContent(onStateUpdate)
                 
-                // Phase 4: Complete (100%)
-                onStateUpdate(
-                    LoadingState(
-                        status = getString(R.string.loading_complete),
-                        detail = "Tutto pronto!",
-                        progress = 100,
-                        showProgress = true,
-                        isComplete = true
-                    )
-                )
-                delay(600)
-
-                
-                goToMain()
-
+                if (forceRefresh) {
+                    onStateUpdate(LoadingState(status = getString(R.string.loading_complete), detail = "Tutto pronto!", progress = 100, showProgress = true, isComplete = true))
+                    delay(600)
+                    goToMain()
+                }
                 
             } catch (e: Exception) {
-                onStateUpdate(
-                    LoadingState(
-                        status = getString(R.string.loading_error),
-                        detail = e.message ?: "",
-                        progress = 0,
-                        showProgress = false,
-                        hasError = true
-                    )
-                )
-                delay(2000)
+                Log.e("LoadingActivity", "Error in startLoading", e)
                 goToMain()
             }
         }
@@ -426,12 +336,12 @@ class LoadingActivity : ComponentActivity() {
                         
                         withContext(Dispatchers.Main) {
                             onStateUpdate(
-                                LoadingState(
-                                    status = "Preparazione contenuti in evidenza...",
-                                    detail = movie.name,
-                                    progress = movieProgress,
-                                    showProgress = true
-                                )
+                                 LoadingState(
+                                     status = "Preparazione film...",
+                                     detail = movie.name,
+                                     progress = movieProgress,
+                                     showProgress = true
+                                 )
                             )
                         }
                         
