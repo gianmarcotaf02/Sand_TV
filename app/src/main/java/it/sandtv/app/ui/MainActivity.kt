@@ -91,6 +91,7 @@ import it.sandtv.app.ui.theme.SandTVColors
 import it.sandtv.app.ui.theme.SandTVTheme
 import it.sandtv.app.ui.theme.AccentColor
 import it.sandtv.app.ui.tv.TvHomeScreen
+import it.sandtv.app.ui.components.ExpandableNavRail
 import androidx.tv.foundation.lazy.list.TvLazyColumn
 import androidx.tv.foundation.lazy.list.itemsIndexed
 import androidx.tv.foundation.lazy.list.rememberTvLazyListState
@@ -244,7 +245,7 @@ private fun MainActivityScreen(
     
     // State
     var selectedTab by remember { mutableStateOf(initialTab) }
-    var isDrawerOpen by remember { mutableStateOf(false) }
+    var railExpanded by remember { mutableStateOf(false) }
     var selectedCategory by remember { mutableStateOf<String?>(null) }
     var showCreateListDialog by remember { mutableStateOf(false) }
     
@@ -420,179 +421,155 @@ private fun MainActivityScreen(
         })
     }
     
-    Box(
+    Row(
         modifier = Modifier
             .fillMaxSize()
             .background(SandTVColors.BackgroundDark)
     ) {
-        // Main content with animated tab transition
-        androidx.compose.animation.AnimatedContent(
-            targetState = selectedTab,
-            transitionSpec = {
-                // Premium crossfade transition for tabs (Netflix style)
-                androidx.compose.animation.fadeIn(
-                    animationSpec = androidx.compose.animation.core.tween(400)
-                ).togetherWith(
-                    androidx.compose.animation.fadeOut(
-                        animationSpec = androidx.compose.animation.core.tween(400)
-                    )
-                )
-            },
-            label = "tabTransition"
-        ) { targetTab ->
-            // Show shimmer while loading, content when ready
-            val isContentLoading = homeState.isLoading && homeState.carouselRows.isEmpty()
-            
-            if (isContentLoading) {
-                // Shimmer loading skeleton (Prime Video style)
-                TabLoadingSkeleton()
-            } else {
-                TvHomeScreen(
-                    state = homeState,
-                    onItemClick = { handleItemClick(it) },
-                    onSeeAllClick = { handleSeeAllClick(it) },
-                    onPlayClick = { handleItemClick(it) },
-                    onTopBarFocusRequest = {
-                        // Focus on Film tab when UP is pressed from first carousel row
-                        try {
-                            topBarFocusRequester.requestFocus()
-                        } catch (e: Exception) {
-                            // Ignore focus errors
-                        }
-                    },
-                    topBarFocusRequester = topBarFocusRequester,  // Pass to Hero for focusProperties
-                    onCreateListClick = {
-                        // Show dialog to create new list
-                        showCreateListDialog = true
-                    },
-                    onHeroClick = { heroItem ->
-                        // Navigate to details page with preloaded data for instant rendering
-                        val intent = Intent(context, DetailsActivity::class.java).apply {
-                            putExtra("content_id", heroItem.id)
-                            putExtra("content_type", heroItem.contentType)
-                            putExtra("title", heroItem.title)
-                            putExtra("poster_url", heroItem.posterUrl)
-                            putExtra("backdrop_url", heroItem.backdropUrl)
-                        }
-                        startActivityWithTransition(intent)
-                    },
-                    onHeroPlayClick = { heroItem ->
-                        // Navigate directly to player - PlayerActivity now handles series stream URL lookup
-                        val intent = Intent(context, it.sandtv.app.ui.player.PlayerActivity::class.java).apply {
-                            putExtra("content_id", heroItem.id)
-                            putExtra("content_type", heroItem.contentType)
-                            putExtra("title", heroItem.title)
-                        }
-                        startActivityWithTransition(intent)
-                    },
-                    onTrailerClick = { heroItem ->
-                        heroItem.trailerKey?.let { activity.playTrailer(it) }
-                    },
-                    onNextHero = { homeViewModel.nextHero() },
-                    onPrevHero = { homeViewModel.prevHero() },
-                    onToggleHeroFavorite = { homeViewModel.toggleHeroFavorite(it) },
-                    onAddHeroToPlaylist = { 
-                        homeViewModel.addHeroToWatchLater(it)
-                        android.widget.Toast.makeText(context, "Aggiunto a Da guardare", android.widget.Toast.LENGTH_SHORT).show()
-                    },
-                    // Category filter callbacks
-                    onToggleCategoryFilter = { category -> homeViewModel.toggleCategoryFilter(category) },
-                    onSelectAllCategories = { homeViewModel.selectAllCategories() },
-                    onClearCategoryFilters = { homeViewModel.clearCategoryFilters() },
-                    onMarkAsWatchedClick = { heroItem ->
-                        homeViewModel.markAsWatched(heroItem)
-                        android.widget.Toast.makeText(context, "Rimosso da Continua a guardare", android.widget.Toast.LENGTH_SHORT).show()
-                    },
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .focusRequester(contentFocusRequester)
-                )
-            }
-        }
-        
-        // Top bar overlay
-        MainTopBar(
+        // Navigation Rail (expandable)
+        ExpandableNavRail(
             selectedTab = selectedTab,
             onTabSelected = { selectTab(it) },
-            onMenuClick = { isDrawerOpen = true },
-            onProfileClick = { 
-                startActivityWithTransition(Intent(context, it.sandtv.app.ui.profile.ProfileSelectionActivity::class.java))
+            selectedCategory = selectedCategory,
+            onCategorySelected = { category ->
+                selectedCategory = category
+                val isMovies = selectedTab == MainTab.MOVIES
+                homeViewModel.loadCategoryContent(category, isMovies)
             },
-            onSearchClick = {
-                startActivityWithTransition(Intent(context, SearchActivity::class.java))
-            },
+            categories = currentCategories,
+            isExpanded = railExpanded,
+            onExpandedChange = { railExpanded = it },
             onSettingsClick = {
                 startActivityWithTransition(Intent(context, SettingsActivity::class.java))
             },
-            onRandomClick = {
-                // Get random content and navigate to details
-                coroutineScope.launch {
-                    val randomItem = homeViewModel.getRandomContent()
-                    if (randomItem != null) {
-                        val intent = Intent(context, DetailsActivity::class.java).apply {
-                            putExtra("content_id", randomItem.first)
-                            putExtra("content_type", randomItem.second)
-                        }
-                        startActivityWithTransition(intent)
-                    }
-                }
-            },
-            onDownloadsClick = {
-                startActivityWithTransition(Intent(context, DownloadsActivity::class.java))
-            },
             onContentFocusRequest = {
-                // Focus on first carousel when DOWN is pressed from tabs
                 try {
                     contentFocusRequester.requestFocus()
                 } catch (e: Exception) {
                     // Ignore focus errors
                 }
             },
-            filmTabFocusRequester = topBarFocusRequester,
-            searchButtonFocusRequester = searchButtonFocusRequester,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxHeight()
         )
         
-        // Sidebar drawer overlay
-        if (isDrawerOpen) {
-            val favoriteCategories by (
-                if (selectedTab == MainTab.MOVIES) homeViewModel.favoriteMovieCategories
-                else homeViewModel.favoriteSeriesCategories
-            ).collectAsState()
+        // Main content area
+        Column(modifier = Modifier.fillMaxSize()) {
+            // Mini Top Bar (clock + actions only)
+            MiniTopBar(
+                onProfileClick = { 
+                    startActivityWithTransition(Intent(context, it.sandtv.app.ui.profile.ProfileSelectionActivity::class.java))
+                },
+                onSearchClick = {
+                    startActivityWithTransition(Intent(context, SearchActivity::class.java))
+                },
+                onSettingsClick = {
+                    startActivityWithTransition(Intent(context, SettingsActivity::class.java))
+                },
+                onRandomClick = {
+                    coroutineScope.launch {
+                        val randomItem = homeViewModel.getRandomContent()
+                        if (randomItem != null) {
+                            val intent = Intent(context, DetailsActivity::class.java).apply {
+                                putExtra("content_id", randomItem.first)
+                                putExtra("content_type", randomItem.second)
+                            }
+                            startActivityWithTransition(intent)
+                        }
+                    }
+                },
+                onDownloadsClick = {
+                    startActivityWithTransition(Intent(context, DownloadsActivity::class.java))
+                },
+                onContentFocusRequest = {
+                    try {
+                        contentFocusRequester.requestFocus()
+                    } catch (e: Exception) {
+                        // Ignore focus errors
+                    }
+                },
+                searchButtonFocusRequester = searchButtonFocusRequester,
+                modifier = Modifier.fillMaxWidth()
+            )
             
-            Row(modifier = Modifier.fillMaxSize()) {
-            CategorySidebar(
-                    categories = currentCategories,
-                    selectedCategory = selectedCategory,
-                    favoriteCategories = favoriteCategories,
-                    onCategorySelected = { category ->
-                        selectedCategory = category
-                        isDrawerOpen = false
-                        // Load content for selected category
-                        val isMovies = selectedTab == MainTab.MOVIES
-                        homeViewModel.loadCategoryContent(category, isMovies)
-                    },
-                    onToggleFavorite = { category ->
-                        val isMovies = selectedTab == MainTab.MOVIES
-                        homeViewModel.toggleFavoriteCategory(category, isMovies)
-                    },
-                    onViewAllCategories = {
-                        isDrawerOpen = false
-                        val contentType = if (selectedTab == MainTab.MOVIES) "movies" else "series"
-                        startActivityWithTransition(Intent(context, it.sandtv.app.ui.category.AllCategoriesActivity::class.java).apply {
-                            putExtra("contentType", contentType)
-                        })
-                    },
-                    onClose = { isDrawerOpen = false }
-                )
+            // Main content with animated tab transition
+            androidx.compose.animation.AnimatedContent(
+                targetState = selectedTab,
+                transitionSpec = {
+                    androidx.compose.animation.fadeIn(
+                        animationSpec = androidx.compose.animation.core.tween(400)
+                    ).togetherWith(
+                        androidx.compose.animation.fadeOut(
+                            animationSpec = androidx.compose.animation.core.tween(400)
+                        )
+                    )
+                },
+                label = "tabTransition"
+            ) { targetTab ->
+                val isContentLoading = homeState.isLoading && homeState.carouselRows.isEmpty()
                 
-                // Click outside to close
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(SandTVColors.BackgroundDark.copy(alpha = 0.5f))
-                        .noRippleClickable { isDrawerOpen = false }
-                )
+                if (isContentLoading) {
+                    TabLoadingSkeleton()
+                } else {
+                    TvHomeScreen(
+                        state = homeState,
+                        onItemClick = { handleItemClick(it) },
+                        onSeeAllClick = { handleSeeAllClick(it) },
+                        onPlayClick = { handleItemClick(it) },
+                        onTopBarFocusRequest = {
+                            try {
+                                topBarFocusRequester.requestFocus()
+                            } catch (e: Exception) {
+                                // Ignore focus errors
+                            }
+                        },
+                        topBarFocusRequester = topBarFocusRequester,
+                        onCreateListClick = {
+                            showCreateListDialog = true
+                        },
+                        onHeroClick = { heroItem ->
+                            val intent = Intent(context, DetailsActivity::class.java).apply {
+                                putExtra("content_id", heroItem.id)
+                                putExtra("content_type", heroItem.contentType)
+                                putExtra("title", heroItem.title)
+                                putExtra("poster_url", heroItem.posterUrl)
+                                putExtra("backdrop_url", heroItem.backdropUrl)
+                            }
+                            startActivityWithTransition(intent)
+                        },
+                        onHeroPlayClick = { heroItem ->
+                            val intent = Intent(context, it.sandtv.app.ui.player.PlayerActivity::class.java).apply {
+                                putExtra("content_id", heroItem.id)
+                                putExtra("content_type", heroItem.contentType)
+                                putExtra("title", heroItem.title)
+                            }
+                            startActivityWithTransition(intent)
+                        },
+                        onTrailerClick = { heroItem ->
+                            heroItem.trailerKey?.let { activity.playTrailer(it) }
+                        },
+                        onNextHero = { homeViewModel.nextHero() },
+                        onPrevHero = { homeViewModel.prevHero() },
+                        onToggleHeroFavorite = { homeViewModel.toggleHeroFavorite(it) },
+                        onAddHeroToPlaylist = { 
+                            homeViewModel.addHeroToWatchLater(it)
+                            android.widget.Toast.makeText(context, "Aggiunto a Da guardare", android.widget.Toast.LENGTH_SHORT).show()
+                        },
+                        onToggleCategoryFilter = { category -> homeViewModel.toggleCategoryFilter(category) },
+                        onSelectAllCategories = { homeViewModel.selectAllCategories() },
+                        onClearCategoryFilters = { homeViewModel.clearCategoryFilters() },
+                        onMarkAsWatchedClick = { heroItem ->
+                            homeViewModel.markAsWatched(heroItem)
+                            android.widget.Toast.makeText(context, "Rimosso da Continua a guardare", android.widget.Toast.LENGTH_SHORT).show()
+                        },
+                        onRailFocusRequest = {
+                            // Focus on rail when LEFT is pressed from content
+                            railExpanded = true
+                        },
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .focusRequester(contentFocusRequester)
+                    )
+                }
             }
         }
         
@@ -603,7 +580,6 @@ private fun MainActivityScreen(
                 onCreate = { listName ->
                     homeViewModel.createList(listName)
                     showCreateListDialog = false
-                    // Reload lists tab to show the new list
                     homeViewModel.loadContent(HomeContentType.LISTS)
                 }
             )
@@ -832,6 +808,73 @@ private fun MainTopBar(
                 onDownPress = onContentFocusRequest
             )
         }
+    }
+}
+
+/**
+ * Mini Top Bar - versione semplificata senza tabs
+ * Mostra solo orologio e azioni (search, download, settings, profile)
+ * Usata con il Navigation Rail
+ */
+@Composable
+private fun MiniTopBar(
+    onProfileClick: () -> Unit,
+    onSearchClick: () -> Unit,
+    onSettingsClick: () -> Unit,
+    onRandomClick: () -> Unit = {},
+    onDownloadsClick: () -> Unit = {},
+    onContentFocusRequest: () -> Unit = {},
+    searchButtonFocusRequester: FocusRequester? = null,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier
+            .background(Color.Black.copy(alpha = 0.8f))
+            .padding(horizontal = 24.dp, vertical = 12.dp),
+        horizontalArrangement = Arrangement.End,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        // Digital Clock
+        DigitalClock()
+        
+        Spacer(modifier = Modifier.width(16.dp))
+        
+        // Random content button
+        TopBarIconButton(
+            painter = androidx.compose.ui.res.painterResource(it.sandtv.app.R.drawable.dadi),
+            contentDescription = "Contenuto casuale",
+            onClick = onRandomClick,
+            onDownPress = onContentFocusRequest
+        )
+        
+        TopBarIconButton(
+            icon = Icons.Default.Download,
+            contentDescription = "Download",
+            onClick = onDownloadsClick,
+            onDownPress = onContentFocusRequest
+        )
+        
+        TopBarIconButton(
+            icon = Icons.Default.Search,
+            contentDescription = "Cerca",
+            onClick = onSearchClick,
+            onDownPress = onContentFocusRequest,
+            focusRequester = searchButtonFocusRequester
+        )
+        
+        TopBarIconButton(
+            icon = Icons.Default.Settings,
+            contentDescription = "Impostazioni",
+            onClick = onSettingsClick,
+            onDownPress = onContentFocusRequest
+        )
+        
+        TopBarIconButton(
+            icon = Icons.Default.Person,
+            contentDescription = "Profilo",
+            onClick = onProfileClick,
+            onDownPress = onContentFocusRequest
+        )
     }
 }
 

@@ -133,6 +133,7 @@ fun TvHomeScreen(
     onAddHeroToPlaylist: (HeroItem) -> Unit = {},
     onTrailerClick: (HeroItem) -> Unit = {},
     onMarkAsWatchedClick: (HeroItem) -> Unit = {},
+    onRailFocusRequest: () -> Unit = {},  // Called when LEFT from first carousel item
     modifier: Modifier = Modifier
 ) {
     // Key scroll state on first hero ID to reset when switching tabs
@@ -157,6 +158,7 @@ fun TvHomeScreen(
             onAddHeroToPlaylist = onAddHeroToPlaylist,
             onTrailerClick = onTrailerClick,
             onMarkAsWatchedClick = onMarkAsWatchedClick,
+            onRailFocusRequest = onRailFocusRequest,
             modifier = modifier
         )
     }
@@ -183,6 +185,7 @@ private fun TvHomeScreenContent(
     onAddHeroToPlaylist: (HeroItem) -> Unit = {},
     onTrailerClick: (HeroItem) -> Unit = {},
     onMarkAsWatchedClick: (HeroItem) -> Unit = {},
+    onRailFocusRequest: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val columnListState = rememberTvLazyListState()
@@ -576,7 +579,18 @@ private fun TvHomeScreenContent(
                 // Disable user scroll while Hero is focused to keep it stable
                 // TvLazyColumn will still auto-scroll when focus changes (DOWN to carousel)
                 userScrollEnabled = !isHeroFocused,
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier
+                    .fillMaxSize()
+                    .onPreviewKeyEvent { keyEvent ->
+                        // LEFT key: navigate to rail
+                        if (keyEvent.type == KeyEventType.KeyDown && 
+                            keyEvent.key == Key.DirectionLeft) {
+                            onRailFocusRequest()
+                            true
+                        } else {
+                            false
+                        }
+                    }
             ) {
                 // Hero Banner as first item
                 if (hasHero) {

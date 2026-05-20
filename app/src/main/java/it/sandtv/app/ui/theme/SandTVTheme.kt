@@ -131,6 +131,13 @@ object SandTVColors {
     val PlayerControlsBg = Color(0x60000000)
     val PlayerSeekbarPlayed: Color get() = Accent
     
+    // Rail Navigation Colors
+    val RailBackground = Color(0x80000000)
+    val RailBackgroundExpanded = Color(0xCC000000)
+    val RailItemFocused = BackgroundTertiary
+    val RailItemSelected = Accent.copy(alpha = 0.15f)
+    val RailDivider = BackgroundTertiary
+    
     // Update function
     fun updateAccent(accentColor: AccentColor) {
         _accent.value = accentColor.primary
