@@ -3,7 +3,6 @@ package it.sandtv.app.ui.components
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -16,19 +15,16 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import it.sandtv.app.ui.theme.AppAnimations
 import it.sandtv.app.ui.theme.SandTVColors
 
-/**
- * Singolo elemento del Navigation Rail (icona + label)
- * Usato per Film, Serie TV, Live, Serie A, Preferiti, Liste, Cronologia, Impostazioni
- */
 @Composable
 fun NavRailItem(
     icon: ImageVector,
@@ -43,7 +39,7 @@ fun NavRailItem(
     val isFocused by interactionSource.collectIsFocusedAsState()
     
     val scale by animateFloatAsState(
-        targetValue = if (isFocused) 1.08f else 1f,
+        targetValue = if (isFocused) 1.05f else 1f,
         animationSpec = AppAnimations.SpringCardFocus,
         label = "navRailItemScale"
     )
@@ -55,14 +51,6 @@ fun NavRailItem(
             else -> Color.Transparent
         },
         label = "navRailItemBg"
-    )
-    
-    val borderColor by animateColorAsState(
-        targetValue = when {
-            isFocused -> SandTVColors.Accent
-            else -> Color.Transparent
-        },
-        label = "navRailItemBorder"
     )
     
     val iconColor by animateColorAsState(
@@ -96,41 +84,49 @@ fun NavRailItem(
                 scaleY = scale
             }
             .fillMaxWidth()
-            .height(56.dp)
-            .clip(RoundedCornerShape(12.dp))
-            .border(2.dp, borderColor, RoundedCornerShape(12.dp))
+            .height(48.dp)
+            .clip(RoundedCornerShape(10.dp))
             .background(backgroundColor)
             .clickable(
                 interactionSource = interactionSource,
                 indication = null,
                 onClick = onClick
             )
-            .focusable(interactionSource = interactionSource)
-            .padding(horizontal = if (isExpanded) 16.dp else 0.dp),
+            .focusable(interactionSource = interactionSource),
         contentAlignment = if (isExpanded) Alignment.CenterStart else Alignment.Center
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = label,
-                tint = iconTint ?: iconColor,
-                modifier = Modifier.size(24.dp)
-            )
-            
-            if (isExpanded) {
+        if (isExpanded) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+            ) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = label,
+                    tint = iconTint ?: iconColor,
+                    modifier = Modifier.size(22.dp)
+                )
+                
                 Text(
                     text = label,
                     style = androidx.compose.material3.MaterialTheme.typography.bodyMedium,
                     color = textColor,
                     fontWeight = FontWeight.Medium,
                     maxLines = 1,
+                    fontSize = 13.sp,
                     modifier = Modifier.alpha(textAlpha)
                 )
             }
+        } else {
+            Icon(
+                imageVector = icon,
+                contentDescription = label,
+                tint = iconTint ?: iconColor,
+                modifier = Modifier.size(24.dp)
+            )
         }
     }
 }
