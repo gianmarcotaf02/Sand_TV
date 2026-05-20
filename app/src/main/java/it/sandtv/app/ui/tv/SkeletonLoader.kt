@@ -33,13 +33,23 @@ fun SkeletonLoader(
         ),
         label = "shimmerOffset"
     )
+    // Pulse animation for a breathing effect
+    val pulseAlpha by infiniteTransition.animateFloat(
+        initialValue = 0.5f,
+        targetValue = 0.9f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(1200, easing = FastOutSlowInEasing, delayMillis = 100),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "pulseAlpha"
+    )
     
     // Gradient brush for the shimmer effect
     val shimmerBrush = Brush.linearGradient(
         colors = listOf(
-            SandTVColors.BackgroundSecondary,
-            SandTVColors.BackgroundTertiary.copy(alpha = 0.8f),
-            SandTVColors.BackgroundSecondary
+            SandTVColors.BackgroundSecondary.copy(alpha = pulseAlpha),
+            SandTVColors.BackgroundTertiary.copy(alpha = pulseAlpha),
+            SandTVColors.BackgroundSecondary.copy(alpha = pulseAlpha)
         ),
         start = Offset(shimmerOffset * 1000f, 0f),
         end = Offset((shimmerOffset + 1f) * 1000f, 0f)

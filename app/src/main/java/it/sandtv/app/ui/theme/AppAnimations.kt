@@ -10,6 +10,7 @@ import androidx.compose.animation.slideOutVertically
 
 /**
  * Centralized animation constants for consistent UX across the app
+ * Premium Netflix-level animation system
  */
 object AppAnimations {
     
@@ -39,6 +40,24 @@ object AppAnimations {
         stiffness = Spring.StiffnessLow
     )
     
+    /** Card focus spring - fast and snappy with subtle overshoot */
+    val SpringCardFocus = spring<Float>(
+        dampingRatio = 0.75f,
+        stiffness = 500f
+    )
+    
+    /** Button press spring - instant response */
+    val SpringButtonPress = spring<Float>(
+        dampingRatio = 0.65f,
+        stiffness = 600f
+    )
+    
+    /** Glow spring - smooth fade for glow effects */
+    val SpringGlow = spring<Float>(
+        dampingRatio = 0.85f,
+        stiffness = 350f
+    )
+    
     // ============== Duration Constants ==============
     
     /** Fast fade duration (ms) */
@@ -53,13 +72,39 @@ object AppAnimations {
     /** Activity transition duration (ms) */
     const val ActivityTransitionMs = 350
     
+    /** Hero crossfade duration (ms) */
+    const val HeroCrossfadeMs = 500
+    
+    /** Card info reveal duration (ms) */
+    const val CardInfoRevealMs = 200
+    
     // ============== Scale Values ==============
     
     /** Card focus scale */
-    const val CardFocusScale = 1.05f
+    const val CardFocusScale = 1.08f
+    
+    /** Button focus scale */
+    const val ButtonFocusScale = 1.05f
+    
+    /** Icon button focus scale */
+    const val IconButtonFocusScale = 1.15f
     
     /** Button press scale */
-    const val ButtonPressScale = 0.95f
+    const val ButtonPressScale = 0.98f
+    
+    /** Grid item focus scale */
+    const val GridItemFocusScale = 1.05f
+    
+    // ============== Glow Values ==============
+    
+    /** Glow shadow elevation when focused */
+    const val FocusGlowElevation = 16f
+    
+    /** Glow shadow elevation when unfocused */
+    const val UnfocusedGlowElevation = 0f
+    
+    /** Glow alpha when focused */
+    const val FocusGlowAlpha = 0.4f
     
     // ============== Pre-built Enter/Exit Specs ==============
     

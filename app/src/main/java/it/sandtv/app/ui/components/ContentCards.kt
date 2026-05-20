@@ -19,7 +19,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -33,6 +33,7 @@ import it.sandtv.app.data.database.entity.Channel
 import it.sandtv.app.data.database.entity.Movie
 import it.sandtv.app.data.database.entity.Series
 import it.sandtv.app.ui.theme.SandTVColors
+import it.sandtv.app.ui.theme.AppAnimations
 
 /**
  * Reusable content cards for Movies, Series, Channels
@@ -121,7 +122,8 @@ fun ChannelCard(
     val isFocused by interactionSource.collectIsFocusedAsState()
     
     val scale by animateFloatAsState(
-        targetValue = if (isFocused) 1.08f else 1f,
+        targetValue = if (isFocused) AppAnimations.CardFocusScale else 1f,
+        animationSpec = AppAnimations.SpringCardFocus,
         label = "channelScale"
     )
     
@@ -132,7 +134,10 @@ fun ChannelCard(
     
     Column(
         modifier = modifier
-            .scale(scale)
+            .graphicsLayer {
+                scaleX = scale
+                scaleY = scale
+            }
             .width(width)
             .focusable(interactionSource = interactionSource)
             .clickable(
@@ -209,7 +214,8 @@ fun ContinueWatchingCard(
     val isFocused by interactionSource.collectIsFocusedAsState()
     
     val scale by animateFloatAsState(
-        targetValue = if (isFocused) 1.05f else 1f,
+        targetValue = if (isFocused) AppAnimations.ButtonFocusScale else 1f,
+        animationSpec = AppAnimations.SpringCardFocus,
         label = "continueScale"
     )
     
@@ -220,7 +226,10 @@ fun ContinueWatchingCard(
     
     Box(
         modifier = modifier
-            .scale(scale)
+            .graphicsLayer {
+                scaleX = scale
+                scaleY = scale
+            }
             .width(280.dp)
             .height(157.dp)
             .clip(RoundedCornerShape(8.dp))
@@ -328,6 +337,7 @@ fun SettingsCard(
     
     val scale by animateFloatAsState(
         targetValue = if (isFocused) 1.1f else 1f,
+        animationSpec = AppAnimations.SpringCardFocus,
         label = "settingsScale"
     )
     
@@ -338,7 +348,10 @@ fun SettingsCard(
     
     Column(
         modifier = modifier
-            .scale(scale)
+            .graphicsLayer {
+                scaleX = scale
+                scaleY = scale
+            }
             .width(120.dp)
             .focusable(interactionSource = interactionSource)
             .clickable(
@@ -394,7 +407,8 @@ private fun ContentPosterCard(
     val isFocused by interactionSource.collectIsFocusedAsState()
     
     val scale by animateFloatAsState(
-        targetValue = if (isFocused) 1.08f else 1f,
+        targetValue = if (isFocused) AppAnimations.CardFocusScale else 1f,
+        animationSpec = AppAnimations.SpringCardFocus,
         label = "posterScale"
     )
     
@@ -405,7 +419,10 @@ private fun ContentPosterCard(
     
     Column(
         modifier = modifier
-            .scale(scale)
+            .graphicsLayer {
+                scaleX = scale
+                scaleY = scale
+            }
             .width(width)
             .focusable(interactionSource = interactionSource)
             .clickable(

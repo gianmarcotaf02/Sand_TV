@@ -24,7 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.focus.focusRequester
@@ -41,6 +41,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import it.sandtv.app.R
 import it.sandtv.app.ui.theme.SandTVColors
+import it.sandtv.app.ui.theme.AppAnimations
 import it.sandtv.app.ui.theme.SandTVTheme
 
 /**
@@ -260,7 +261,10 @@ private fun HeroPlayButton(onClick: () -> Unit) {
     Button(
         onClick = onClick,
         modifier = Modifier
-            .scale(scale)
+            .graphicsLayer {
+                scaleX = scale
+                scaleY = scale
+            }
             .height(40.dp)  // Reduced from 48dp
             .focusable(interactionSource = interactionSource),
         colors = ButtonDefaults.buttonColors(
@@ -306,7 +310,10 @@ private fun HeroSecondaryButton(
     Button(
         onClick = onClick,
         modifier = Modifier
-            .scale(scale)
+            .graphicsLayer {
+                scaleX = scale
+                scaleY = scale
+            }
             .height(48.dp)
             .focusable(interactionSource = interactionSource),
         colors = ButtonDefaults.buttonColors(
@@ -425,7 +432,10 @@ fun PosterCard(
     
     Column(
         modifier = modifier
-            .scale(scale)
+            .graphicsLayer {
+                scaleX = scale
+                scaleY = scale
+            }
             .width(130.dp)  // Reduced from 150dp
             .wrapContentHeight()  // Let content determine height (poster + title)
             .focusable(interactionSource = interactionSource)
@@ -581,7 +591,10 @@ fun WideCard(
     
     Box(
         modifier = modifier
-            .scale(scale)
+            .graphicsLayer {
+                scaleX = scale
+                scaleY = scale
+            }
             .width(280.dp)
             .height(157.dp)
             .clip(RoundedCornerShape(8.dp))

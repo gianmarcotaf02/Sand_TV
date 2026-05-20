@@ -13,7 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import it.sandtv.app.R
 import it.sandtv.app.ui.theme.SandTVColors
+import it.sandtv.app.ui.theme.AppAnimations
 import it.sandtv.app.ui.theme.SandTVTheme
 import kotlinx.coroutines.delay
 
@@ -243,7 +244,11 @@ private fun AnimatedLogo() {
         Box(
             modifier = Modifier
                 .size(200.dp)
-                .scale(scale * 1.2f)
+                .graphicsLayer {
+                val s = scale * 1.2f
+                scaleX = s
+                scaleY = s
+            }
                 .background(
                     brush = Brush.radialGradient(
                         colors = listOf(
@@ -259,7 +264,10 @@ private fun AnimatedLogo() {
         Box(
             modifier = Modifier
                 .size(160.dp)
-                .scale(scale)
+                .graphicsLayer {
+                scaleX = scale
+                scaleY = scale
+            }
                 .shadow(
                     elevation = 24.dp,
                     shape = RoundedCornerShape(24.dp),

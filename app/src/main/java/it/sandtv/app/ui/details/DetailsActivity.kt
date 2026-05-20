@@ -397,7 +397,12 @@ class DetailsActivity : ComponentActivity() {
                         
                         // Save it back to DB for next time
                         movieDao.update(movie.copy(
-                            xtreamPlot = info.plot, xtreamCast = info.cast, xtreamDirector = info.director, xtreamGenre = info.genre
+                            xtreamPlot = info.plot ?: movie.xtreamPlot,
+                            xtreamCast = info.cast ?: movie.xtreamCast,
+                            xtreamDirector = info.director ?: movie.xtreamDirector,
+                            xtreamGenre = info.genre ?: movie.xtreamGenre,
+                            xtreamRating = info.rating ?: movie.xtreamRating,
+                            xtreamYoutubeTrailer = info.youtubeTrailer ?: movie.xtreamYoutubeTrailer
                         ))
                     }
                 }
@@ -420,17 +425,17 @@ class DetailsActivity : ComponentActivity() {
         var state = DetailsState(
             title = movie.name,
             year = enrichedMovie.year?.toString() ?: "",
-            overview = overview,
-            genres = genre ?: "",
+            overview = enrichedMovie.plot ?: "",
+            genres = enrichedMovie.genre ?: "",
             duration = duration,
-            director = director,
-            cast = cast,
-            posterUrl = movie.logoUrl ?: enrichedMovie.posterUrl,
-            backdropUrl = movie.backdropUrl ?: enrichedMovie.backdropUrl,
+            director = enrichedMovie.director,
+            cast = enrichedMovie.cast,
+            posterUrl = enrichedMovie.posterUrl,
+            backdropUrl = enrichedMovie.backdropUrl,
             contentType = ContentType.MOVIE,
             isFavorite = isFavorite,
             isLoading = false,
-            tmdbRating = tmdbRating,
+            tmdbRating = enrichedMovie.rating,
             imdbRating = enrichedMovie.omdbImdbRating,
             rottenTomatoesScore = enrichedMovie.omdbRottenTomatoesScore,
             metacriticScore = enrichedMovie.omdbMetacriticScore,
@@ -463,16 +468,14 @@ class DetailsActivity : ComponentActivity() {
         
         onStateUpdate(state)
         
-        // Check if OMDB ratings need refresh (null or older than 7 days, or all ratings still null)
-        val hasAnyOmdbRating = enrichedMovie.omdbImdbRating != null || 
-            enrichedMovie.omdbRottenTomatoesScore != null || 
-            enrichedMovie.omdbMetacriticScore != null
-        val needsOmdbRefresh = enrichedMovie.omdbLastFetchAt == null || 
-            !hasAnyOmdbRating ||  // Force retry if all ratings are null (fallback logic improved)
-            System.currentTimeMillis() - enrichedMovie.omdbLastFetchAt > 7 * 24 * 60 * 60 * 1000  // 7 days cache
+        // Check if OMDB ratings need refresh (null or older than 7 days)
+        // Lazy Loading per OMDB: only activate if data is absent in levels 1, 2, 3 (no rating available)
+        val hasAnyPrimaryRating = enrichedMovie.rating != null
+        val needsOmdbRefresh = !hasAnyPrimaryRating && (enrichedMovie.omdbLastFetchAt == null || 
+            System.currentTimeMillis() - enrichedMovie.omdbLastFetchAt > 7 * 24 * 60 * 60 * 1000)
         
         if (needsOmdbRefresh) {
-            Log.d("ImdbRatings", "OMDB refresh needed! hasAnyRating=$hasAnyOmdbRating, lastFetch=${enrichedMovie.omdbLastFetchAt}")
+            Log.d("ImdbRatings", "OMDB refresh needed! hasAnyPrimaryRating=$hasAnyPrimaryRating, lastFetch=${enrichedMovie.omdbLastFetchAt}")
             Log.d("ImdbRatings", "IMDB ID: ${enrichedMovie.tmdbImdbId}, English title: tmdbTitle=${enrichedMovie.tmdbTitle}, tmdbOriginalTitle=${enrichedMovie.tmdbOriginalTitle}")
             loadImdbRatings(
                 title = movie.name, 
@@ -663,15 +666,16 @@ class DetailsActivity : ComponentActivity() {
         var state = DetailsState(
             title = series.name,
             year = series.year?.toString() ?: "",
-            overview = series.xtreamPlot ?: series.tmdbOverview ?: "",
-            genres = series.xtreamGenre ?: series.tmdbGenres ?: "",
-            cast = series.xtreamCast,
+            overview = series.plot ?: "",
+            genres = series.genre ?: "",
+            cast = series.cast,
+            director = series.director,
             posterUrl = series.posterUrl,
             backdropUrl = series.backdropUrl,
             contentType = ContentType.SERIES,
             isFavorite = isFavorite,
             isLoading = false,
-            tmdbRating = series.tmdbVoteAverage,
+            tmdbRating = series.rating,
             seasons = seasons,
             selectedSeason = selectedSeason,
             episodes = episodes,
@@ -696,9 +700,11 @@ class DetailsActivity : ComponentActivity() {
         onStateUpdate(state)
         
         // Check if OMDB ratings need refresh (null or older than 24 hours)
+        // Lazy Loading per OMDB: only activate if data is absent in levels 1, 2, 3 (no rating available)
+        val hasAnyPrimaryRating = series.rating != null
         val lastFetch = series.omdbLastFetchAt
-        val needsOmdbRefresh = lastFetch == null || 
-            System.currentTimeMillis() - lastFetch > 24 * 60 * 60 * 1000
+        val needsOmdbRefresh = !hasAnyPrimaryRating && (lastFetch == null || 
+            System.currentTimeMillis() - lastFetch > 24 * 60 * 60 * 1000)
         
         if (needsOmdbRefresh) {
             loadImdbRatings(series.name, series.year) { ratings: ImdbRatingsRepository.RatingInfo? ->

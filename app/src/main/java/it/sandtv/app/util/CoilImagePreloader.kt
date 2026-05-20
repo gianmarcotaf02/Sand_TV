@@ -8,6 +8,8 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
 
+import coil.size.Precision
+
 /**
  * Image preloader using Coil (same cache as UI rendering)
  * 
@@ -31,6 +33,7 @@ class CoilImagePreloader @Inject constructor(
             val request = ImageRequest.Builder(context)
                 .data(url)
                 .size(targetSize)
+                .precision(Precision.INEXACT) // Fast decoding, no strict constraints
                 .memoryCachePolicy(coil.request.CachePolicy.ENABLED)
                 .diskCachePolicy(coil.request.CachePolicy.ENABLED)
                 .build()

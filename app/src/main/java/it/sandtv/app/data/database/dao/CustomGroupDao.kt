@@ -113,6 +113,7 @@ interface CustomGroupDao {
     /**
      * Get current item's position info
      */
+    @RewriteQueriesToDropUnusedColumns
     @Query("""
         SELECT gi.*, 
                (SELECT COUNT(*) FROM group_items WHERE groupId = gi.groupId) as totalItems

@@ -1,6 +1,8 @@
 package it.sandtv.app.ui.tv
 
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -11,6 +13,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -27,6 +30,7 @@ import coil.compose.AsyncImage
 import it.sandtv.app.R
 import it.sandtv.app.ui.home.CarouselItem
 import it.sandtv.app.ui.theme.SandTVColors
+import it.sandtv.app.ui.theme.AppAnimations
 
 /**
  * TV-optimized content card using androidx.tv.material3
@@ -50,8 +54,30 @@ fun TvContentCard(
     var isFocused by remember { mutableStateOf(false) }
     
     val scale by animateFloatAsState(
-        targetValue = if (isFocused) 1.08f else 1f,
+        targetValue = if (isFocused) AppAnimations.CardFocusScale else 1f,
+        animationSpec = AppAnimations.SpringCardFocus,
         label = "cardScale"
+    )
+    
+
+    // Focus glow effect - animated shadow elevation
+    val glowElevation by animateFloatAsState(
+        targetValue = if (isFocused) AppAnimations.FocusGlowElevation else AppAnimations.UnfocusedGlowElevation,
+        animationSpec = AppAnimations.SpringGlow,
+        label = "cardGlow"
+    )
+    
+    // Title slide-up animation on focus
+    val titleOffsetY by animateDpAsState(
+        targetValue = if (isFocused) (-2).dp else 0.dp,
+        label = "titleOffset"
+    )
+    
+    // Title alpha transition
+    val titleAlpha by animateFloatAsState(
+        targetValue = if (isFocused) 1f else 0.7f,
+        animationSpec = AppAnimations.SpringSmooth,
+        label = "titleAlpha"
     )
     
     // Use smaller dimensions for channels (square-ish), larger for movies/series (poster)
@@ -68,7 +94,14 @@ fun TvContentCard(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(cardHeight)
-                .onFocusChanged { isFocused = it.isFocused },
+                .onFocusChanged { isFocused = it.isFocused }
+                .graphicsLayer {
+                    // Focus glow via shadow
+                    shadowElevation = glowElevation
+                    shape = RoundedCornerShape(8.dp)
+                    ambientShadowColor = SandTVColors.Accent
+                    spotShadowColor = SandTVColors.Accent
+                },
             scale = CardDefaults.scale(
                 scale = 1f,
                 focusedScale = 1.08f,
@@ -93,8 +126,6 @@ fun TvContentCard(
             )
         ) {
             Box(modifier = Modifier.fillMaxSize()) {
-                // DEBUG: Log poster URL for each card
-                android.util.Log.d("CoilDebug", "TvContentCard loading: title=${item.title}, posterUrl=${item.posterUrl}")
                 
                 // Poster/Logo image - use Fit for channels, Crop for movies/series
                 if (item.posterUrl.isNullOrEmpty()) {
@@ -122,12 +153,6 @@ fun TvContentCard(
                         contentScale = if (isChannel) ContentScale.Fit else ContentScale.Crop,
                         placeholder = coil.compose.rememberAsyncImagePainter(R.drawable.placeholder_poster),
                         error = coil.compose.rememberAsyncImagePainter(R.drawable.placeholder_poster),
-                        onError = { error ->
-                            android.util.Log.e("CoilDebug", "FAILED to load: title=${item.title}, url=${item.posterUrl}, error=${error.result.throwable}")
-                        },
-                        onSuccess = {
-                            android.util.Log.d("CoilDebug", "SUCCESS: title=${item.title}")
-                        },
                         modifier = Modifier
                             .fillMaxSize()
                             .then(if (isChannel) Modifier.padding(8.dp) else Modifier)
@@ -226,7 +251,7 @@ fun TvContentCard(
         
         Spacer(modifier = Modifier.height(8.dp))
         
-        // Title below card
+        // Title below card - animated slide-up + fade on focus
         Text(
             text = item.title,
             style = MaterialTheme.typography.bodySmall.copy(
@@ -235,7 +260,12 @@ fun TvContentCard(
             ),
             color = if (isFocused) SandTVColors.TextPrimary else SandTVColors.TextSecondary,
             maxLines = 2,
-            overflow = TextOverflow.Ellipsis
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier
+                .graphicsLayer {
+                    translationY = titleOffsetY.toPx()
+                    alpha = titleAlpha
+                }
         )
     }
 }
@@ -252,12 +282,32 @@ fun TvWideCard(
 ) {
     var isFocused by remember { mutableStateOf(false) }
     
+    // Focus glow effect
+    val glowElevation by animateFloatAsState(
+        targetValue = if (isFocused) AppAnimations.FocusGlowElevation else AppAnimations.UnfocusedGlowElevation,
+        animationSpec = AppAnimations.SpringGlow,
+        label = "wideCardGlow"
+    )
+    
+    // Title alpha transition
+    val titleAlpha by animateFloatAsState(
+        targetValue = if (isFocused) 1f else 0.8f,
+        animationSpec = AppAnimations.SpringSmooth,
+        label = "wideTitleAlpha"
+    )
+    
     Card(
         onClick = onClick,
         modifier = modifier
             .width(280.dp)
             .height(157.dp)
-            .onFocusChanged { isFocused = it.isFocused },
+            .onFocusChanged { isFocused = it.isFocused }
+            .graphicsLayer {
+                shadowElevation = glowElevation
+                shape = RoundedCornerShape(8.dp)
+                ambientShadowColor = SandTVColors.Accent
+                spotShadowColor = SandTVColors.Accent
+            },
         scale = CardDefaults.scale(
             scale = 1f,
             focusedScale = 1.05f,
@@ -308,12 +358,16 @@ fun TvWideCard(
             Text(
                 text = item.title,
                 style = MaterialTheme.typography.bodyMedium,
-                color = SandTVColors.TextPrimary,
+                color = if (isFocused) SandTVColors.Accent else SandTVColors.TextPrimary,
+                fontWeight = if (isFocused) FontWeight.Bold else FontWeight.Normal,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier
                     .align(Alignment.BottomStart)
                     .padding(12.dp)
+                    .graphicsLayer {
+                        alpha = titleAlpha
+                    }
             )
             
             // Progress bar (for continue watching)

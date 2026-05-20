@@ -44,6 +44,7 @@ data class Series(
     val xtreamCast: String? = null,
     val xtreamDirector: String? = null,
     val xtreamGenre: String? = null,
+    val xtreamRating: String? = null,
     
     // TMDB enriched data
     val tmdbId: Int? = null,
@@ -70,7 +71,8 @@ data class Series(
     val addedAt: Long = System.currentTimeMillis(),
     val tmdbLastFetchAt: Long? = null,
     val playlistOrder: Int = 0,  // Position in M3U file (higher = added later by provider)
-
+    val year: Int? = null,
+    
     // New episode tracking
     val latestEpisodeAddedAt: Long? = null,
     val latestEpisodeSeason: Int? = null,
@@ -83,13 +85,16 @@ data class Series(
     val omdbAudienceScore: Int? = null,  // Popcornmeter (tomatoUserMeter)
     val omdbLastFetchAt: Long? = null
 ) {
-    // Convenience properties for UI
+    // Convenience properties for UI (Waterfall Logic)
     val posterUrl: String? get() = logoUrl ?: tmdbPosterPath?.let { "https://image.tmdb.org/t/p/w500$it" }
     val backdropUrl: String? get() = xtreamBackdropUrl ?: tmdbBackdropPath?.let { "https://image.tmdb.org/t/p/w1280$it" }
-    val rating: Float? get() = tmdbVoteAverage
+    val rating: Float? get() = xtreamRating?.toFloatOrNull() ?: tmdbVoteAverage ?: omdbImdbRating?.toFloatOrNull()
     val plot: String? get() = xtreamPlot ?: tmdbOverview
     val genre: String? get() = xtreamGenre ?: tmdbGenres
-    val year: Int? get() = tmdbFirstAirDate?.take(4)?.toIntOrNull()
+    val cast: String? get() = xtreamCast ?: tmdbCast
+    val director: String? get() = xtreamDirector // No tmdbDirector for series
     val imdbId: String? get() = null
     val title: String get() = tmdbName?.takeIf { it.isNotEmpty() } ?: name
 }
+
+

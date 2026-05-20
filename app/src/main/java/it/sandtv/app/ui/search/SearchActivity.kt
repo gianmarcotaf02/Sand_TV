@@ -35,7 +35,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.input.key.Key
@@ -65,6 +65,7 @@ import it.sandtv.app.data.database.entity.ContentType
 import it.sandtv.app.ui.details.DetailsActivity
 import it.sandtv.app.ui.player.PlayerActivity
 import it.sandtv.app.ui.theme.SandTVColors
+import it.sandtv.app.ui.theme.AppAnimations
 import it.sandtv.app.ui.theme.SandTVTheme
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -647,7 +648,10 @@ private fun SearchResultCard(
     
     Column(
         modifier = Modifier
-            .scale(scale)
+            .graphicsLayer {
+                scaleX = scale
+                scaleY = scale
+            }
             .width(140.dp)
             .focusable(interactionSource = interactionSource)
             .onPreviewKeyEvent { keyEvent ->

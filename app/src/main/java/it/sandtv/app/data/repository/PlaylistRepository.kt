@@ -167,11 +167,23 @@ class PlaylistRepository @Inject constructor(
         try {
             val apiUrl = "$baseUrl/player_api.php?username=$username&password=$password&action=get_series_info&series_id=$xtreamSeriesId"
             val response = downloadContent(apiUrl)
-            val seriesInfo = xtreamParser.parseSeriesInfo(response)
-            if (seriesInfo == null) return@withContext false
+            val seriesInfoResult = xtreamParser.parseSeriesInfo(response)
+            if (seriesInfoResult == null) return@withContext false
+            
+            // Save info back to Series DB
+            val info = seriesInfoResult.info
+            if (info != null) {
+                seriesDao.update(series.copy(
+                    xtreamPlot = info.plot ?: series.xtreamPlot,
+                    xtreamCast = info.cast ?: series.xtreamCast,
+                    xtreamDirector = info.director ?: series.xtreamDirector,
+                    xtreamGenre = info.genre ?: series.xtreamGenre,
+                    xtreamRating = info.rating ?: series.xtreamRating
+                ))
+            }
             
             val episodeEntities = mutableListOf<Episode>()
-            seriesInfo.episodes?.forEach { (seasonKey, episodeList) ->
+            seriesInfoResult.episodes?.forEach { (seasonKey, episodeList) ->
                 val seasonNum = seasonKey.toIntOrNull() ?: 1
                 episodeList.forEach { ep ->
                     val episodeNum = ep.episodeNum.takeIf { it > 0 } ?: return@forEach
@@ -282,6 +294,7 @@ class PlaylistRepository @Inject constructor(
                     xtreamStreamId = vod.id,
                     containerExtension = vod.extension,
                     year = vod.year?.toIntOrNull(),
+                    xtreamRating = vod.rating,
                     playlistOrder = (vod.added ?: index.toLong()).toInt()
                 )
             })
@@ -298,6 +311,11 @@ class PlaylistRepository @Inject constructor(
                     category = seriesCategoryMap[ser.categoryId] ?: "Uncategorized",
                     categoryId = ser.categoryId,
                     xtreamSeriesId = ser.id,
+                    xtreamRating = ser.rating,
+                    xtreamPlot = ser.plot,
+                    xtreamCast = ser.cast,
+                    xtreamDirector = ser.director,
+                    xtreamGenre = ser.genre,
                     playlistOrder = (ser.added ?: index.toLong()).toInt()
                 )
             })
@@ -381,14 +399,14 @@ class PlaylistRepository @Inject constructor(
                             moviesToUpdate.add(existing.copy(
                                 name = vod.name, streamUrl = streamUrl, logoUrl = vod.poster, xtreamBackdropUrl = vod.backdrop,
                                 category = categoryName, categoryId = vod.categoryId, containerExtension = vod.extension,
-                                year = vod.year?.toIntOrNull(), playlistOrder = playlistOrder
+                                year = vod.year?.toIntOrNull(), xtreamRating = vod.rating, playlistOrder = playlistOrder
                             ))
                         }
                     } else {
                         moviesToInsert.add(Movie(
                             playlistId = playlistId, name = vod.name, streamUrl = streamUrl, logoUrl = vod.poster, xtreamBackdropUrl = vod.backdrop,
                             category = categoryName, categoryId = vod.categoryId, xtreamStreamId = vod.id,
-                            containerExtension = vod.extension, year = vod.year?.toIntOrNull(), playlistOrder = playlistOrder
+                            containerExtension = vod.extension, year = vod.year?.toIntOrNull(), xtreamRating = vod.rating, playlistOrder = playlistOrder
                         ))
                     }
                 }
@@ -422,15 +440,22 @@ class PlaylistRepository @Inject constructor(
                         if (existing.name != ser.name || existing.logoUrl != ser.poster || existing.category != categoryName) {
                             seriesToUpdate.add(existing.copy(
                                 name = ser.name, logoUrl = ser.poster, xtreamBackdropUrl = ser.backdrop,
-                                category = categoryName, categoryId = ser.categoryId, playlistOrder = playlistOrder
+                                category = categoryName, categoryId = ser.categoryId, xtreamRating = ser.rating, 
+                                xtreamPlot = ser.plot, xtreamCast = ser.cast, xtreamDirector = ser.director, xtreamGenre = ser.genre,
+                                playlistOrder = playlistOrder
                             ))
                         } else {
-                            seriesToUpdate.add(existing.copy(playlistOrder = playlistOrder))
+                            seriesToUpdate.add(existing.copy(
+                                xtreamRating = ser.rating, xtreamPlot = ser.plot, xtreamCast = ser.cast, 
+                                xtreamDirector = ser.director, xtreamGenre = ser.genre, playlistOrder = playlistOrder
+                            ))
                         }
                     } else {
                         seriesToInsert.add(Series(
                             playlistId = playlistId, name = ser.name, logoUrl = ser.poster, xtreamBackdropUrl = ser.backdrop,
-                            category = categoryName, categoryId = ser.categoryId, xtreamSeriesId = ser.id, playlistOrder = playlistOrder
+                            category = categoryName, categoryId = ser.categoryId, xtreamSeriesId = ser.id, 
+                            xtreamRating = ser.rating, xtreamPlot = ser.plot, xtreamCast = ser.cast, 
+                            xtreamDirector = ser.director, xtreamGenre = ser.genre, playlistOrder = playlistOrder
                         ))
                     }
                 }

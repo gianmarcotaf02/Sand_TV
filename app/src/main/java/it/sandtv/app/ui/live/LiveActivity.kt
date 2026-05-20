@@ -15,6 +15,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.items
@@ -34,7 +35,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.focus.focusRequester
@@ -59,8 +60,11 @@ import it.sandtv.app.ui.multiscreen.MultiscreenActivity
 import it.sandtv.app.ui.player.PlayerActivity
 import it.sandtv.app.ui.search.SearchActivity
 import it.sandtv.app.ui.theme.SandTVColors
+import it.sandtv.app.ui.theme.AppAnimations
 import it.sandtv.app.ui.theme.SandTVTheme
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import it.sandtv.app.data.database.entity.FavoriteCategory
@@ -165,8 +169,10 @@ class LiveActivity : ComponentActivity() {
         }
         
         // Load EPG data if needed (respecting cache)
+        // EPG is already being loaded in background by LoadingActivity
+        // This LaunchedEffect only handles edge cases where LoadingActivity didn't load it
         LaunchedEffect(Unit) {
-            // Check if we already have valid data in RAM or Disk
+            // Check if we already have valid data in RAM
             if (epgRepository.isCacheValid()) {
                  isEpgLoading = false
                  return@LaunchedEffect
@@ -208,7 +214,7 @@ class LiveActivity : ComponentActivity() {
                 isLoading = true
                 
                 // Load channels based on category type
-                channels = if (cat == RECENT_CATEGORY) {
+                val loadedChannels = if (cat == RECENT_CATEGORY) {
                     val cutoff = System.currentTimeMillis() - RECENT_WINDOW_MS
                     val recentIds = recentlyWatchedDao.getRecentChannelIds(cutoff)
                     channelDao.getChannelsByIds(recentIds)
@@ -216,24 +222,19 @@ class LiveActivity : ComponentActivity() {
                     channelDao.getChannelsByCategoryList(cat)
                 }
                 
-                // Load EPG for channels (EPG should already be loaded)
-                val programs = mutableMapOf<Long, List<EpgProgram>>()
+                channels = loadedChannels
                 
-                channels.forEach { channel ->
-                    // Try multiple channel ID formats (like original code)
+                // Load EPG for channels in parallel
+                val programs = loadedChannels.map { channel ->
                     val channelIds = listOfNotNull(
                         channel.xtreamEpgChannelId,
                         channel.name,
                         channel.xtreamStreamId?.toString()
                     )
-                    
-                    var epgPrograms = emptyList<EpgProgram>()
-                    for (channelId in channelIds) {
-                        epgPrograms = epgRepository.getProgramsForChannel(channelId)
-                        if (epgPrograms.isNotEmpty()) break
+                    async(Dispatchers.Default) {
+                        channel.id to epgRepository.getProgramsForChannelWithFallback(channelIds)
                     }
-                    programs[channel.id] = epgPrograms
-                }
+                }.awaitAll().toMap()
                 
                 channelPrograms = programs
                 isLoading = false
@@ -248,11 +249,16 @@ class LiveActivity : ComponentActivity() {
             }
         }
         
+        // Derived state: compute current programs only when they actually change
+        // This avoids recomposing all channel cards every 60s when the program is still the same
+        val currentPrograms: Map<Long, EpgProgram?> = deriveCurrentPrograms(channels, channelPrograms, currentTime)
+        
         LiveScreen(
             categories = categories,
             selectedCategory = selectedCategory,
             channels = channels,
             channelPrograms = channelPrograms,
+            currentPrograms = currentPrograms,
             isGridMode = isGridMode,
             isLoading = isLoading,
             isEpgLoading = isEpgLoading,
@@ -295,6 +301,27 @@ private const val PIXELS_PER_MINUTE = 2
 private const val TIMELINE_HOURS = 6
 
 /**
+ * Derived state helper: computes current programs only when they actually change.
+ * This prevents unnecessary recompositions when currentTime ticks but the current program is still the same.
+ */
+@Composable
+private fun deriveCurrentPrograms(
+    channels: List<Channel>,
+    channelPrograms: Map<Long, List<EpgProgram>>,
+    currentTime: Long
+): Map<Long, EpgProgram?> {
+    return remember(channels, channelPrograms) {
+        derivedStateOf {
+            channels.associate { channel ->
+                val programs = channelPrograms[channel.id] ?: emptyList()
+                val currentProgram = programs.find { it.start <= currentTime && it.end > currentTime }
+                channel.id to currentProgram
+            }
+        }
+    }.value
+}
+
+/**
  * Live Screen Composable
  */
 @Composable
@@ -303,6 +330,7 @@ fun LiveScreen(
     selectedCategory: String?,
     channels: List<Channel>,
     channelPrograms: Map<Long, List<EpgProgram>>,
+    currentPrograms: Map<Long, EpgProgram?>,
     isGridMode: Boolean,
     isLoading: Boolean,
     isEpgLoading: Boolean,
@@ -396,9 +424,7 @@ fun LiveScreen(
                             tvGridItems(channels, key = { it.id }) { channel ->
                                 LiveChannelCard(
                                     channel = channel,
-                                    currentProgram = channelPrograms[channel.id]?.find { 
-                                        it.start <= currentTime && it.end > currentTime 
-                                    },
+                                    currentProgram = currentPrograms[channel.id],
                                     onClick = { onChannelClick(channel) }
                                 )
                             }
@@ -616,24 +642,23 @@ private fun EpgChannelRow(
             )
         }
         
-        // Programs timeline (horizontal scroll)
-        Row(
-            modifier = Modifier
-                .weight(1f)
-                .horizontalScroll(rememberScrollState()),
+        // Programs timeline (horizontal lazy row - only composes visible items)
+        LazyRow(
+            modifier = Modifier.weight(1f),
             horizontalArrangement = Arrangement.spacedBy(2.dp)
         ) {
             if (programs.isEmpty()) {
-                // No program placeholder - spans full timeline width
-                EpgProgramBlock(
-                    title = "Nessun programma disponibile",
-                    timeRange = "",
-                    durationMinutes = TIMELINE_HOURS * 60,
-                    isCurrent = false,
-                    isEmpty = true
-                )
+                item {
+                    EpgProgramBlock(
+                        title = "Nessun programma disponibile",
+                        timeRange = "",
+                        durationMinutes = TIMELINE_HOURS * 60,
+                        isCurrent = false,
+                        isEmpty = true
+                    )
+                }
             } else {
-                programs.forEach { program ->
+                items(programs, key = { it.start }) { program ->
                     val isCurrent = program.start <= currentTime && program.end > currentTime
                     val durationMinutes = ((program.end - program.start) / 60_000).toInt()
                     
@@ -1009,7 +1034,10 @@ private fun LiveChannelCard(
     
     Column(
         modifier = Modifier
-            .scale(scale)
+            .graphicsLayer {
+                scaleX = scale
+                scaleY = scale
+            }
             .width(140.dp)  // Reduced from 180.dp for more compact grid
             .focusable(interactionSource = interactionSource)
             .clickable(

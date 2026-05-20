@@ -71,8 +71,12 @@ class XtreamParser @Inject constructor() {
     fun parseVodStreams(json: String): List<XtreamVod> {
         return try {
             val array = JSONArray(json)
-            (0 until array.length()).map { i ->
-            val obj = array.getJSONObject(i)
+            (0 until array.length()).mapNotNull { i ->
+                val obj = array.getJSONObject(i)
+                val name = obj.optString("name", "")
+                
+                // Filter out category delimiters
+                if (isCategoryDelimiter(name)) return@mapNotNull null
                 // Debug: log raw poster fields for first 3 items
                 if (i < 3) {
                     Log.d(TAG, "VOD[$i] raw fields: cover='${obj.optString("cover", "")}' cover_big='${obj.optString("cover_big", "")}' stream_icon='${obj.optString("stream_icon", "")}' movie_image='${obj.optString("movie_image", "")}' icon='${obj.optString("icon", "")}' name='${obj.optString("name", "")}'")
@@ -94,7 +98,7 @@ class XtreamParser @Inject constructor() {
                     
                 XtreamVod(
                     id = obj.optInt("stream_id", 0),
-                    name = obj.optString("name", ""),
+                    name = name,
                     poster = posterUrl,
                     backdrop = backdropUrl,
                     categoryId = obj.optString("category_id", "").takeIf { it.isNotEmpty() },
@@ -121,8 +125,12 @@ class XtreamParser @Inject constructor() {
     fun parseSeries(json: String): List<XtreamSeries> {
         return try {
             val array = JSONArray(json)
-            (0 until array.length()).map { i ->
+            (0 until array.length()).mapNotNull { i ->
                 val obj = array.getJSONObject(i)
+                val name = obj.optString("name", "")
+                
+                // Filter out category delimiters
+                if (isCategoryDelimiter(name)) return@mapNotNull null
                 // Try multiple fields for poster URL
                 val posterUrl = obj.optString("cover", "").takeIf { it.isNotEmpty() }
                     ?: obj.optString("stream_icon", "").takeIf { it.isNotEmpty() }
@@ -137,12 +145,16 @@ class XtreamParser @Inject constructor() {
                     
                 XtreamSeries(
                     id = obj.optInt("series_id", 0),
-                    name = obj.optString("name", ""),
+                    name = name,
                     poster = posterUrl,
                     backdrop = backdropUrl,
                     categoryId = obj.optString("category_id", "").takeIf { it.isNotEmpty() },
                     rating = obj.optString("rating", "").takeIf { it.isNotEmpty() },
                     year = obj.optString("year", "").takeIf { it.isNotEmpty() },
+                    plot = obj.optString("plot", "").takeIf { it.isNotEmpty() },
+                    cast = obj.optString("cast", "").takeIf { it.isNotEmpty() },
+                    director = obj.optString("director", "").takeIf { it.isNotEmpty() },
+                    genre = obj.optString("genre", "").takeIf { it.isNotEmpty() },
                     added = addedTimestamp
                 )
             }
@@ -223,6 +235,18 @@ class XtreamParser @Inject constructor() {
             null
         }
     }
+    
+    /**
+     * Checks if an item name is actually a category delimiter 
+     * (e.g. "- - - - Scary Movie - - - -", "=== ACTION ===", "*** Kids ***")
+     */
+    private fun isCategoryDelimiter(name: String): Boolean {
+        val trimmed = name.trim()
+        // Matches at least 3 occurrences of special characters (-, =, *, ~, |, <, >) with optional spaces
+        // at the very beginning of the name.
+        val delimiterPattern = Regex("^([_\\\\=*~|><-]\\s*){3,}.*")
+        return delimiterPattern.matches(trimmed)
+    }
 }
 
 // Simple data classes without annotations
@@ -261,6 +285,10 @@ data class XtreamSeries(
     val categoryId: String?,
     val rating: String?,
     val year: String?,
+    val plot: String? = null,
+    val cast: String? = null,
+    val director: String? = null,
+    val genre: String? = null,
     val added: Long? = null  // Unix timestamp when content was added by provider
 )
 

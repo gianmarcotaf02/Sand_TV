@@ -21,7 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -35,6 +35,7 @@ import androidx.tv.material3.*
 import dagger.hilt.android.AndroidEntryPoint
 import it.sandtv.app.R
 import it.sandtv.app.ui.theme.SandTVColors
+import it.sandtv.app.ui.theme.AppAnimations
 import it.sandtv.app.ui.theme.SandTVTheme
 import coil.compose.AsyncImage
 
@@ -161,7 +162,10 @@ fun SerieATabButton(
     Button(
         onClick = onClick,
         modifier = Modifier
-            .scale(scale)
+            .graphicsLayer {
+                scaleX = scale
+                scaleY = scale
+            }
             .onFocusChanged { isFocused = it.isFocused },
         colors = ButtonDefaults.colors(
             containerColor = backgroundColor,

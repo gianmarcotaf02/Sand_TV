@@ -8,7 +8,9 @@ import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.*
 import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.*
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -31,7 +33,9 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.zIndex
-import androidx.compose.ui.draw.scale
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
@@ -49,6 +53,7 @@ import it.sandtv.app.data.database.entity.ContentType
 import it.sandtv.app.data.database.entity.CustomGroup
 import it.sandtv.app.data.database.entity.Episode
 import it.sandtv.app.ui.theme.SandTVColors
+import it.sandtv.app.ui.theme.AppAnimations
 import it.sandtv.app.ui.theme.SandTVTheme
 import it.sandtv.app.util.TitleCleaner
 
@@ -187,11 +192,20 @@ fun DetailsScreen(
             .fillMaxSize()
             .background(SandTVColors.BackgroundDark)
     ) {
-        // Full content fade-in: everything appears at once with a smooth dissolve
-        // While loading, the screen stays dark (BackgroundDark). When ready → fade in.
+        // Skeleton loader while fetching content
+        AnimatedVisibility(
+            visible = state.isLoading,
+            enter = fadeIn(tween(300)),
+            exit = fadeOut(tween(400))
+        ) {
+            DetailsSkeletonLoader()
+        }
+        
+        // Full content fade-in
         AnimatedVisibility(
             visible = !state.isLoading,
-            enter = fadeIn(tween(600))
+            enter = fadeIn(tween(600)),
+            exit = fadeOut(tween(300))
         ) {
             Box(modifier = Modifier.fillMaxSize()) {
         // Backdrop image - FULLSCREEN, shifted RIGHT
@@ -666,7 +680,10 @@ private fun DetailsTopBar(
     Row(modifier = modifier) {
         Box(
             modifier = Modifier
-                .scale(scale)
+                .graphicsLayer {
+                scaleX = scale
+                scaleY = scale
+            }
                 .size(48.dp)
                 .clip(CircleShape)
                 .background(SandTVColors.BackgroundTertiary.copy(alpha = 0.8f))
@@ -869,7 +886,10 @@ private fun PlayButton(
     
     Box(
         modifier = Modifier
-            .scale(scale)
+            .graphicsLayer {
+                scaleX = scale
+                scaleY = scale
+            }
             .widthIn(min = 100.dp, max = 160.dp)  // Narrower: no icon buttons squishing
             .height(52.dp)
             .border(3.dp, borderColor, RoundedCornerShape(12.dp))
@@ -1009,7 +1029,10 @@ private fun FavoriteButton(
     
     Box(
         modifier = Modifier
-            .scale(focusScale)
+            .graphicsLayer {
+                scaleX = focusScale
+                scaleY = focusScale
+            }
             .size(52.dp)
             .clip(CircleShape)
             .background(backgroundColor)
@@ -1028,7 +1051,10 @@ private fun FavoriteButton(
             tint = heartColor,
             modifier = Modifier
                 .size(26.dp)
-                .scale(animatedBounce)
+                .graphicsLayer {
+                scaleX = animatedBounce
+                scaleY = animatedBounce
+            }
         )
     }
 }
@@ -1085,7 +1111,10 @@ private fun MarkAsWatchedButton(
     
     Box(
         modifier = Modifier
-            .scale(focusScale)
+            .graphicsLayer {
+                scaleX = focusScale
+                scaleY = focusScale
+            }
             .size(52.dp)
             .clip(CircleShape)
             .background(backgroundColor)
@@ -1163,7 +1192,10 @@ private fun DownloadButton(
     
     Box(
         modifier = Modifier
-            .scale(focusScale)
+            .graphicsLayer {
+                scaleX = focusScale
+                scaleY = focusScale
+            }
             .size(52.dp)
             .clip(CircleShape)
             .background(backgroundColor)
@@ -1269,7 +1301,10 @@ private fun EpisodesSectionHeader(
             
             Box(
                 modifier = Modifier
-                    .scale(seasonDownloadScale)
+                    .graphicsLayer {
+                    scaleX = seasonDownloadScale
+                    scaleY = seasonDownloadScale
+                }
                     .size(36.dp)
                     .clip(CircleShape)
                     .background(seasonDownloadBg)
@@ -1379,7 +1414,10 @@ private fun SeasonTab(
     
     Box(
         modifier = Modifier
-            .scale(scale)
+            .graphicsLayer {
+                scaleX = scale
+                scaleY = scale
+            }
             .clip(RoundedCornerShape(8.dp))
             .background(backgroundColor)
             .focusable(interactionSource = interactionSource)
@@ -1457,7 +1495,10 @@ private fun EpisodeCard(
         Row(
             modifier = Modifier
                 .weight(1f)
-                .scale(scale)
+                .graphicsLayer {
+                scaleX = scale
+                scaleY = scale
+            }
                 .clip(RoundedCornerShape(8.dp))
                 .border(2.dp, borderColor, RoundedCornerShape(8.dp))
                 .background(backgroundColor)
@@ -1659,7 +1700,10 @@ private fun EpisodeCard(
         
         Box(
             modifier = Modifier
-                .scale(downloadScale)
+                .graphicsLayer {
+                scaleX = downloadScale
+                scaleY = downloadScale
+            }
                 .size(44.dp)
                 .clip(CircleShape)
                 .background(downloadBg)
@@ -1750,7 +1794,10 @@ private fun TrailerButton(
 
     Box(
         modifier = Modifier
-            .scale(scale)
+            .graphicsLayer {
+                scaleX = scale
+                scaleY = scale
+            }
             .size(52.dp)
             .clip(CircleShape)
             .background(backgroundColor)
@@ -1838,7 +1885,10 @@ private fun AddToListButton(
     Box {
         Box(
             modifier = Modifier
-                .scale(scale)
+                .graphicsLayer {
+                scaleX = scale
+                scaleY = scale
+            }
                 .size(52.dp)
                 .clip(CircleShape) // Changed to CircleShape
                 .background(backgroundColor)
@@ -1998,5 +2048,88 @@ private fun DetailsScreenPreview() {
             onSeasonSelected = {},
             onEpisodeClick = {}
         )
+    }
+}
+
+@Composable
+fun DetailsSkeletonLoader(modifier: Modifier = Modifier) {
+    val infiniteTransition = rememberInfiniteTransition(label = "shimmer_details")
+    
+    val shimmerOffset by infiniteTransition.animateFloat(
+        initialValue = -1f,
+        targetValue = 2f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(1500, easing = LinearEasing),
+            repeatMode = RepeatMode.Restart
+        ),
+        label = "shimmerOffset_details"
+    )
+    val pulseAlpha by infiniteTransition.animateFloat(
+        initialValue = 0.5f,
+        targetValue = 0.9f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(1200, easing = FastOutSlowInEasing, delayMillis = 100),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "pulseAlpha_details"
+    )
+    
+    val shimmerBrush = Brush.linearGradient(
+        colors = listOf(
+            SandTVColors.BackgroundSecondary.copy(alpha = pulseAlpha),
+            SandTVColors.BackgroundTertiary.copy(alpha = pulseAlpha),
+            SandTVColors.BackgroundSecondary.copy(alpha = pulseAlpha)
+        ),
+        start = Offset(shimmerOffset * 1000f, 0f),
+        end = Offset((shimmerOffset + 1f) * 1000f, 0f)
+    )
+
+    Box(modifier = modifier.fillMaxSize().background(SandTVColors.BackgroundDark)) {
+        // Main content row (similar layout to the loaded state)
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(start = 56.dp, end = 56.dp, top = 64.dp, bottom = 48.dp)
+        ) {
+            // Left column (Poster placeholder)
+            Box(
+                modifier = Modifier
+                    .width(150.dp)
+                    .height(225.dp)
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(shimmerBrush)
+            )
+            
+            Spacer(modifier = Modifier.width(32.dp))
+            
+            // Right column (Info placeholders)
+            Column(modifier = Modifier.weight(1f)) {
+                // Title
+                Box(modifier = Modifier.width(300.dp).height(40.dp).clip(RoundedCornerShape(4.dp)).background(shimmerBrush))
+                Spacer(modifier = Modifier.height(16.dp))
+                // Year/Genre
+                Box(modifier = Modifier.width(200.dp).height(20.dp).clip(RoundedCornerShape(4.dp)).background(shimmerBrush))
+                Spacer(modifier = Modifier.height(24.dp))
+                // Ratings
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    repeat(3) {
+                        Box(modifier = Modifier.width(60.dp).height(30.dp).clip(RoundedCornerShape(4.dp)).background(shimmerBrush))
+                    }
+                }
+                Spacer(modifier = Modifier.height(32.dp))
+                // Buttons
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Box(modifier = Modifier.width(140.dp).height(48.dp).clip(RoundedCornerShape(24.dp)).background(shimmerBrush))
+                    Box(modifier = Modifier.width(48.dp).height(48.dp).clip(CircleShape).background(shimmerBrush))
+                    Box(modifier = Modifier.width(48.dp).height(48.dp).clip(CircleShape).background(shimmerBrush))
+                }
+                Spacer(modifier = Modifier.height(32.dp))
+                // Overview
+                repeat(3) {
+                    Box(modifier = Modifier.fillMaxWidth(0.8f - (it * 0.1f)).height(16.dp).clip(RoundedCornerShape(4.dp)).background(shimmerBrush))
+                    Spacer(modifier = Modifier.height(8.dp))
+                }
+            }
+        }
     }
 }

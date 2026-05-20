@@ -56,7 +56,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.scale
+import androidx.compose.ui.draw.drawWithCache
+import it.sandtv.app.ui.theme.AppAnimations
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusRequester
@@ -234,13 +235,20 @@ private fun TvHomeScreenContent(
                         // Back Button
                         val backInteractionSource = remember { MutableInteractionSource() }
                         val isBackFocused by backInteractionSource.collectIsFocusedAsState()
-                        val backScale by animateFloatAsState(targetValue = if (isBackFocused) 1.1f else 1f, label = "backScale")
+                        val backScale by animateFloatAsState(
+                            targetValue = if (isBackFocused) 1.1f else 1f,
+                            animationSpec = AppAnimations.SpringCardFocus,
+                            label = "backScale"
+                        )
                         
                         Box(
                             contentAlignment = Alignment.Center,
                             modifier = Modifier
                                 .size(40.dp)
-                                .scale(backScale)
+                                .graphicsLayer {
+                                    scaleX = backScale
+                                    scaleY = backScale
+                                }
                                 .background(
                                     color = if (isBackFocused) SandTVColors.Accent else SandTVColors.BackgroundTertiary,
                                     shape = CircleShape
@@ -326,7 +334,11 @@ private fun TvHomeScreenContent(
                                     isFocused = focusState.isFocused
                                 }
                                 .focusable()
-                                .scale(if (isFocused) 1.05f else 1f)
+                                .graphicsLayer {
+                                    val s = if (isFocused) AppAnimations.GridItemFocusScale else 1f
+                                    scaleX = s
+                                    scaleY = s
+                                }
                                 .clickable { onItemClick(item) }
                         ) {
                             // Poster image with fixed height
@@ -375,7 +387,6 @@ private fun TvHomeScreenContent(
                 }
             }
         } else if (state.isFavoritesTab && state.carouselRows.isEmpty()) {
-            android.util.Log.d("TvHomeScreenDebug", "BRANCH: Favorites empty")
             // Empty state for Favorites/Preferiti tab
             Column(
                 modifier = Modifier
@@ -409,7 +420,6 @@ private fun TvHomeScreenContent(
                 )
             }
         } else if (state.isListsTab && state.carouselRows.isEmpty()) {
-            android.util.Log.d("TvHomeScreenDebug", "BRANCH: Lists empty")
             // Empty state for Lists tab - show create first list prompt
             Column(
                 modifier = Modifier
@@ -452,13 +462,17 @@ private fun TvHomeScreenContent(
                 val isCreateFocused by createButtonInteractionSource.collectIsFocusedAsState()
                 
                 val buttonScale by animateFloatAsState(
-                    targetValue = if (isCreateFocused) 1.05f else 1f,
+                    targetValue = if (isCreateFocused) AppAnimations.ButtonFocusScale else 1f,
+                    animationSpec = AppAnimations.SpringButtonPress,
                     label = "createButtonScale"
                 )
                 
                 Box(
                     modifier = Modifier
-                        .scale(buttonScale)
+                        .graphicsLayer {
+                            scaleX = buttonScale
+                            scaleY = buttonScale
+                        }
                         .clip(RoundedCornerShape(12.dp))
                         .background(if (isCreateFocused) SandTVColors.AccentLight else SandTVColors.Accent)
                         .focusable(interactionSource = createButtonInteractionSource)
@@ -490,7 +504,6 @@ private fun TvHomeScreenContent(
                 }
             }
         } else if (state.isHistoryTab && state.carouselRows.isEmpty()) {
-            android.util.Log.d("TvHomeScreenDebug", "BRANCH: History empty")
             // Empty state for History tab
             Column(
                 modifier = Modifier
@@ -524,11 +537,9 @@ private fun TvHomeScreenContent(
                 )
             }
         } else if (state.carouselRows.isEmpty() && state.heroItems.isEmpty()) {
-            android.util.Log.d("TvHomeScreenDebug", "BRANCH: Content loading in background, showing skeleton")
             // Content is loading in background - show skeleton loading
             SkeletonLoader()
         } else {
-            android.util.Log.d("TvHomeScreenDebug", "BRANCH: Normal carousel mode")
             // Carousel mode - hero is first item in TvLazyColumn
             // Simple layout: hero -> carousel rows, normal focus chain
             val coroutineScope = rememberCoroutineScope()
@@ -636,7 +647,33 @@ private fun TvHomeScreenContent(
                         
                             // Add spacing above rows to avoid them being stuck at the very top
                         // contentPadding handles general top, but specific item padding helps pivot alignment
-                        Column {
+                        // Stagger entrance animation
+                        var isVisible by remember { mutableStateOf(false) }
+                        LaunchedEffect(row.title) {
+                            // Delay based on index to create stagger effect (cap at 5 items)
+                            val staggerDelay = minOf(index, 5) * 100L
+                            delay(staggerDelay)
+                            isVisible = true
+                        }
+                        
+                        val rowAlpha by animateFloatAsState(
+                            targetValue = if (isVisible) 1f else 0f,
+                            animationSpec = tween(durationMillis = 600, easing = androidx.compose.animation.core.FastOutSlowInEasing),
+                            label = "rowAlpha"
+                        )
+                        
+                        val rowOffsetY by androidx.compose.animation.core.animateDpAsState(
+                            targetValue = if (isVisible) 0.dp else 40.dp,
+                            animationSpec = spring(dampingRatio = 0.8f, stiffness = 300f),
+                            label = "rowOffset"
+                        )
+                        
+                        Column(
+                            modifier = Modifier.graphicsLayer {
+                                alpha = rowAlpha
+                                translationY = rowOffsetY.toPx()
+                            }
+                        ) {
                             Spacer(modifier = Modifier.height(30.dp))
                             
                             // First carousel with Hero: intercept UP to return to Hero
@@ -836,34 +873,16 @@ fun HeroBanner(
                         .fillMaxHeight()
                         .fillMaxWidth(0.60f)  // 60% width instead of full
                         .align(Alignment.CenterEnd)  // Align to right side
-                )
-
-                
-                
-                
-                // Top fade - pure black for backdrop fade
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(100.dp)
-                        .align(Alignment.TopCenter)
-                        .background(
-                            brush = Brush.verticalGradient(
-                                colors = listOf(
-                                    Color.Black,
-                                    Color.Black.copy(alpha = 0.7f),
-                                    Color.Transparent
-                                )
+                        .drawWithCache {
+                            val topGradient = Brush.verticalGradient(
+                                colors = listOf(Color.Black, Color.Black.copy(alpha = 0.7f), Color.Transparent),
+                                endY = 100.dp.toPx()
                             )
-                        )
-                )
-                
-                // Left fade - strong black for text readability
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(
-                            brush = Brush.horizontalGradient(
+                            val bottomGradient = Brush.verticalGradient(
+                                colors = listOf(Color.Transparent, Color.Black),
+                                startY = this.size.height - 100.dp.toPx()
+                            )
+                            val leftGradient = Brush.horizontalGradient(
                                 colorStops = arrayOf(
                                     0f to Color.Black,
                                     0.30f to Color.Black.copy(alpha = 0.98f),
@@ -872,36 +891,18 @@ fun HeroBanner(
                                     0.80f to Color.Transparent
                                 )
                             )
-                        )
-                )
-                
-                // Right fade - subtle black
-                Box(
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .width(100.dp)
-                        .align(Alignment.CenterEnd)
-                        .background(
-                            brush = Brush.horizontalGradient(
-                                colors = listOf(
-                                    Color.Transparent,
-                                    Color.Black.copy(alpha = 0.6f)
-                                )
+                            val rightGradient = Brush.horizontalGradient(
+                                colors = listOf(Color.Transparent, Color.Black.copy(alpha = 0.6f)),
+                                startX = this.size.width - 100.dp.toPx()
                             )
-                        )
-                )
-                
-                // Bottom fade - for smooth transition
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(100.dp)
-                        .align(Alignment.BottomCenter)
-                        .background(
-                            brush = Brush.verticalGradient(
-                                colors = listOf(Color.Transparent, Color.Black)
-                            )
-                        )
+                            onDrawWithContent {
+                                drawContent()
+                                drawRect(topGradient)
+                                drawRect(bottomGradient)
+                                drawRect(leftGradient)
+                                drawRect(rightGradient)
+                            }
+                        }
                 )
                 
                 // Content - inside animation block for full slide effect
@@ -1131,7 +1132,8 @@ fun HeroBanner(
                             LaunchedEffect(isPlayFocused) { isPaused = isPlayFocused }
                             
                             val playScale by animateFloatAsState(
-                                targetValue = if (isPlayFocused) 1.1f else 1f,  // Increased from 1.05f for better visibility
+                                targetValue = if (isPlayFocused) 1.1f else 1f,
+                                animationSpec = AppAnimations.SpringButtonPress,
                                 label = "playScale"
                             )
                             
@@ -1157,7 +1159,10 @@ fun HeroBanner(
                             Button(
                                 onClick = onPlayClick,
                                 modifier = Modifier
-                                    .scale(playScale)
+                                    .graphicsLayer {
+                                        scaleX = playScale
+                                        scaleY = playScale
+                                    }
                                     .then(if (playButtonFocusRequester != null) Modifier.focusRequester(playButtonFocusRequester) else Modifier)
                                     .focusProperties {
                                         // Redirect UP navigation to TopBar
@@ -1399,7 +1404,8 @@ private fun HeroButton(
     }
     
     val scale by animateFloatAsState(
-        targetValue = if (isFocused) 1.05f else 1f,
+        targetValue = if (isFocused) AppAnimations.ButtonFocusScale else 1f,
+        animationSpec = AppAnimations.SpringButtonPress,
         label = "heroButtonScale"
     )
     
@@ -1415,7 +1421,10 @@ private fun HeroButton(
     Box(
         modifier = Modifier
             .wrapContentWidth()
-            .scale(scale)
+            .graphicsLayer {
+                scaleX = scale
+                scaleY = scale
+            }
             .clip(RoundedCornerShape(8.dp))
     ) {
         // Button content
@@ -1523,7 +1532,8 @@ private fun HeroIconButton(
     )
     
     val scale by animateFloatAsState(
-        targetValue = if (isFocused) 1.15f else 1f,
+        targetValue = if (isFocused) AppAnimations.IconButtonFocusScale else 1f,
+        animationSpec = AppAnimations.SpringCardFocus,
         label = "heroIconButtonScale"
     )
     
@@ -1537,7 +1547,6 @@ private fun HeroIconButton(
             isFocused -> SandTVColors.Accent
             else -> SandTVColors.BackgroundSecondary.copy(alpha = 0.5f)
         },
-        animationSpec = spring(dampingRatio = 0.6f, stiffness = 300f),
         label = "heroBtnBg"
     )
     
@@ -1548,20 +1557,21 @@ private fun HeroIconButton(
             isFocused -> SandTVColors.Accent  // Accent when focused
             else -> SandTVColors.TextSecondary.copy(alpha = 0.7f)  // Visible default
         },
-        animationSpec = spring(dampingRatio = 0.6f, stiffness = 300f),
         label = "heroBtnBorder"
     )
     
     // Icon tint - matches FavoriteButton exactly
     val iconTint by animateColorAsState(
         targetValue = if (isActive) activeColor else SandTVColors.TextPrimary,
-        animationSpec = spring(dampingRatio = 0.5f, stiffness = 400f),
         label = "heroBtnTint"
     )
     
     Box(
         modifier = Modifier
-            .scale(scale)
+            .graphicsLayer {
+                scaleX = scale
+                scaleY = scale
+            }
             .size(48.dp)
             .clip(CircleShape)
             .background(backgroundColor)
@@ -1593,7 +1603,10 @@ private fun HeroIconButton(
             tint = iconTint,
             modifier = Modifier
                 .size(24.dp)
-                .scale(animatedBounce)
+                .graphicsLayer {
+                    scaleX = animatedBounce
+                    scaleY = animatedBounce
+                }
         )
     }
 }
@@ -1620,7 +1633,8 @@ private fun HeroIconButton(
     }
     
     val scale by animateFloatAsState(
-        targetValue = if (isFocused) 1.15f else 1f,
+        targetValue = if (isFocused) AppAnimations.IconButtonFocusScale else 1f,
+        animationSpec = AppAnimations.SpringCardFocus,
         label = "heroIconButtonScale"
     )
     
@@ -1631,7 +1645,6 @@ private fun HeroIconButton(
             isFocused -> SandTVColors.Accent
             else -> SandTVColors.BackgroundSecondary.copy(alpha = 0.5f)
         },
-        animationSpec = spring(dampingRatio = 0.6f, stiffness = 300f),
         label = "heroBtnBg"
     )
     
@@ -1642,20 +1655,21 @@ private fun HeroIconButton(
             isFocused -> SandTVColors.Accent
             else -> SandTVColors.TextSecondary.copy(alpha = 0.7f)
         },
-        animationSpec = spring(dampingRatio = 0.6f, stiffness = 300f),
         label = "heroBtnBorder"
     )
     
     // Icon tint
     val iconTint by animateColorAsState(
         targetValue = if (isActive) Color(0xFFE91E63) else SandTVColors.TextPrimary,
-        animationSpec = spring(dampingRatio = 0.5f, stiffness = 400f),
         label = "heroBtnTint"
     )
     
     Box(
         modifier = Modifier
-            .scale(scale)
+            .graphicsLayer {
+                scaleX = scale
+                scaleY = scale
+            }
             .size(48.dp)
             .clip(CircleShape)
             .background(backgroundColor)
@@ -1707,6 +1721,7 @@ private fun HeroTrailerButton(
     
     val scale by animateFloatAsState(
         targetValue = if (isFocused) 1.1f else 1f,
+        animationSpec = AppAnimations.SpringCardFocus,
         label = "heroTrailerScale"
     )
     
@@ -1717,7 +1732,10 @@ private fun HeroTrailerButton(
     
     Box(
         modifier = Modifier
-            .scale(scale)
+            .graphicsLayer {
+                scaleX = scale
+                scaleY = scale
+            }
             .size(48.dp)
             .clip(CircleShape)
             .border(1.dp, SandTVColors.TextSecondary.copy(alpha = 0.5f), CircleShape)
@@ -1753,7 +1771,8 @@ private fun HeroNavArrow(
     val isFocused by interactionSource.collectIsFocusedAsState()
     
     val scale by animateFloatAsState(
-        targetValue = if (isFocused) 1.15f else 1f,
+        targetValue = if (isFocused) AppAnimations.IconButtonFocusScale else 1f,
+        animationSpec = AppAnimations.SpringCardFocus,
         label = "arrowScale"
     )
     
@@ -1769,7 +1788,10 @@ private fun HeroNavArrow(
     
     Box(
         modifier = modifier
-            .scale(scale)
+            .graphicsLayer {
+                scaleX = scale
+                scaleY = scale
+            }
             .size(48.dp)
             .clip(CircleShape)
             .border(3.dp, borderColor, CircleShape)
@@ -1855,7 +1877,8 @@ fun CategoryFilterButton(
     val isFocused by interactionSource.collectIsFocusedAsState()
     
     val scale by animateFloatAsState(
-        targetValue = if (isFocused) 1.05f else 1f,
+        targetValue = if (isFocused) AppAnimations.ButtonFocusScale else 1f,
+        animationSpec = AppAnimations.SpringButtonPress,
         label = "filterButtonScale"
     )
     
@@ -1863,7 +1886,10 @@ fun CategoryFilterButton(
         // Filter button
         Row(
             modifier = Modifier
-                .scale(scale)
+                .graphicsLayer {
+                    scaleX = scale
+                    scaleY = scale
+                }
                 .clip(RoundedCornerShape(8.dp))
                 .background(
                     if (isFocused) SandTVColors.Accent 

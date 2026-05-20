@@ -494,6 +494,12 @@ class TMDBService @Inject constructor(
             return true
         }
         
+        // Filter category delimiters disguised as titles (e.g. "- - - - Scary Movie - - - -")
+        if (Regex("^([_\\\\=*~|><-]\\s*){3,}.*").matches(title.trim())) {
+            Log.d(TAG, "shouldExcludeContent: '$title' -> EXCLUDED (Delimiter filter)")
+            return true
+        }
+        
         return false
     }
     
@@ -712,13 +718,15 @@ class TMDBService @Inject constructor(
      */
     private fun normalizeTitle(title: String): String {
         return title.lowercase()
-            .replace(Regex("[^a-z0-9àèéìòù]"), "")
             .replace("à", "a")
             .replace("è", "e")
             .replace("é", "e")
             .replace("ì", "i")
             .replace("ò", "o")
             .replace("ù", "u")
+            .replace(Regex("[^a-z0-9 ]"), " ")
+            .trim()
+            .replace(Regex("\\s+"), " ")
     }
     
     /**
@@ -816,6 +824,17 @@ class TMDBService @Inject constructor(
     }
     
     /**
+     * Check if a movie is sufficiently enriched by the provider data
+     * (Trama, Backdrop, Poster) to skip TMDB lookup
+     */
+    private fun isSufficientlyEnriched(movie: Movie): Boolean {
+        val hasPlot = !movie.xtreamPlot.isNullOrEmpty()
+        val hasBackdrop = !movie.xtreamBackdropUrl.isNullOrEmpty()
+        val hasPoster = !movie.logoUrl.isNullOrEmpty()
+        return hasPlot && hasBackdrop && hasPoster
+    }
+
+    /**
      * Enrich movie with TMDB details (plot, cast, director, runtime)
      * Called on-demand when opening movie details
      * Uses multiple search strategies for better matching
@@ -823,6 +842,12 @@ class TMDBService @Inject constructor(
     suspend fun enrichMovieDetails(movie: Movie): Movie = withContext(Dispatchers.IO) {
         Log.d(TAG, "===== ENRICH START: '${movie.name}' =====")
         Log.d(TAG, "Movie state: tmdbId=${movie.tmdbId}, tmdbVoteAverage=${movie.tmdbVoteAverage}, tmdbOriginalTitle=${movie.tmdbOriginalTitle}, tmdbLastFetchAt=${movie.tmdbLastFetchAt}")
+        
+        // Skip Intelligent: if sufficiently enriched by provider, skip TMDB lookup
+        if (isSufficientlyEnriched(movie) && movie.tmdbId == null) {
+            Log.d(TAG, "SKIP: Movie '${movie.name}' is sufficiently enriched by provider, skipping TMDB match")
+            return@withContext movie
+        }
         
         // Skip if already enriched recently AND has TMDB data AND has original title (for OMDB fallback) AND has trailer key
         val hasRealData = movie.tmdbId != null && movie.tmdbOverview != null && movie.tmdbOriginalTitle != null && movie.tmdbTrailerKey != null
@@ -1362,18 +1387,46 @@ class TMDBService @Inject constructor(
              return match
         }
         
-        // 2. CONTAINS match
+        // 2. CONTAINS match with WORD BOUNDARIES
         if (nLocal.length > 3 && nTmdb.length > 3) {
-            if (nLocal.contains(nTmdb) || nTmdb.contains(nLocal)) {
-                // If titles are very similar (e.g. starts with), allow permissive year check
-                if (nLocal.startsWith(nTmdb) || nTmdb.startsWith(nLocal)) {
-                     val match = isSameYear(localYear, tmdbYear)
-                     if (match) Log.d(TAG, "MATCH START: '$localTitle' ~= '$tmdbTitle' (Years: L=$localYear T=$tmdbYear)")
-                     return match
+            val wordsLocal = nLocal.split(" ")
+            val wordsTmdb = nTmdb.split(" ")
+            
+            // Check if local title starts with the exact TMDB words
+            var startsWithWord = false
+            if (wordsLocal.size >= wordsTmdb.size && wordsTmdb.isNotEmpty()) {
+                startsWithWord = true
+                for (i in wordsTmdb.indices) {
+                    if (wordsLocal[i] != wordsTmdb[i]) {
+                        startsWithWord = false
+                        break
+                    }
                 }
-                // Otherwise require strict year check to avoid false positives
+            }
+            
+            if (startsWithWord) {
+                // If it starts with the exact TMDB words, check lengths
+                // "Michael Jackson" vs "Michael" is a false positive because the lengths differ greatly
+                val isLengthSimilar = nLocal.length <= nTmdb.length * 1.5
+                
+                if (isLengthSimilar) {
+                    val match = isSameYear(localYear, tmdbYear)
+                    if (match) Log.d(TAG, "MATCH START_PERMISSIVE: '$localTitle' ~= '$tmdbTitle'")
+                    return match
+                } else {
+                    val match = isSameYearStrict(localYear, tmdbYear)
+                    if (match) Log.d(TAG, "MATCH START_STRICT: '$localTitle' ~= '$tmdbTitle'")
+                    return match
+                }
+            }
+            
+            // Fallback: Check if nLocal contains nTmdb as a whole phrase (word boundaries)
+            val escapedTmdb = Regex.escape(nTmdb)
+            val containsWord = Regex("\\b$escapedTmdb\\b").containsMatchIn(nLocal)
+            
+            if (containsWord) {
                 val match = isSameYearStrict(localYear, tmdbYear)
-                if (match) Log.d(TAG, "MATCH STRICT: '$localTitle' ~= '$tmdbTitle' (Years: L=$localYear T=$tmdbYear)")
+                if (match) Log.d(TAG, "MATCH CONTAINS_STRICT: '$localTitle' ~= '$tmdbTitle'")
                 return match
             }
         }

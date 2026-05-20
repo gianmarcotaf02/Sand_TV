@@ -33,6 +33,7 @@ import it.sandtv.app.ui.home.CarouselItem
 import it.sandtv.app.ui.home.CarouselRow
 import it.sandtv.app.ui.components.CategoryCard
 import it.sandtv.app.ui.theme.SandTVColors
+import it.sandtv.app.ui.theme.AppAnimations
 
 /**
  * TV-optimized carousel row using TvLazyRow
@@ -177,7 +178,8 @@ private fun TvSeeAllCard(onClick: () -> Unit) {
     val isFocused by interactionSource.collectIsFocusedAsState()
     
     val scale by androidx.compose.animation.core.animateFloatAsState(
-        targetValue = if (isFocused) 1.08f else 1f,
+        targetValue = if (isFocused) AppAnimations.CardFocusScale else 1f,
+        animationSpec = AppAnimations.SpringCardFocus,
         label = "seeAllCardScale"
     )
     

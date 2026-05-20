@@ -19,7 +19,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import it.sandtv.app.data.database.entity.ContinueWatchingItem
 import it.sandtv.app.ui.theme.SandTVColors
+import it.sandtv.app.ui.theme.AppAnimations
 
 /**
  * Continue Watching Carousel - Shows in-progress content with progress bar
@@ -92,7 +93,10 @@ private fun ContinueWatchingCard(
     
     Column(
         modifier = Modifier
-            .scale(scale)
+            .graphicsLayer {
+                scaleX = scale
+                scaleY = scale
+            }
             .width(160.dp)
             .focusable(interactionSource = interactionSource)
             .clickable(

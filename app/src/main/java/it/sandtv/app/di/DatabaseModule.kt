@@ -86,8 +86,13 @@ object DatabaseModule {
      */
     private val MIGRATION_9_10 = object : Migration(9, 10) {
         override fun migrate(db: SupportSQLiteDatabase) {
-            // Migration for team_channel_map was added directly in version 10
-            // No actions needed here if table already exists
+            // Create team_channel_map table (for Serie A team-channel mapping)
+            db.execSQL("""
+                CREATE TABLE IF NOT EXISTS team_channel_map (
+                    teamName TEXT NOT NULL PRIMARY KEY,
+                    channelIds TEXT NOT NULL
+                )
+            """)
         }
     }
     
@@ -186,6 +191,31 @@ object DatabaseModule {
         }
     }
     
+    /**
+     * Migration from version 15 to 16:
+     * - Add xtreamRating and xtreamYoutubeTrailer columns to movies table
+     * - Add xtreamRating column to series table
+     */
+    private val MIGRATION_15_16 = object : Migration(15, 16) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            // Movies: add xtreamRating and xtreamYoutubeTrailer columns
+            db.execSQL("ALTER TABLE movies ADD COLUMN xtreamRating TEXT DEFAULT NULL")
+            db.execSQL("ALTER TABLE movies ADD COLUMN xtreamYoutubeTrailer TEXT DEFAULT NULL")
+            // Series: add xtreamRating column
+            db.execSQL("ALTER TABLE series ADD COLUMN xtreamRating TEXT DEFAULT NULL")
+        }
+    }
+
+    /**
+     * Migration from version 16 to 17:
+     * - Add year column to series table
+     */
+    private val MIGRATION_16_17 = object : Migration(16, 17) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            db.execSQL("ALTER TABLE series ADD COLUMN year INTEGER DEFAULT NULL")
+        }
+    }
+
     @Provides
     @Singleton
     fun provideAppDatabase(
@@ -196,7 +226,8 @@ object DatabaseModule {
             AppDatabase::class.java,
             AppDatabase.DATABASE_NAME
         )
-            .addMigrations(MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11, MIGRATION_11_12, MIGRATION_12_13, MIGRATION_13_14, MIGRATION_14_15)
+            .addMigrations(MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11, MIGRATION_11_12, MIGRATION_12_13, MIGRATION_13_14, MIGRATION_14_15, MIGRATION_15_16, MIGRATION_16_17)
+            .fallbackToDestructiveMigration()
             .build()
     }
     

@@ -31,7 +31,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
@@ -50,6 +50,7 @@ import it.sandtv.app.data.database.entity.Movie
 import it.sandtv.app.ui.components.ContinueWatchingCarousel
 import it.sandtv.app.ui.details.DetailsActivity
 import it.sandtv.app.ui.theme.SandTVColors
+import it.sandtv.app.ui.theme.AppAnimations
 import it.sandtv.app.ui.theme.SandTVTheme
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -493,7 +494,10 @@ private fun MovieGridCard(
     
     Column(
         modifier = Modifier
-            .scale(scale)
+            .graphicsLayer {
+                scaleX = scale
+                scaleY = scale
+            }
             .width(150.dp)
             .focusable(interactionSource = interactionSource)
             .clickable(

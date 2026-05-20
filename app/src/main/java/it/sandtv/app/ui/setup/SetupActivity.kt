@@ -33,7 +33,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -62,6 +62,7 @@ import it.sandtv.app.data.preferences.UserPreferences
 import it.sandtv.app.data.repository.PlaylistRepository
 import it.sandtv.app.ui.loading.LoadingActivity
 import it.sandtv.app.ui.theme.SandTVColors
+import it.sandtv.app.ui.theme.AppAnimations
 import it.sandtv.app.ui.theme.SandTVTheme
 import it.sandtv.app.util.QRCodeGenerator
 import kotlinx.coroutines.delay
@@ -306,6 +307,11 @@ class SetupActivity : ComponentActivity() {
                             }
                         }
                         
+                        // Stop listening immediately to prevent multiple triggers
+                        if (firebaseListener != null) {
+                            sessionRef.removeEventListener(firebaseListener!!)
+                        }
+                        
                         // Delete the session data after receiving
                         sessionRef.removeValue()
                         
@@ -368,9 +374,12 @@ class SetupActivity : ComponentActivity() {
     }
     
     private suspend fun completeSetup() {
+        if (isFinishing || isDestroyed) return
+        
         userPreferences.setSetupComplete(true)
         
         val intent = Intent(this@SetupActivity, LoadingActivity::class.java)
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
         startActivity(intent)
         finish()
     }
@@ -1029,7 +1038,10 @@ private fun TabButton(
     Box(
         modifier = modifier
             .fillMaxHeight()
-            .scale(scale)
+            .graphicsLayer {
+                scaleX = scale
+                scaleY = scale
+            }
             .focusable(interactionSource = interactionSource)
             .clickable(
                 interactionSource = interactionSource,
@@ -1217,7 +1229,10 @@ private fun AddPlaylistButton(
         modifier = Modifier
             .fillMaxWidth()
             .height(buttonHeight)
-            .scale(scale)
+            .graphicsLayer {
+                scaleX = scale
+                scaleY = scale
+            }
             .clip(RoundedCornerShape(16.dp))
             .then(
                 if (isLoading) {

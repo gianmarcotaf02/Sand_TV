@@ -29,8 +29,8 @@ import it.sandtv.app.data.database.entity.*
         TeamChannelMap::class,
         DownloadedContent::class
     ],
-    version = 15,
-    exportSchema = true
+    version = 17,
+    exportSchema = false
 )
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {

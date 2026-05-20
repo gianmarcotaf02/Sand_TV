@@ -24,7 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -41,6 +41,7 @@ import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
 import it.sandtv.app.ui.theme.SandTVColors
+import it.sandtv.app.ui.theme.AppAnimations
 import kotlinx.coroutines.delay
 
 /**
@@ -532,7 +533,10 @@ private fun RestartButton(onClick: () -> Unit) {
 
     Row(
         modifier = Modifier
-            .scale(scale)
+            .graphicsLayer {
+                scaleX = scale
+                scaleY = scale
+            }
             .height(48.dp)
             .clip(RoundedCornerShape(24.dp))
             .background(backgroundColor)
@@ -594,7 +598,10 @@ private fun NetflixPlayPauseButton(
     Box(
         modifier = Modifier
             .size(48.dp)
-            .scale(scale)
+            .graphicsLayer {
+                scaleX = scale
+                scaleY = scale
+            }
             .clip(CircleShape)
             .background(backgroundColor)
             .focusRequester(focusRequester)
@@ -747,7 +754,10 @@ private fun ModernProgressBar(
             .offset(x = thumbOffset)
             .size(20.dp)
             .align(Alignment.CenterStart)
-            .scale(thumbScale)
+            .graphicsLayer {
+                scaleX = thumbScale
+                scaleY = thumbScale
+            }
             .background(thumbColor, CircleShape)
             .then(
                 if (isFocused || isSeekModeActive) {
@@ -797,7 +807,10 @@ private fun ModernPlayPauseButton(
     Box(
         modifier = Modifier
             .size(80.dp)
-            .scale(scale)
+            .graphicsLayer {
+                scaleX = scale
+                scaleY = scale
+            }
             .clip(CircleShape)
             .background(backgroundColor)
             .border(
@@ -850,7 +863,10 @@ private fun ModernIconButton(
     Box(
         modifier = Modifier
             .size(size)
-            .scale(scale)
+            .graphicsLayer {
+                scaleX = scale
+                scaleY = scale
+            }
             .clip(CircleShape)
             .background(backgroundColor)
             .then(if (focusRequester != null) Modifier.focusRequester(focusRequester) else Modifier)
@@ -895,7 +911,10 @@ private fun ModernPillButton(
     
     Box(
         modifier = Modifier
-            .scale(scale)
+            .graphicsLayer {
+                scaleX = scale
+                scaleY = scale
+            }
             .clip(RoundedCornerShape(20.dp))
             .background(backgroundColor)
             .then(if (focusRequester != null) Modifier.focusRequester(focusRequester) else Modifier)
@@ -1011,7 +1030,10 @@ private fun ModernPreviousButton(onClick: () -> Unit) {
     
     Row(
         modifier = Modifier
-            .scale(scale)
+            .graphicsLayer {
+                scaleX = scale
+                scaleY = scale
+            }
             .clip(RoundedCornerShape(20.dp))
             .background(backgroundColor)
             .focusable(interactionSource = interactionSource)
@@ -1059,7 +1081,10 @@ private fun ModernNextButton(onClick: () -> Unit) {
     
     Row(
         modifier = Modifier
-            .scale(scale)
+            .graphicsLayer {
+                scaleX = scale
+                scaleY = scale
+            }
             .clip(RoundedCornerShape(20.dp))
             .background(backgroundColor)
             .focusable(interactionSource = interactionSource)
@@ -1160,7 +1185,10 @@ private fun ModernLoadingIndicator() {
     Box(
         modifier = Modifier
             .size(80.dp)
-            .scale(scale),
+            .graphicsLayer {
+                scaleX = scale
+                scaleY = scale
+            },
         contentAlignment = Alignment.Center
     ) {
         CircularProgressIndicator(
@@ -1210,7 +1238,10 @@ private fun ModernNextEpisodeOverlay(
     
     Box(
         modifier = modifier
-            .scale(scale)
+            .graphicsLayer {
+                scaleX = scale
+                scaleY = scale
+            }
             .width(340.dp)
             .clip(RoundedCornerShape(16.dp))
             .background(Color.Black.copy(alpha = 0.9f))

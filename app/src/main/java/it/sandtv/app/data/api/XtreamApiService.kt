@@ -208,7 +208,9 @@ data class XtreamVodDetails(
     val genre: String?,
     @Json(name = "release_date") val releaseDate: String?,
     val duration: String?,
-    @Json(name = "duration_secs") val durationSecs: Int?
+    @Json(name = "duration_secs") val durationSecs: Int?,
+    val rating: String?,
+    @Json(name = "youtube_trailer") val youtubeTrailer: String?
     // Note: video and audio fields removed - they can be arrays or objects causing parse errors
 )
 

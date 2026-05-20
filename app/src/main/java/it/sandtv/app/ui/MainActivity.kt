@@ -56,7 +56,7 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Brush
@@ -317,8 +317,8 @@ private fun MainActivityScreen(
     fun startActivityWithTransition(intent: Intent) {
         val options = ActivityOptionsCompat.makeCustomAnimation(
             context,
-            android.R.anim.fade_in,
-            android.R.anim.fade_out
+            it.sandtv.app.R.anim.zoom_in_enter,
+            it.sandtv.app.R.anim.zoom_in_exit
         )
         context.startActivity(intent, options.toBundle())
     }
@@ -429,18 +429,13 @@ private fun MainActivityScreen(
         androidx.compose.animation.AnimatedContent(
             targetState = selectedTab,
             transitionSpec = {
-                // Slide transition based on tab order
-                val direction = if (targetState.ordinal > initialState.ordinal) {
-                    (androidx.compose.animation.slideInHorizontally { it } + androidx.compose.animation.fadeIn()).togetherWith(
-                        androidx.compose.animation.slideOutHorizontally { -it } + androidx.compose.animation.fadeOut()
+                // Premium crossfade transition for tabs (Netflix style)
+                androidx.compose.animation.fadeIn(
+                    animationSpec = androidx.compose.animation.core.tween(400)
+                ).togetherWith(
+                    androidx.compose.animation.fadeOut(
+                        animationSpec = androidx.compose.animation.core.tween(400)
                     )
-                } else {
-                    (androidx.compose.animation.slideInHorizontally { -it } + androidx.compose.animation.fadeIn()).togetherWith(
-                        androidx.compose.animation.slideOutHorizontally { it } + androidx.compose.animation.fadeOut()
-                    )
-                }
-                direction.using(
-                    androidx.compose.animation.SizeTransform(clip = false)
                 )
             },
             label = "tabTransition"
@@ -916,7 +911,7 @@ private fun TopBarIconButton(
     
     val scale by animateFloatAsState(
         targetValue = if (isFocused) 1.2f else 1f,
-        animationSpec = spring(dampingRatio = 0.6f, stiffness = 400f),
+        animationSpec = AppAnimations.SpringCardFocus,
         label = "iconButtonScale"
     )
     
@@ -937,7 +932,10 @@ private fun TopBarIconButton(
     
     Box(
         modifier = Modifier
-            .scale(scale)
+            .graphicsLayer {
+                scaleX = scale
+                scaleY = scale
+            }
             .size(40.dp)
             .clip(RoundedCornerShape(8.dp))
             .border(2.dp, borderColor, RoundedCornerShape(8.dp))
@@ -985,7 +983,7 @@ private fun TopBarIconButton(
     
     val scale by animateFloatAsState(
         targetValue = if (isFocused) 1.2f else 1f,
-        animationSpec = spring(dampingRatio = 0.6f, stiffness = 400f),
+        animationSpec = AppAnimations.SpringCardFocus,
         label = "iconButtonScale"
     )
     
@@ -1001,7 +999,10 @@ private fun TopBarIconButton(
     
     Box(
         modifier = Modifier
-            .scale(scale)
+            .graphicsLayer {
+                scaleX = scale
+                scaleY = scale
+            }
             .size(40.dp)
             .clip(RoundedCornerShape(8.dp))
             .border(2.dp, borderColor, RoundedCornerShape(8.dp))
@@ -1086,6 +1087,7 @@ private fun ImageTabButton(
 
     val scale by animateFloatAsState(
         targetValue = if (isFocused) 1.1f else 1f,
+        animationSpec = AppAnimations.SpringCardFocus,
         label = "imgTabScale"
     )
 
@@ -1097,7 +1099,10 @@ private fun ImageTabButton(
 
     Box(
         modifier = Modifier
-            .scale(scale)
+            .graphicsLayer {
+                scaleX = scale
+                scaleY = scale
+            }
             .height(36.dp) 
             .clip(RoundedCornerShape(8.dp))
             .border(2.dp, borderColor, RoundedCornerShape(8.dp))
@@ -1144,7 +1149,7 @@ private fun FavoritesTabButton(
     
     val scale by animateFloatAsState(
         targetValue = if (isFocused) 1.1f else 1f,
-        animationSpec = spring(dampingRatio = 0.6f, stiffness = 400f),
+        animationSpec = AppAnimations.SpringCardFocus,
         label = "heartTabScale"
     )
     
@@ -1168,7 +1173,10 @@ private fun FavoritesTabButton(
     
     Box(
         modifier = Modifier
-            .scale(scale)
+            .graphicsLayer {
+                scaleX = scale
+                scaleY = scale
+            }
             .size(36.dp)
             .clip(RoundedCornerShape(8.dp))
             .background(backgroundColor)
@@ -1219,7 +1227,7 @@ private fun ListsTabButton(
     
     val scale by animateFloatAsState(
         targetValue = if (isFocused) 1.1f else 1f,
-        animationSpec = spring(dampingRatio = 0.6f, stiffness = 400f),
+        animationSpec = AppAnimations.SpringCardFocus,
         label = "listsTabScale"
     )
     
@@ -1243,7 +1251,10 @@ private fun ListsTabButton(
     
     Box(
         modifier = Modifier
-            .scale(scale)
+            .graphicsLayer {
+                scaleX = scale
+                scaleY = scale
+            }
             .size(36.dp)
             .clip(RoundedCornerShape(8.dp))
             .background(backgroundColor)
@@ -1294,7 +1305,7 @@ private fun HistoryTabButton(
     
     val scale by animateFloatAsState(
         targetValue = if (isFocused) 1.1f else 1f,
-        animationSpec = spring(dampingRatio = 0.6f, stiffness = 400f),
+        animationSpec = AppAnimations.SpringCardFocus,
         label = "historyTabScale"
     )
     
@@ -1318,7 +1329,10 @@ private fun HistoryTabButton(
     
     Box(
         modifier = Modifier
-            .scale(scale)
+            .graphicsLayer {
+                scaleX = scale
+                scaleY = scale
+            }
             .size(36.dp)
             .clip(RoundedCornerShape(8.dp))
             .background(backgroundColor)

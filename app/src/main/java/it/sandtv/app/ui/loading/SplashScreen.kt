@@ -14,7 +14,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import it.sandtv.app.R
 import it.sandtv.app.ui.theme.SandTVColors
+import it.sandtv.app.ui.theme.AppAnimations
 import kotlinx.coroutines.delay
 
 /**
@@ -118,7 +119,10 @@ fun SplashScreen(
                 Box(
                     modifier = Modifier
                         .size(120.dp)
-                        .scale(logoScale)
+                        .graphicsLayer {
+                scaleX = logoScale
+                scaleY = logoScale
+            }
                         .clip(RoundedCornerShape(20.dp))
                         .background(SandTVColors.BackgroundSecondary)
                 ) {

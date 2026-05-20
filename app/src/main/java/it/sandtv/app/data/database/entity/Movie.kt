@@ -1,5 +1,6 @@
 package it.sandtv.app.data.database.entity
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
@@ -45,6 +46,8 @@ data class Movie(
     val xtreamCast: String? = null,
     val xtreamDirector: String? = null,
     val xtreamGenre: String? = null,
+    val xtreamRating: String? = null,
+    val xtreamYoutubeTrailer: String? = null,
     val containerExtension: String? = null,
     
     // TMDB enriched data
@@ -72,6 +75,7 @@ data class Movie(
     val resolution: String? = null,
     
     // Metadata
+    @ColumnInfo(name = "year")
     val year: Int? = null,
     val isHidden: Boolean = false,
     val addedAt: Long = System.currentTimeMillis(),
@@ -85,12 +89,16 @@ data class Movie(
     val omdbAudienceScore: Int? = null,  // Popcornmeter (tomatoUserMeter)
     val omdbLastFetchAt: Long? = null
 ) {
-    // Convenience properties for UI
+    // Convenience properties for UI (Waterfall Logic)
     val posterUrl: String? get() = logoUrl ?: tmdbPosterPath?.let { "https://image.tmdb.org/t/p/w500$it" }
     val backdropUrl: String? get() = xtreamBackdropUrl ?: tmdbBackdropPath?.let { "https://image.tmdb.org/t/p/w1280$it" }
-    val rating: Float? get() = tmdbVoteAverage
+    val rating: Float? get() = xtreamRating?.toFloatOrNull() ?: tmdbVoteAverage ?: omdbImdbRating?.toFloatOrNull()
     val plot: String? get() = xtreamPlot ?: tmdbOverview
     val genre: String? get() = xtreamGenre ?: tmdbGenres
-    val imdbId: String? get() = tmdbImdbId
+    val cast: String? get() = xtreamCast ?: tmdbCast
+    val director: String? get() = xtreamDirector ?: tmdbDirector
+    val imdbId: String? get() = null
     val title: String get() = tmdbTitle?.takeIf { it.isNotEmpty() } ?: name
 }
+
+

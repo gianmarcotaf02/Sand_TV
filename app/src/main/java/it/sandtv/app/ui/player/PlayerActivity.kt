@@ -323,6 +323,12 @@ class PlayerActivity : ComponentActivity() {
         }
     }
     
+    @Suppress("DEPRECATION")
+    override fun finish() {
+        super.finish()
+        overridePendingTransition(it.sandtv.app.R.anim.zoom_out_enter, it.sandtv.app.R.anim.zoom_out_exit)
+    }
+    
     private fun initPlayer() {
         // Optimized buffer configuration for IPTV streams
         val loadControl = DefaultLoadControl.Builder()

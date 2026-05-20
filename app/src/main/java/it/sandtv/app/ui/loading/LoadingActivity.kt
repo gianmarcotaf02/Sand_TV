@@ -107,12 +107,21 @@ class LoadingActivity : ComponentActivity() {
                     return@launch
                 }
                 
-                // If not forceRefresh and we have playlists, we can go to Main almost immediately
-                // and run the sync in the background.
+                // Go to Main immediately when using cache
                 if (!forceRefresh) {
-                    Log.d("LoadingActivity", "Using cache, proceeding to Main while syncing in background")
+                    Log.d("LoadingActivity", "Using cache, proceeding to Main immediately")
+                    
+                    // Start EPG loading in background (fire-and-forget, don't block startup)
+                    lifecycleScope.launch {
+                        try {
+                            loadEpgIfNeeded(playlists, forceRefresh = false) { _ -> }
+                        } catch (e: Exception) {
+                            Log.e("LoadingActivity", "Background EPG load failed", e)
+                        }
+                    }
+                    
                     goToMain()
-                    // Continue executing the sync in the background
+                    return@launch
                 }
                 
                 // The rest of the sync logic continues here...
@@ -551,7 +560,7 @@ class LoadingActivity : ComponentActivity() {
             val lastUpdate = userPreferences.getTmdbPopularLastUpdate()
             val oneWeekMs = 7 * 24 * 60 * 60 * 1000L
             
-            // FORCE REFRESH: Disabled in production
+            // FORCE REFRESH: Disabled (returning to 7-day cycle)
             val forceRefresh = false
             val needsUpdate = forceRefresh || (System.currentTimeMillis() - lastUpdate) > oneWeekMs
             

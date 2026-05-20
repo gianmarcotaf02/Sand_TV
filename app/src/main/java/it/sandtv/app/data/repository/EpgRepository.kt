@@ -256,11 +256,37 @@ class EpgRepository @Inject constructor(
      * Get programs for a channel
      */
     suspend fun getProgramsForChannel(channelId: String): List<EpgProgram> {
-        // Return cached data if available
         return epgCache[channelId] 
             ?: epgCache[channelId.lowercase()] 
             ?: epgCache[channelId.uppercase()]
             ?: emptyList()
+    }
+    
+    /**
+     * Batch lookup: get programs for multiple channels in one call
+     * Returns a map of channel ID to programs
+     */
+    fun getProgramsForChannels(channelIds: Set<String>): Map<String, List<EpgProgram>> {
+        return channelIds.associateWith { channelId ->
+            epgCache[channelId] 
+                ?: epgCache[channelId.lowercase()] 
+                ?: epgCache[channelId.uppercase()]
+                ?: emptyList()
+        }
+    }
+    
+    /**
+     * Get programs for a single channel with multiple ID fallbacks
+     * Tries each ID format until a match is found
+     */
+    fun getProgramsForChannelWithFallback(channelIds: List<String>): List<EpgProgram> {
+        for (channelId in channelIds) {
+            val programs = epgCache[channelId] 
+                ?: epgCache[channelId.lowercase()] 
+                ?: epgCache[channelId.uppercase()]
+            if (programs != null && programs.isNotEmpty()) return programs
+        }
+        return emptyList()
     }
     
     /**

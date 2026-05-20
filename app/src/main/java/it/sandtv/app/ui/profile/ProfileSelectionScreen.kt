@@ -22,7 +22,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Brush
@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import it.sandtv.app.R
 import it.sandtv.app.data.database.entity.Profile
 import it.sandtv.app.ui.theme.SandTVColors
+import it.sandtv.app.ui.theme.AppAnimations
 import it.sandtv.app.ui.theme.SandTVTheme
 
 /**
@@ -214,7 +215,10 @@ fun ProfileCard(
     )
 
     val columnModifier = modifier
-        .scale(scale)
+        .graphicsLayer {
+                scaleX = scale
+                scaleY = scale
+            }
         .let { mod -> 
             if (focusRequester != null) mod.focusRequester(focusRequester) else mod 
         }
@@ -299,7 +303,10 @@ private fun AddProfileButton(
     
     Box(
         modifier = Modifier
-            .scale(scale)
+            .graphicsLayer {
+                scaleX = scale
+                scaleY = scale
+            }
             .size(64.dp)
             .clip(CircleShape)
             .border(1.dp, borderColor, CircleShape)
@@ -467,7 +474,10 @@ private fun AvatarOption(
     
     Box(
         modifier = Modifier
-            .scale(scale)
+            .graphicsLayer {
+                scaleX = scale
+                scaleY = scale
+            }
             .size(80.dp)
             .clip(RoundedCornerShape(16.dp))
             .border(3.dp, borderColor, RoundedCornerShape(16.dp))

@@ -18,7 +18,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import it.sandtv.app.data.database.entity.Playlist
 import it.sandtv.app.ui.theme.SandTVColors
+import it.sandtv.app.ui.theme.AppAnimations
 
 /**
  * Compose Dialog for adding a new profile with playlist selection
@@ -237,7 +238,10 @@ private fun ColorCircle(
     Box(
         modifier = Modifier
             .size(48.dp)
-            .scale(scale)
+            .graphicsLayer {
+                scaleX = scale
+                scaleY = scale
+            }
             .clip(CircleShape)
             .border(3.dp, borderColor, CircleShape)
             .background(Color(android.graphics.Color.parseColor(color)))

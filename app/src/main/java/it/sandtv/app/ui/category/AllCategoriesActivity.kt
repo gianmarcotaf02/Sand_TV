@@ -22,7 +22,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
@@ -43,6 +43,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import it.sandtv.app.data.database.dao.MovieDao
 import it.sandtv.app.data.database.dao.SeriesDao
 import it.sandtv.app.ui.theme.SandTVColors
+import it.sandtv.app.ui.theme.AppAnimations
 import it.sandtv.app.ui.theme.SandTVTheme
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -253,7 +254,10 @@ private fun CategoryCard(
 
     Box(
         modifier = Modifier
-            .scale(scale)
+            .graphicsLayer {
+                scaleX = scale
+                scaleY = scale
+            }
             .height(150.dp)  // Increased from 120dp
             .clip(RoundedCornerShape(16.dp))
             .border(3.dp, borderColor, RoundedCornerShape(16.dp))
