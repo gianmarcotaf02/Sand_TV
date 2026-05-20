@@ -579,18 +579,7 @@ private fun TvHomeScreenContent(
                 // Disable user scroll while Hero is focused to keep it stable
                 // TvLazyColumn will still auto-scroll when focus changes (DOWN to carousel)
                 userScrollEnabled = !isHeroFocused,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .onPreviewKeyEvent { keyEvent ->
-                        // LEFT key: navigate to rail
-                        if (keyEvent.type == KeyEventType.KeyDown && 
-                            keyEvent.key == Key.DirectionLeft) {
-                            onRailFocusRequest()
-                            true
-                        } else {
-                            false
-                        }
-                    }
+                modifier = Modifier.fillMaxSize()
             ) {
                 // Hero Banner as first item
                 if (hasHero) {
@@ -715,7 +704,8 @@ private fun TvHomeScreenContent(
                                         row = row,
                                         onItemClick = onItemClick,
                                         onSeeAllClick = { onSeeAllClick(row.title) },
-                                        focusRequester = rowFocusRequesters.getOrNull(index) ?: remember { FocusRequester() }
+                                        focusRequester = rowFocusRequesters.getOrNull(index) ?: remember { FocusRequester() },
+                                        onLeftOnFirstItem = onRailFocusRequest
                                     )
                                 }
                             } else {
@@ -724,7 +714,8 @@ private fun TvHomeScreenContent(
                                     row = row,
                                     onItemClick = onItemClick,
                                     onSeeAllClick = { onSeeAllClick(row.title) },
-                                    focusRequester = rowFocusRequesters.getOrNull(index) ?: remember { FocusRequester() }
+                                    focusRequester = rowFocusRequesters.getOrNull(index) ?: remember { FocusRequester() },
+                                    onLeftOnFirstItem = onRailFocusRequest
                                 )
                             }
                         }

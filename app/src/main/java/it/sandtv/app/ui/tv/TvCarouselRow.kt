@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.tv.foundation.lazy.list.TvLazyRow
 import androidx.tv.foundation.lazy.list.TvLazyListScope
 import androidx.tv.foundation.lazy.list.items
+import androidx.tv.foundation.lazy.list.itemsIndexed
 import androidx.tv.foundation.lazy.list.rememberTvLazyListState
 import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.MaterialTheme
@@ -53,15 +54,15 @@ fun TvCarouselRow(
     onSeeAllClick: () -> Unit,
     modifier: Modifier = Modifier,
     focusRequester: FocusRequester = remember { FocusRequester() },
-    onUpPressed: (() -> Unit)? = null,  // Called when UP pressed on this row
-    onFocusChanged: ((Boolean) -> Unit)? = null  // Called when row gains/loses focus
+    onUpPressed: (() -> Unit)? = null,
+    onFocusChanged: ((Boolean) -> Unit)? = null,
+    onLeftOnFirstItem: (() -> Unit)? = null
 ) {
     val listState = rememberTvLazyListState()
     
-    // Track if any item in this row is focused
     var isRowFocused by remember { mutableStateOf(false) }
+    var isFirstItemFocused by remember { mutableStateOf(false) }
     
-    // Report focus changes to parent
     LaunchedEffect(isRowFocused) {
         onFocusChanged?.invoke(isRowFocused)
     }
@@ -74,7 +75,6 @@ fun TvCarouselRow(
                 isRowFocused = focusState.hasFocus
             }
     ) {
-        // Row header
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -96,10 +96,6 @@ fun TvCarouselRow(
         
         Spacer(modifier = Modifier.height(10.dp))
         
-        // Horizontal carousel with TvLazyRow
-        // Note: Removed focusRestorer() which causes crashes when items are recycled
-        // The crash: "Cannot read CompositionLocal because the Modifier node is not currently attached"
-        // This is a known Compose TV bug. Focus state is now managed by TvLazyListState.
         TvLazyRow(
             state = listState,
             contentPadding = PaddingValues(start = 48.dp, end = 48.dp),
@@ -108,28 +104,49 @@ fun TvCarouselRow(
             modifier = Modifier
                 .focusRequester(focusRequester)
         ) {
-            items(
+            itemsIndexed(
                 items = row.items,
-                key = { "${it.contentType}_${it.id}" }
-            ) { item ->
-                // Render CategoryCard for category types, TvContentCard for content
-                when {
-                    item.contentType.startsWith("CATEGORY_") -> {
-                        CategoryCard(
-                            item = item,
-                            onClick = { onItemClick(item) }
-                        )
-                    }
-                    else -> {
-                        TvContentCard(
-                            item = item,
-                            onClick = { onItemClick(item) }
-                        )
+                key = { index, item -> "${item.contentType}_${item.id}" }
+            ) { index, item ->
+                val isFocused = remember { mutableStateOf(false) }
+                val isFirst = index == 0
+                
+                Box(
+                    modifier = Modifier
+                        .onFocusChanged { focusState ->
+                            isFocused.value = focusState.isFocused
+                            if (isFirst) {
+                                isFirstItemFocused = focusState.isFocused
+                            }
+                        }
+                        .onPreviewKeyEvent { keyEvent ->
+                            if (keyEvent.type == KeyEventType.KeyDown && 
+                                keyEvent.key == Key.DirectionLeft && 
+                                isFirst && isFirstItemFocused) {
+                                onLeftOnFirstItem?.invoke()
+                                true
+                            } else {
+                                false
+                            }
+                        }
+                ) {
+                    when {
+                        item.contentType.startsWith("CATEGORY_") -> {
+                            CategoryCard(
+                                item = item,
+                                onClick = { onItemClick(item) }
+                            )
+                        }
+                        else -> {
+                            TvContentCard(
+                                item = item,
+                                onClick = { onItemClick(item) }
+                            )
+                        }
                     }
                 }
             }
             
-            // "Vedi tutto" as last item in carousel for D-pad accessibility
             if (row.showSeeAll) {
                 item(key = "see_all_${row.title}") {
                     TvSeeAllCard(onClick = onSeeAllClick)
