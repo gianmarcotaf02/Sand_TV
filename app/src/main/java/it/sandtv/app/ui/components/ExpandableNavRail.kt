@@ -55,7 +55,7 @@ fun ExpandableNavRail(
     modifier: Modifier = Modifier
 ) {
     val railWidth by animateDpAsState(
-        targetValue = if (isExpanded) 220.dp else 72.dp,
+        targetValue = if (isExpanded) 200.dp else 64.dp,
         animationSpec = spring(dampingRatio = 0.7f, stiffness = 400f),
         label = "railWidth"
     )
@@ -110,33 +110,34 @@ fun ExpandableNavRail(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                        .padding(horizontal = 12.dp, vertical = 8.dp),
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     Image(
                         painter = painterResource(id = R.drawable.logo),
                         contentDescription = "SandTV",
-                        modifier = Modifier.size(32.dp)
+                        modifier = Modifier.size(28.dp)
                     )
                     Text(
                         text = "SandTV",
                         style = androidx.compose.material3.MaterialTheme.typography.titleMedium,
                         color = SandTVColors.TextPrimary,
                         fontWeight = FontWeight.Bold,
+                        fontSize = 14.sp,
                         modifier = Modifier.alpha(textAlpha)
                     )
                 }
                 
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(16.dp))
                 
                 HorizontalDivider(
                     color = SandTVColors.BackgroundTertiary.copy(alpha = 0.4f),
                     thickness = 0.5.dp,
-                    modifier = Modifier.padding(horizontal = 16.dp)
+                    modifier = Modifier.padding(horizontal = 12.dp)
                 )
                 
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(16.dp))
             } else {
                 Box(
                     modifier = Modifier
@@ -147,9 +148,10 @@ fun ExpandableNavRail(
                     Image(
                         painter = painterResource(id = R.drawable.logo),
                         contentDescription = "SandTV",
-                        modifier = Modifier.size(36.dp)
+                        modifier = Modifier.size(32.dp)
                     )
                 }
+                Spacer(modifier = Modifier.height(16.dp))
             }
             
             // Navigation items
@@ -165,7 +167,7 @@ fun ExpandableNavRail(
                     modifier = Modifier.focusRequester(firstItemFocusRequester)
                 )
                 
-                Spacer(modifier = Modifier.height(2.dp))
+                Spacer(modifier = Modifier.height(1.dp))
                 
                 NavRailItem(
                     icon = Icons.Default.Tv,
@@ -175,7 +177,7 @@ fun ExpandableNavRail(
                     onClick = { onTabSelected(MainTab.SERIES) }
                 )
                 
-                Spacer(modifier = Modifier.height(2.dp))
+                Spacer(modifier = Modifier.height(1.dp))
                 
                 NavRailItem(
                     icon = Icons.Default.LiveTv,
@@ -185,7 +187,7 @@ fun ExpandableNavRail(
                     onClick = { onTabSelected(MainTab.LIVE) }
                 )
                 
-                Spacer(modifier = Modifier.height(2.dp))
+                Spacer(modifier = Modifier.height(1.dp))
                 
                 SerieARailItem(
                     isSelected = selectedTab == MainTab.SERIE_A,
@@ -193,7 +195,7 @@ fun ExpandableNavRail(
                     onClick = { onTabSelected(MainTab.SERIE_A) }
                 )
                 
-                Spacer(modifier = Modifier.height(2.dp))
+                Spacer(modifier = Modifier.height(1.dp))
                 
                 NavRailItem(
                     icon = if (selectedTab == MainTab.FAVORITES) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
@@ -203,7 +205,7 @@ fun ExpandableNavRail(
                     onClick = { onTabSelected(MainTab.FAVORITES) }
                 )
                 
-                Spacer(modifier = Modifier.height(2.dp))
+                Spacer(modifier = Modifier.height(1.dp))
                 
                 NavRailItem(
                     icon = Icons.AutoMirrored.Filled.FormatListBulleted,
@@ -213,7 +215,7 @@ fun ExpandableNavRail(
                     onClick = { onTabSelected(MainTab.LISTS) }
                 )
                 
-                Spacer(modifier = Modifier.height(2.dp))
+                Spacer(modifier = Modifier.height(1.dp))
                 
                 NavRailItem(
                     icon = Icons.Default.History,
@@ -232,7 +234,7 @@ fun ExpandableNavRail(
                 HorizontalDivider(
                     color = SandTVColors.BackgroundTertiary.copy(alpha = 0.4f),
                     thickness = 0.5.dp,
-                    modifier = Modifier.padding(horizontal = 16.dp)
+                    modifier = Modifier.padding(horizontal = 12.dp)
                 )
                 
                 Spacer(modifier = Modifier.height(10.dp))
@@ -240,7 +242,7 @@ fun ExpandableNavRail(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
+                        .padding(horizontal = 12.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
@@ -266,7 +268,7 @@ fun ExpandableNavRail(
                     modifier = Modifier
                         .fillMaxWidth()
                         .weight(1f)
-                        .padding(horizontal = 10.dp),
+                        .padding(horizontal = 8.dp),
                     verticalArrangement = Arrangement.spacedBy(1.dp)
                 ) {
                     items(categories) { category ->
@@ -292,7 +294,7 @@ fun ExpandableNavRail(
                 HorizontalDivider(
                     color = SandTVColors.BackgroundTertiary.copy(alpha = 0.4f),
                     thickness = 0.5.dp,
-                    modifier = Modifier.padding(horizontal = 16.dp)
+                    modifier = Modifier.padding(horizontal = 12.dp)
                 )
                 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -362,15 +364,15 @@ private fun SerieARailItem(
         if (isExpanded) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
+                    .padding(horizontal = 12.dp)
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.serie_a),
                     contentDescription = "Serie A",
-                    modifier = Modifier.size(22.dp)
+                    modifier = Modifier.size(20.dp)
                 )
                 
                 Text(
@@ -383,6 +385,7 @@ private fun SerieARailItem(
                     },
                     fontWeight = FontWeight.Medium,
                     maxLines = 1,
+                    fontSize = 13.sp,
                     modifier = Modifier.alpha(textAlpha)
                 )
             }
@@ -390,7 +393,7 @@ private fun SerieARailItem(
             Image(
                 painter = painterResource(id = R.drawable.serie_a),
                 contentDescription = "Serie A",
-                modifier = Modifier.size(26.dp)
+                modifier = Modifier.size(22.dp)
             )
         }
     }

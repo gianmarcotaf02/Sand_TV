@@ -98,16 +98,16 @@ fun NavRailItem(
         if (isExpanded) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
+                    .padding(horizontal = 12.dp)
             ) {
                 Icon(
                     imageVector = icon,
                     contentDescription = label,
                     tint = iconTint ?: iconColor,
-                    modifier = Modifier.size(22.dp)
+                    modifier = Modifier.size(20.dp)
                 )
                 
                 Text(
@@ -125,7 +125,7 @@ fun NavRailItem(
                 imageVector = icon,
                 contentDescription = label,
                 tint = iconTint ?: iconColor,
-                modifier = Modifier.size(24.dp)
+                modifier = Modifier.size(22.dp)
             )
         }
     }
