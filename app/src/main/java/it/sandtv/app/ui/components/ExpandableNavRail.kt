@@ -51,6 +51,7 @@ fun ExpandableNavRail(
     onExpandedChange: (Boolean) -> Unit,
     onSettingsClick: () -> Unit,
     onContentFocusRequest: () -> Unit,
+    onCollapseRequest: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val railWidth by animateDpAsState(
@@ -88,6 +89,16 @@ fun ExpandableNavRail(
                 )
             )
             .focusRequester(railFocusRequester)
+            .onPreviewKeyEvent { keyEvent ->
+                if (keyEvent.type == KeyEventType.KeyDown && 
+                    keyEvent.key == Key.DirectionRight && isExpanded) {
+                    onCollapseRequest()
+                    onContentFocusRequest()
+                    true
+                } else {
+                    false
+                }
+            }
     ) {
         Column(
             modifier = Modifier

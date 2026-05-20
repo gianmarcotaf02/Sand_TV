@@ -442,6 +442,7 @@ private fun MainActivityScreen(
             onSettingsClick = {
                 startActivityWithTransition(Intent(context, SettingsActivity::class.java))
             },
+            onCollapseRequest = { railExpanded = false },
             onContentFocusRequest = {
                 try {
                     contentFocusRequester.requestFocus()

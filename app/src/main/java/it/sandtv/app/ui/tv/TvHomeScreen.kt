@@ -571,7 +571,7 @@ private fun TvHomeScreenContent(
             TvLazyColumn(
                 state = columnListState,
                 contentPadding = PaddingValues(
-                    top = 80.dp,  // Account for TopBar
+                    top = 64.dp,
                     bottom = 56.dp
                 ),
                 // Pivot at 20% from top - high enough to hide Hero and show carousel title
@@ -640,7 +640,8 @@ private fun TvHomeScreenContent(
                                     onMarkAsWatchedClick = { onMarkAsWatchedClick(hero) },
                                     playButtonFocusRequester = heroPlayButtonFocusRequester,
                                     onFocusChanged = { /* Handled by internal logic if needed */ },
-                                    topBarFocusRequester = topBarFocusRequester  // UP navigates to TopBar
+                                    topBarFocusRequester = topBarFocusRequester,
+                                    onRailFocusRequest = onRailFocusRequest
                                 )
                             }
                         }
@@ -828,8 +829,9 @@ fun HeroBanner(
     onAddToPlaylistClick: (HeroItem) -> Unit = {},
     onMarkAsWatchedClick: (HeroItem) -> Unit = {},
     playButtonFocusRequester: FocusRequester? = null,
-    onFocusChanged: (Boolean) -> Unit = {},  // Called when any hero button gains/loses focus
-    topBarFocusRequester: FocusRequester? = null,  // FocusRequester for TopBar - UP navigation redirect
+    onFocusChanged: (Boolean) -> Unit = {},
+    topBarFocusRequester: FocusRequester? = null,
+    onRailFocusRequest: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     // Auto-rotate every 7 seconds (only when not focused)
@@ -1353,6 +1355,7 @@ fun HeroBanner(
                     slideDirection = -1
                     onPrevClick()
                 },
+                onLeftPress = onRailFocusRequest,
                 modifier = Modifier
                     .align(Alignment.CenterStart)
                     .padding(start = 16.dp)
@@ -1779,6 +1782,7 @@ private fun HeroTrailerButton(
 private fun HeroNavArrow(
     isLeft: Boolean,
     onClick: () -> Unit,
+    onLeftPress: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     val interactionSource = remember { MutableInteractionSource() }
@@ -1815,7 +1819,16 @@ private fun HeroNavArrow(
                 indication = null,
                 onClick = onClick
             )
-            .focusable(interactionSource = interactionSource),
+            .focusable(interactionSource = interactionSource)
+            .onPreviewKeyEvent { keyEvent ->
+                if (keyEvent.type == KeyEventType.KeyDown && 
+                    keyEvent.key == Key.DirectionLeft && isLeft) {
+                    onLeftPress?.invoke()
+                    true
+                } else {
+                    false
+                }
+            },
         contentAlignment = Alignment.Center
     ) {
         Icon(
