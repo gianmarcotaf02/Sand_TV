@@ -571,7 +571,7 @@ private fun TvHomeScreenContent(
             TvLazyColumn(
                 state = columnListState,
                 contentPadding = PaddingValues(
-                    top = 64.dp,
+                    top = 48.dp,
                     bottom = 56.dp
                 ),
                 // Pivot at 20% from top - high enough to hide Hero and show carousel title
