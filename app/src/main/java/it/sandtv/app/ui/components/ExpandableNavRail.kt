@@ -31,6 +31,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
@@ -42,8 +43,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import it.sandtv.app.ui.MainTab
 import it.sandtv.app.R
-import it.sandtv.app.ui.MainActivity
 import it.sandtv.app.ui.theme.SandTVColors
 
 /**
@@ -60,8 +61,8 @@ import it.sandtv.app.ui.theme.SandTVColors
  */
 @Composable
 fun ExpandableNavRail(
-    selectedTab: MainActivity.MainTab,
-    onTabSelected: (MainActivity.MainTab) -> Unit,
+    selectedTab: MainTab,
+    onTabSelected: (MainTab) -> Unit,
     selectedCategory: String?,
     onCategorySelected: (String) -> Unit,
     categories: List<String>,
@@ -133,12 +134,20 @@ fun ExpandableNavRail(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.sandtv_logo),
-                        contentDescription = "SandTV",
-                        tint = SandTVColors.Accent,
-                        modifier = Modifier.size(28.dp)
-                    )
+                    Box(
+                        modifier = Modifier
+                            .size(28.dp)
+                            .clip(RoundedCornerShape(6.dp))
+                            .background(SandTVColors.Accent),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "S",
+                            style = androidx.compose.material3.MaterialTheme.typography.labelLarge,
+                            color = Color.White,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
                     Text(
                         text = "SandTV",
                         style = androidx.compose.material3.MaterialTheme.typography.titleMedium,
@@ -166,12 +175,20 @@ fun ExpandableNavRail(
                         .padding(horizontal = 16.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.sandtv_logo),
-                        contentDescription = "SandTV",
-                        tint = SandTVColors.Accent,
-                        modifier = Modifier.size(28.dp)
-                    )
+                    Box(
+                        modifier = Modifier
+                            .size(28.dp)
+                            .clip(RoundedCornerShape(6.dp))
+                            .background(SandTVColors.Accent),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "S",
+                            style = androidx.compose.material3.MaterialTheme.typography.labelLarge,
+                            color = Color.White,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
                 }
                 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -185,9 +202,9 @@ fun ExpandableNavRail(
                 NavRailItem(
                     icon = Icons.Default.Movie,
                     label = "Film",
-                    isSelected = selectedTab == MainActivity.MainTab.MOVIES,
+                    isSelected = selectedTab == MainTab.MOVIES,
                     isExpanded = isExpanded,
-                    onClick = { onTabSelected(MainActivity.MainTab.MOVIES) },
+                    onClick = { onTabSelected(MainTab.MOVIES) },
                     modifier = Modifier.focusRequester(firstItemFocusRequester)
                 )
                 
@@ -197,9 +214,9 @@ fun ExpandableNavRail(
                 NavRailItem(
                     icon = Icons.Default.Tv,
                     label = "Serie TV",
-                    isSelected = selectedTab == MainActivity.MainTab.SERIES,
+                    isSelected = selectedTab == MainTab.SERIES,
                     isExpanded = isExpanded,
-                    onClick = { onTabSelected(MainActivity.MainTab.SERIES) }
+                    onClick = { onTabSelected(MainTab.SERIES) }
                 )
                 
                 Spacer(modifier = Modifier.height(4.dp))
@@ -208,29 +225,29 @@ fun ExpandableNavRail(
                 NavRailItem(
                     icon = Icons.Default.LiveTv,
                     label = "Live",
-                    isSelected = selectedTab == MainActivity.MainTab.LIVE,
+                    isSelected = selectedTab == MainTab.LIVE,
                     isExpanded = isExpanded,
-                    onClick = { onTabSelected(MainActivity.MainTab.LIVE) }
+                    onClick = { onTabSelected(MainTab.LIVE) }
                 )
                 
                 Spacer(modifier = Modifier.height(4.dp))
                 
                 // Serie A (con logo PNG)
                 SerieARailItem(
-                    isSelected = selectedTab == MainActivity.MainTab.SERIE_A,
+                    isSelected = selectedTab == MainTab.SERIE_A,
                     isExpanded = isExpanded,
-                    onClick = { onTabSelected(MainActivity.MainTab.SERIE_A) }
+                    onClick = { onTabSelected(MainTab.SERIE_A) }
                 )
                 
                 Spacer(modifier = Modifier.height(4.dp))
                 
                 // Preferiti
                 NavRailItem(
-                    icon = if (selectedTab == MainActivity.MainTab.FAVORITES) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                    icon = if (selectedTab == MainTab.FAVORITES) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
                     label = "Preferiti",
-                    isSelected = selectedTab == MainActivity.MainTab.FAVORITES,
+                    isSelected = selectedTab == MainTab.FAVORITES,
                     isExpanded = isExpanded,
-                    onClick = { onTabSelected(MainActivity.MainTab.FAVORITES) }
+                    onClick = { onTabSelected(MainTab.FAVORITES) }
                 )
                 
                 Spacer(modifier = Modifier.height(4.dp))
@@ -239,9 +256,9 @@ fun ExpandableNavRail(
                 NavRailItem(
                     icon = Icons.AutoMirrored.Filled.FormatListBulleted,
                     label = "Liste",
-                    isSelected = selectedTab == MainActivity.MainTab.LISTS,
+                    isSelected = selectedTab == MainTab.LISTS,
                     isExpanded = isExpanded,
-                    onClick = { onTabSelected(MainActivity.MainTab.LISTS) }
+                    onClick = { onTabSelected(MainTab.LISTS) }
                 )
                 
                 Spacer(modifier = Modifier.height(4.dp))
@@ -250,9 +267,9 @@ fun ExpandableNavRail(
                 NavRailItem(
                     icon = Icons.Default.History,
                     label = "Cronologia",
-                    isSelected = selectedTab == MainActivity.MainTab.HISTORY,
+                    isSelected = selectedTab == MainTab.HISTORY,
                     isExpanded = isExpanded,
-                    onClick = { onTabSelected(MainActivity.MainTab.HISTORY) },
+                    onClick = { onTabSelected(MainTab.HISTORY) },
                     modifier = Modifier.focusRequester(lastItemFocusRequester)
                 )
             }
