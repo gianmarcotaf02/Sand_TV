@@ -43,11 +43,15 @@ import androidx.compose.ui.res.painterResource
 import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
 import it.sandtv.app.R
+import it.sandtv.app.data.api.XtreamApiService
 import it.sandtv.app.data.database.dao.PlaylistDao
 import it.sandtv.app.data.database.dao.ProfileDao
 import it.sandtv.app.data.database.entity.Playlist
 import it.sandtv.app.data.database.entity.Profile
 import it.sandtv.app.data.preferences.UserPreferences
+import okhttp3.OkHttpClient
+import retrofit2.Retrofit
+import retrofit2.converter.moshi.MoshiConverterFactory
 import it.sandtv.app.ui.loading.LoadingActivity
 import it.sandtv.app.ui.profile.getAvatarResource
 import it.sandtv.app.ui.setup.SetupActivity
@@ -106,7 +110,7 @@ class SettingsActivity : ComponentActivity() {
         }
         
         val menuItems = listOf(
-            SettingsMenuItem("profile", "Profilo", "Modifica nome e avatar", Icons.Default.Person),
+            SettingsMenuItem("profile", "Account e Profilo", "Dettagli account e modifica profilo", Icons.Default.Person),
             SettingsMenuItem("playlist", "Playlist", "Aggiornamento e sincronizzazione", Icons.AutoMirrored.Filled.List),
             SettingsMenuItem("preferences", "Preferenze", "Impostazioni generali", Icons.Default.Settings),
             SettingsMenuItem("player", "Player", "Impostazioni riproduzione", Icons.Default.PlayArrow),
@@ -147,7 +151,7 @@ class SettingsActivity : ComponentActivity() {
                     .padding(40.dp)
             ) {
                 when (selectedMenuId) {
-                    "profile" -> ProfileSettings(profileDao, userPreferences, contentFocusRequester)
+                    "profile" -> ProfileSettings(profileDao, playlistDao, userPreferences, contentFocusRequester)
                     "playlist" -> PlaylistSettings(playlistDao, playlistRepository, userPreferences, contentFocusRequester)
                     "preferences" -> PreferencesSettings(userPreferences, contentFocusRequester)
                     "player" -> PlayerSettings(userPreferences, contentFocusRequester)
@@ -437,12 +441,23 @@ private fun SettingsMenuItemRow(
 // ============ Settings Sections ============
 
 @Composable
-private fun ProfileSettings(profileDao: ProfileDao, userPreferences: UserPreferences, contentFocusRequester: FocusRequester? = null) {
+private fun ProfileSettings(
+    profileDao: ProfileDao,
+    playlistDao: PlaylistDao,
+    userPreferences: UserPreferences,
+    contentFocusRequester: FocusRequester? = null
+) {
     val coroutineScope = rememberCoroutineScope()
     var currentProfile by remember { mutableStateOf<Profile?>(null) }
     var editedName by remember { mutableStateOf("") }
     var selectedAvatarIndex by remember { mutableStateOf(0) }
     var showAvatarPicker by remember { mutableStateOf(false) }
+    
+    // Xtream account state
+    var xtreamPlaylist by remember { mutableStateOf<Playlist?>(null) }
+    var authResponse by remember { mutableStateOf<it.sandtv.app.data.api.XtreamAuthResponse?>(null) }
+    var authError by remember { mutableStateOf<String?>(null) }
+    var isLoadingAuth by remember { mutableStateOf(false) }
     
     // Load current profile
     LaunchedEffect(Unit) {
@@ -456,7 +471,36 @@ private fun ProfileSettings(profileDao: ProfileDao, userPreferences: UserPrefere
         }
     }
     
-    SettingsSection(title = "Profilo") {
+    // Load xtream playlist
+    LaunchedEffect(currentProfile) {
+        val profile = currentProfile ?: return@LaunchedEffect
+        val playlists = playlistDao.getEnabledPlaylistsList()
+        val playlist = playlists.find { it.type == "xtream" }
+        xtreamPlaylist = playlist
+        if (playlist?.username != null && playlist.password != null) {
+            isLoadingAuth = true
+            authError = null
+            try {
+                val baseUrl = playlist.url.trimEnd('/') + "/"
+                val moshi = com.squareup.moshi.Moshi.Builder().build()
+                val api = Retrofit.Builder()
+                    .baseUrl(baseUrl)
+                    .client(OkHttpClient.Builder().build())
+                    .addConverterFactory(MoshiConverterFactory.create(moshi))
+                    .build()
+                    .create(XtreamApiService::class.java)
+                authResponse = api.authenticate(playlist.username, playlist.password)
+            } catch (e: Exception) {
+                authError = e.message ?: "Errore di connessione"
+            }
+            isLoadingAuth = false
+        }
+    }
+    
+    val playlist = xtreamPlaylist
+    
+    SettingsSection(title = "Account e Profilo") {
+        // Profile section
         currentProfile?.let { profile ->
             Column(
                 verticalArrangement = Arrangement.spacedBy(24.dp),
@@ -476,7 +520,6 @@ private fun ProfileSettings(profileDao: ProfileDao, userPreferences: UserPrefere
                         contentDescription = "Avatar",
                         modifier = Modifier.fillMaxSize()
                     )
-                    // Edit overlay
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
@@ -498,7 +541,6 @@ private fun ProfileSettings(profileDao: ProfileDao, userPreferences: UserPrefere
                     color = SandTVColors.TextTertiary
                 )
                 
-                // Avatar picker
                 if (showAvatarPicker) {
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -534,9 +576,6 @@ private fun ProfileSettings(profileDao: ProfileDao, userPreferences: UserPrefere
                     }
                 }
                 
-                Spacer(modifier = Modifier.height(8.dp))
-                
-                // Name input
                 Column(modifier = Modifier.fillMaxWidth()) {
                     Text(
                         text = "Nome profilo",
@@ -559,9 +598,6 @@ private fun ProfileSettings(profileDao: ProfileDao, userPreferences: UserPrefere
                     )
                 }
                 
-                Spacer(modifier = Modifier.height(16.dp))
-                
-                // Save button
                 Button(
                     onClick = {
                         coroutineScope.launch {
@@ -580,10 +616,141 @@ private fun ProfileSettings(profileDao: ProfileDao, userPreferences: UserPrefere
                 ) {
                     Text("Salva modifiche")
                 }
+                
+                // Xtream Account details
+                if (playlist?.type == "xtream") {
+                    HorizontalDivider(
+                        color = SandTVColors.BackgroundTertiary.copy(alpha = 0.3f),
+                        thickness = 0.5.dp
+                    )
+                    
+                    Text(
+                        text = "Dettagli account Xtream",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = SandTVColors.TextPrimary,
+                        fontWeight = FontWeight.Bold
+                    )
+                    
+                    AccountDetailRow(label = "Server", value = playlist.url)
+                    AccountDetailRow(label = "Username", value = playlist.username ?: "")
+                    AccountDetailRow(label = "Tipo playlist", value = "Xtream Codes")
+                    
+                    if (playlist.channelCount > 0 || playlist.movieCount > 0 || playlist.seriesCount > 0) {
+                        AccountDetailRow(
+                            label = "Contenuti",
+                            value = buildString {
+                                if (playlist.channelCount > 0) append("${playlist.channelCount} canali, ")
+                                if (playlist.movieCount > 0) append("${playlist.movieCount} film, ")
+                                if (playlist.seriesCount > 0) append("${playlist.seriesCount} serie")
+                                if (endsWith(", ")) setLength(length - 2)
+                            }
+                        )
+                    }
+                    
+                    HorizontalDivider(
+                        color = SandTVColors.BackgroundTertiary.copy(alpha = 0.3f),
+                        thickness = 0.5.dp
+                    )
+                    
+                    // Auth status
+                    val userInfo = authResponse?.userInfo
+                    if (isLoadingAuth) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(16.dp),
+                                strokeWidth = 2.dp,
+                                color = SandTVColors.Accent
+                            )
+                            Text(
+                                text = "Verifica account in corso...",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = SandTVColors.TextTertiary
+                            )
+                        }
+                    } else if (authError != null) {
+                        AccountDetailRow(
+                            label = "Stato",
+                            value = "Impossibile verificare",
+                            valueColor = SandTVColors.Error
+                        )
+                        AccountDetailRow(
+                            label = "Errore",
+                            value = authError ?: "",
+                            valueColor = SandTVColors.Error
+                        )
+                    } else if (userInfo != null) {
+                        val isActive = userInfo.auth == 1 && userInfo.status == "Active"
+                        AccountDetailRow(
+                            label = "Stato",
+                            value = if (isActive) "Attivo" else (userInfo.status ?: "Sconosciuto"),
+                            valueColor = if (isActive) SandTVColors.Success else SandTVColors.Error
+                        )
+                        
+                        userInfo.expDate?.let { exp ->
+                            val expDate = try {
+                                val millis = exp.toLong() * 1000
+                                val sdf = java.text.SimpleDateFormat("dd/MM/yyyy", java.util.Locale.getDefault())
+                                sdf.format(java.util.Date(millis))
+                            } catch (e: Exception) { exp }
+                            AccountDetailRow(label = "Scadenza", value = expDate)
+                        }
+                        
+                        userInfo.createdAt?.let { created ->
+                            val createdDate = try {
+                                val millis = created.toLong() * 1000
+                                val sdf = java.text.SimpleDateFormat("dd/MM/yyyy", java.util.Locale.getDefault())
+                                sdf.format(java.util.Date(millis))
+                            } catch (e: Exception) { created }
+                            AccountDetailRow(label = "Registrato il", value = createdDate)
+                        }
+                        
+                        userInfo.activeCons?.let { cons ->
+                            val max = userInfo.maxConnections ?: cons
+                            AccountDetailRow(label = "Connessioni", value = "$cons / $max")
+                        }
+                        
+                        userInfo.isTrial?.let { trial ->
+                            if (trial == "1") {
+                                AccountDetailRow(label = "Tipo", value = "Prova gratuita")
+                            }
+                        }
+                    }
+                }
             }
         } ?: run {
             SettingsInfo(text = "Nessun profilo selezionato")
         }
+    }
+}
+
+@Composable
+private fun AccountDetailRow(
+    label: String,
+    value: String,
+    valueColor: Color = SandTVColors.TextPrimary
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(
+            text = label,
+            style = MaterialTheme.typography.bodyMedium,
+            color = SandTVColors.TextTertiary,
+            modifier = Modifier.weight(0.4f)
+        )
+        Text(
+            text = value,
+            style = MaterialTheme.typography.bodyMedium,
+            color = valueColor,
+            fontWeight = FontWeight.Medium,
+            modifier = Modifier.weight(0.6f)
+        )
     }
 }
 

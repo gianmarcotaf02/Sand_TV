@@ -1,9 +1,11 @@
 package it.sandtv.app.ui.components
 
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -11,8 +13,6 @@ import androidx.compose.foundation.focusable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -25,9 +25,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
@@ -44,14 +48,12 @@ import it.sandtv.app.ui.theme.SandTVColors
 fun ExpandableNavRail(
     selectedTab: MainTab,
     onTabSelected: (MainTab) -> Unit,
-    selectedCategory: String?,
-    onCategorySelected: (String) -> Unit,
-    categories: List<String>,
     isExpanded: Boolean,
     onExpandedChange: (Boolean) -> Unit,
     onSettingsClick: () -> Unit,
     onContentFocusRequest: () -> Unit,
     onCollapseRequest: () -> Unit = {},
+    onExploreCategoriesClick: (Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val railWidth by animateDpAsState(
@@ -76,6 +78,12 @@ fun ExpandableNavRail(
     val firstItemFocusRequester = remember { FocusRequester() }
     val lastItemFocusRequester = remember { FocusRequester() }
     
+    LaunchedEffect(isExpanded) {
+        if (isExpanded) {
+            firstItemFocusRequester.requestFocus()
+        }
+    }
+    
     Box(
         modifier = modifier
             .width(railWidth)
@@ -88,12 +96,24 @@ fun ExpandableNavRail(
                     )
                 )
             )
+            .drawBehind {
+                drawLine(
+                    color = SandTVColors.BackgroundTertiary.copy(alpha = 0.3f),
+                    start = Offset(size.width, 0f),
+                    end = Offset(size.width, size.height),
+                    strokeWidth = 1.dp.toPx()
+                )
+            }
             .focusRequester(railFocusRequester)
             .onPreviewKeyEvent { keyEvent ->
                 if (keyEvent.type == KeyEventType.KeyDown && 
                     keyEvent.key == Key.DirectionRight && isExpanded) {
                     onCollapseRequest()
                     onContentFocusRequest()
+                    true
+                } else if (keyEvent.type == KeyEventType.KeyDown && 
+                           keyEvent.key == Key.DirectionLeft && !isExpanded) {
+                    onExpandedChange(true)
                     true
                 } else {
                     false
@@ -163,9 +183,19 @@ fun ExpandableNavRail(
                     label = "Film",
                     isSelected = selectedTab == MainTab.MOVIES,
                     isExpanded = isExpanded,
-                    onClick = { onTabSelected(MainTab.MOVIES) },
+                    onClick = { 
+                        onTabSelected(MainTab.MOVIES)
+                        if (isExpanded) onCollapseRequest()
+                    },
                     modifier = Modifier.focusRequester(firstItemFocusRequester)
                 )
+                
+                if (isExpanded && selectedTab == MainTab.MOVIES) {
+                    ExploreCategoriesItem(
+                        isMovies = true,
+                        onClick = { onExploreCategoriesClick(true) }
+                    )
+                }
                 
                 Spacer(modifier = Modifier.height(1.dp))
                 
@@ -176,6 +206,13 @@ fun ExpandableNavRail(
                     isExpanded = isExpanded,
                     onClick = { onTabSelected(MainTab.SERIES) }
                 )
+                
+                if (isExpanded && selectedTab == MainTab.SERIES) {
+                    ExploreCategoriesItem(
+                        isMovies = false,
+                        onClick = { onExploreCategoriesClick(false) }
+                    )
+                }
                 
                 Spacer(modifier = Modifier.height(1.dp))
                 
@@ -189,10 +226,13 @@ fun ExpandableNavRail(
                 
                 Spacer(modifier = Modifier.height(1.dp))
                 
-                SerieARailItem(
+                NavRailItem(
+                    icon = Icons.Default.Movie,
+                    label = "Serie A",
                     isSelected = selectedTab == MainTab.SERIE_A,
                     isExpanded = isExpanded,
-                    onClick = { onTabSelected(MainTab.SERIE_A) }
+                    onClick = { onTabSelected(MainTab.SERIE_A) },
+                    iconPainter = painterResource(id = R.drawable.serie_a)
                 )
                 
                 Spacer(modifier = Modifier.height(1.dp))
@@ -227,66 +267,6 @@ fun ExpandableNavRail(
                 )
             }
             
-            // Categories section (only when expanded)
-            if (isExpanded && categories.isNotEmpty()) {
-                Spacer(modifier = Modifier.height(12.dp))
-                
-                HorizontalDivider(
-                    color = SandTVColors.BackgroundTertiary.copy(alpha = 0.4f),
-                    thickness = 0.5.dp,
-                    modifier = Modifier.padding(horizontal = 12.dp)
-                )
-                
-                Spacer(modifier = Modifier.height(10.dp))
-                
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 12.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(6.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Folder,
-                        contentDescription = null,
-                        tint = SandTVColors.Accent.copy(alpha = 0.7f),
-                        modifier = Modifier.size(14.dp)
-                    )
-                    Text(
-                        text = "CATEGORIE",
-                        style = androidx.compose.material3.MaterialTheme.typography.labelSmall,
-                        color = SandTVColors.TextTertiary,
-                        fontWeight = FontWeight.SemiBold,
-                        letterSpacing = 0.8.sp,
-                        fontSize = 10.sp
-                    )
-                }
-                
-                Spacer(modifier = Modifier.height(6.dp))
-                
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f)
-                        .padding(horizontal = 8.dp),
-                    verticalArrangement = Arrangement.spacedBy(1.dp)
-                ) {
-                    items(categories) { category ->
-                        val cleanName = category.replace(Regex("\\s*\\(\\d+\\)$"), "").trim()
-                        CategoryRailItem(
-                            name = category,
-                            isSelected = selectedCategory == cleanName,
-                            isExpanded = isExpanded,
-                            onClick = { onCategorySelected(cleanName) }
-                        )
-                    }
-                    
-                    item {
-                        Spacer(modifier = Modifier.height(12.dp))
-                    }
-                }
-            }
-            
             // Settings at bottom
             if (isExpanded) {
                 Spacer(modifier = Modifier.height(8.dp))
@@ -314,87 +294,91 @@ fun ExpandableNavRail(
 }
 
 @Composable
-private fun SerieARailItem(
-    isSelected: Boolean,
-    isExpanded: Boolean,
+private fun ExploreCategoriesItem(
+    isMovies: Boolean,
+    isExpanded: Boolean = true,
     onClick: () -> Unit
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val isFocused by interactionSource.collectIsFocusedAsState()
     
-    val scale by androidx.compose.animation.core.animateFloatAsState(
-        targetValue = if (isFocused) 1.05f else 1f,
-        animationSpec = it.sandtv.app.ui.theme.AppAnimations.SpringCardFocus,
-        label = "serieARailScale"
+    val backgroundColor by animateColorAsState(
+        targetValue = if (isFocused) SandTVColors.BackgroundTertiary else Color.Transparent,
+        label = "exploreCategoriesBg"
     )
     
-    val backgroundColor by androidx.compose.animation.animateColorAsState(
-        targetValue = when {
-            isSelected -> SandTVColors.Accent.copy(alpha = 0.15f)
-            isFocused -> SandTVColors.BackgroundTertiary
-            else -> Color.Transparent
-        },
-        label = "serieARailBg"
+    val textColor by animateColorAsState(
+        targetValue = if (isFocused) SandTVColors.TextPrimary else SandTVColors.TextTertiary,
+        label = "exploreCategoriesText"
     )
     
-    val textAlpha by androidx.compose.animation.core.animateFloatAsState(
-        targetValue = if (isExpanded) 1f else 0f,
-        animationSpec = androidx.compose.animation.core.tween(150),
-        label = "serieARailTextAlpha"
-    )
-    
-    Box(
+    Row(
         modifier = Modifier
-            .graphicsLayer {
-                scaleX = scale
-                scaleY = scale
-            }
             .fillMaxWidth()
-            .height(48.dp)
-            .clip(RoundedCornerShape(10.dp))
-            .background(backgroundColor)
+            .height(36.dp)
+            .clip(RoundedCornerShape(8.dp))
+            .background(color = backgroundColor)
             .clickable(
                 interactionSource = interactionSource,
                 indication = null,
                 onClick = onClick
             )
-            .focusable(interactionSource = interactionSource),
-        contentAlignment = if (isExpanded) Alignment.CenterStart else Alignment.Center
+            .focusable(interactionSource = interactionSource)
+            .padding(start = 20.dp, end = 12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        if (isExpanded) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 12.dp)
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.serie_a),
-                    contentDescription = "Serie A",
-                    modifier = Modifier.size(20.dp)
-                )
-                
-                Text(
-                    text = "Serie A",
-                    style = androidx.compose.material3.MaterialTheme.typography.bodyMedium,
-                    color = when {
-                        isSelected -> SandTVColors.Accent
-                        isFocused -> SandTVColors.TextPrimary
-                        else -> SandTVColors.TextSecondary
-                    },
-                    fontWeight = FontWeight.Medium,
-                    maxLines = 1,
-                    fontSize = 13.sp,
-                    modifier = Modifier.alpha(textAlpha)
-                )
-            }
-        } else {
-            Image(
-                painter = painterResource(id = R.drawable.serie_a),
-                contentDescription = "Serie A",
-                modifier = Modifier.size(22.dp)
-            )
-        }
+        FourSquaresIcon(
+            modifier = Modifier.size(16.dp),
+            color = textColor
+        )
+        Text(
+            text = "Esplora tutte le categorie",
+            style = androidx.compose.material3.MaterialTheme.typography.bodySmall,
+            color = textColor,
+            fontWeight = FontWeight.Normal,
+            fontSize = 11.sp,
+            maxLines = 1
+        )
+    }
+}
+
+@Composable
+private fun FourSquaresIcon(
+    modifier: Modifier = Modifier,
+    color: Color = SandTVColors.Accent
+) {
+    androidx.compose.foundation.Canvas(modifier = modifier) {
+        val squareSize = size.minDimension / 2.5f
+        val gap = size.minDimension / 10f
+        val cornerRadius = androidx.compose.ui.geometry.CornerRadius(squareSize / 4, squareSize / 4)
+        
+        drawRoundRect(
+            color = color,
+            topLeft = androidx.compose.ui.geometry.Offset(0f, 0f),
+            size = androidx.compose.ui.geometry.Size(squareSize, squareSize),
+            cornerRadius = cornerRadius
+        )
+        
+        drawRoundRect(
+            color = color.copy(alpha = 0.7f),
+            topLeft = androidx.compose.ui.geometry.Offset(squareSize + gap, 0f),
+            size = androidx.compose.ui.geometry.Size(squareSize, squareSize),
+            cornerRadius = cornerRadius
+        )
+        
+        drawRoundRect(
+            color = color.copy(alpha = 0.7f),
+            topLeft = androidx.compose.ui.geometry.Offset(0f, squareSize + gap),
+            size = androidx.compose.ui.geometry.Size(squareSize, squareSize),
+            cornerRadius = cornerRadius
+        )
+        
+        drawRoundRect(
+            color = color.copy(alpha = 0.5f),
+            topLeft = androidx.compose.ui.geometry.Offset(squareSize + gap, squareSize + gap),
+            size = androidx.compose.ui.geometry.Size(squareSize, squareSize),
+            cornerRadius = cornerRadius
+        )
     }
 }

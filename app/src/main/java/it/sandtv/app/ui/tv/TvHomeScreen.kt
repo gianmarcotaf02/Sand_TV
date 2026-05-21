@@ -596,11 +596,6 @@ private fun TvHomeScreenContent(
                                     .onPreviewKeyEvent { keyEvent ->
                                         if (keyEvent.type == KeyEventType.KeyDown) {
                                             when (keyEvent.key) {
-                                                Key.DirectionUp -> {
-                                                    // UP: Navigate to TopBar, don't scroll
-                                                    onTopBarFocusRequest()
-                                                    true // Consume event
-                                                }
                                                 Key.DirectionDown -> {
                                                     // DOWN: Mark that focus is going down, allow scroll
                                                     focusWentDown = true
@@ -1171,12 +1166,6 @@ fun HeroBanner(
                                         scaleY = playScale
                                     }
                                     .then(if (playButtonFocusRequester != null) Modifier.focusRequester(playButtonFocusRequester) else Modifier)
-                                    .focusProperties {
-                                        // Redirect UP navigation to TopBar
-                                        if (topBarFocusRequester != null) {
-                                            up = topBarFocusRequester
-                                        }
-                                    }
                                     .height(52.dp)
                                     .border(3.dp, playBorderColor, RoundedCornerShape(12.dp))
                                     .clip(RoundedCornerShape(12.dp)) // Clip content (including progress bar) to match button shape
@@ -1347,6 +1336,7 @@ fun HeroBanner(
                     onPrevClick()
                 },
                 onLeftPress = onRailFocusRequest,
+                onUpPress = { topBarFocusRequester?.requestFocus() },
                 modifier = Modifier
                     .align(Alignment.CenterStart)
                     .padding(start = 16.dp)
@@ -1359,6 +1349,7 @@ fun HeroBanner(
                     slideDirection = 1
                     onNextClick()
                 },
+                onUpPress = { topBarFocusRequester?.requestFocus() },
                 modifier = Modifier
                     .align(Alignment.CenterEnd)
                     .padding(end = 16.dp)
@@ -1774,6 +1765,7 @@ private fun HeroNavArrow(
     isLeft: Boolean,
     onClick: () -> Unit,
     onLeftPress: (() -> Unit)? = null,
+    onUpPress: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     val interactionSource = remember { MutableInteractionSource() }
@@ -1815,6 +1807,10 @@ private fun HeroNavArrow(
                 if (keyEvent.type == KeyEventType.KeyDown && 
                     keyEvent.key == Key.DirectionLeft && isLeft) {
                     onLeftPress?.invoke()
+                    true
+                } else if (keyEvent.type == KeyEventType.KeyDown && 
+                           keyEvent.key == Key.DirectionUp) {
+                    onUpPress?.invoke()
                     true
                 } else {
                     false

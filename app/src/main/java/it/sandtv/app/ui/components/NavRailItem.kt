@@ -2,6 +2,7 @@ package it.sandtv.app.ui.components
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
@@ -18,6 +19,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -33,7 +35,8 @@ fun NavRailItem(
     isExpanded: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    iconTint: Color? = null
+    iconTint: Color? = null,
+    iconPainter: Painter? = null
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val isFocused by interactionSource.collectIsFocusedAsState()
@@ -103,12 +106,25 @@ fun NavRailItem(
                     .fillMaxWidth()
                     .padding(horizontal = 12.dp)
             ) {
-                Icon(
-                    imageVector = icon,
-                    contentDescription = label,
-                    tint = iconTint ?: iconColor,
-                    modifier = Modifier.size(20.dp)
-                )
+                Box(
+                    modifier = Modifier.size(20.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    if (iconPainter != null) {
+                        Image(
+                            painter = iconPainter,
+                            contentDescription = label,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    } else {
+                        Icon(
+                            imageVector = icon,
+                            contentDescription = label,
+                            tint = iconTint ?: iconColor,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+                }
                 
                 Text(
                     text = label,
@@ -121,12 +137,20 @@ fun NavRailItem(
                 )
             }
         } else {
-            Icon(
-                imageVector = icon,
-                contentDescription = label,
-                tint = iconTint ?: iconColor,
-                modifier = Modifier.size(22.dp)
-            )
+            if (iconPainter != null) {
+                Image(
+                    painter = iconPainter,
+                    contentDescription = label,
+                    modifier = Modifier.size(22.dp)
+                )
+            } else {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = label,
+                    tint = iconTint ?: iconColor,
+                    modifier = Modifier.size(22.dp)
+                )
+            }
         }
     }
 }

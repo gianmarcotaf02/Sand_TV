@@ -245,24 +245,8 @@ private fun MainActivityScreen(
     
     // State
     var selectedTab by remember { mutableStateOf(initialTab) }
-    var railExpanded by remember { mutableStateOf(false) }
-    var selectedCategory by remember { mutableStateOf<String?>(null) }
+    var railExpanded by remember { mutableStateOf(true) }
     var showCreateListDialog by remember { mutableStateOf(false) }
-    
-    // Categories from ViewModel
-    val movieCategories by homeViewModel.movieCategories.collectAsState()
-    val seriesCategories by homeViewModel.seriesCategories.collectAsState()
-    
-    // Get current categories based on tab
-    val currentCategories = when (selectedTab) {
-        MainTab.MOVIES -> movieCategories
-        MainTab.SERIES -> seriesCategories
-        MainTab.FAVORITES -> emptyList()  // No sidebar for favorites
-        MainTab.LISTS -> emptyList()      // No sidebar for lists
-        MainTab.LIVE -> emptyList()
-        MainTab.SERIE_A -> emptyList()
-        MainTab.HISTORY -> emptyList()    // No sidebar for history
-    }
     
     // Handle back press to exit grid mode (See All view) - restore previous scroll position
     androidx.activity.compose.BackHandler(enabled = homeState.isGridMode) {
@@ -340,7 +324,6 @@ private fun MainActivityScreen(
         
         if (tab == selectedTab) return
         selectedTab = tab
-        selectedCategory = null  // Reset category selection
         onTabChanged(tab)
         
         // Load content for the selected tab
@@ -430,13 +413,6 @@ private fun MainActivityScreen(
         ExpandableNavRail(
             selectedTab = selectedTab,
             onTabSelected = { selectTab(it) },
-            selectedCategory = selectedCategory,
-            onCategorySelected = { category ->
-                selectedCategory = category
-                val isMovies = selectedTab == MainTab.MOVIES
-                homeViewModel.loadCategoryContent(category, isMovies)
-            },
-            categories = currentCategories,
             isExpanded = railExpanded,
             onExpandedChange = { railExpanded = it },
             onSettingsClick = {
@@ -450,6 +426,12 @@ private fun MainActivityScreen(
                     // Ignore focus errors
                 }
             },
+            onExploreCategoriesClick = { isMovies ->
+                val contentType = if (isMovies) "movies" else "series"
+                startActivityWithTransition(Intent(context, it.sandtv.app.ui.category.AllCategoriesActivity::class.java).apply {
+                    putExtra("contentType", contentType)
+                })
+            },
             modifier = Modifier.fillMaxHeight()
         )
         
@@ -462,9 +444,6 @@ private fun MainActivityScreen(
                 },
                 onSearchClick = {
                     startActivityWithTransition(Intent(context, SearchActivity::class.java))
-                },
-                onSettingsClick = {
-                    startActivityWithTransition(Intent(context, SettingsActivity::class.java))
                 },
                 onRandomClick = {
                     coroutineScope.launch {
@@ -814,14 +793,13 @@ private fun MainTopBar(
 
 /**
  * Mini Top Bar - versione semplificata senza tabs
- * Mostra solo orologio e azioni (search, download, settings, profile)
+ * Mostra solo orologio e azioni (search, download, profile)
  * Usata con il Navigation Rail
  */
 @Composable
 private fun MiniTopBar(
     onProfileClick: () -> Unit,
     onSearchClick: () -> Unit,
-    onSettingsClick: () -> Unit,
     onRandomClick: () -> Unit = {},
     onDownloadsClick: () -> Unit = {},
     onContentFocusRequest: () -> Unit = {},
@@ -861,13 +839,6 @@ private fun MiniTopBar(
             onClick = onSearchClick,
             onDownPress = onContentFocusRequest,
             focusRequester = searchButtonFocusRequester
-        )
-        
-        TopBarIconButton(
-            icon = Icons.Default.Settings,
-            contentDescription = "Impostazioni",
-            onClick = onSettingsClick,
-            onDownPress = onContentFocusRequest
         )
         
         TopBarIconButton(
